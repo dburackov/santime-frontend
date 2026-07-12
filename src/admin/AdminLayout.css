@@ -1,0 +1,59 @@
+.admin-shell {
+  min-height: 100svh;
+  background: var(--color-bg);
+}
+
+.admin-header {
+  background: var(--color-surface);
+  border-bottom: var(--border);
+}
+
+.admin-header__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 52px;
+}
+
+.admin-header__back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
+
+.admin-header__back:hover {
+  color: var(--color-ink);
+}
+
+.admin-header__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.admin-header__nav {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+}
+
+.admin-header__nav-link {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-slate);
+  white-space: nowrap;
+  padding: var(--space-2) 0 var(--space-3);
+  border-bottom: 2px solid transparent;
+}
+
+.admin-header__nav-link:hover {
+  color: var(--color-ink);
+}
+
+.admin-header__nav-link--active {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-accent);
+}

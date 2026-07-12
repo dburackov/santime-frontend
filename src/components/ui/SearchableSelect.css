@@ -1,0 +1,129 @@
+.searchable-select {
+  position: relative;
+}
+
+.searchable-select__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: var(--border);
+  background: var(--color-surface);
+  color: var(--color-slate);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  min-height: 40px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.searchable-select__trigger--filled {
+  color: var(--color-ink);
+}
+
+.searchable-select__trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.searchable-select__summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchable-select__chevron {
+  flex-shrink: 0;
+  color: var(--color-slate);
+}
+
+.searchable-select__panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.searchable-select__search {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-bottom: var(--border);
+  background: transparent;
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-family: inherit;
+}
+
+.searchable-select__search:focus-visible {
+  outline: none;
+}
+
+.searchable-select__list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--space-1) 0;
+}
+
+.searchable-select__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 8px 12px;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.searchable-select__option:hover {
+  background: var(--color-bg);
+}
+
+.searchable-select__option-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.searchable-select__option input {
+  accent-color: var(--color-accent);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.searchable-select__empty {
+  padding: var(--space-3) 12px;
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
+
+.searchable-select__clear {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-top: var(--border);
+  background: transparent;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.searchable-select__clear:hover {
+  background: var(--color-bg);
+}

@@ -1,0 +1,211 @@
+import { apiRequest } from './client';
+import type {
+  AttributeOptionRequest,
+  AttributeOptionResponse,
+  AttributeRequest,
+  AttributeResponse,
+  BrandRequest,
+  BrandResponse,
+  CategoryAttributeRequest,
+  CategoryAttributeResponse,
+  CategoryAttributeUpdateRequest,
+  CategoryRequest,
+  CategoryResponse,
+  OrderResponse,
+  PageResponse,
+  ProductRequest,
+  ProductResponse,
+  ProductVariantRequest,
+  ProductVariantResponse,
+} from './types';
+
+// ---- Категории ----
+
+export function listCategories(parentId?: number): Promise<CategoryResponse[]> {
+  return apiRequest('/api/admin/categories', { searchParams: { parentId } });
+}
+
+export function getCategory(id: number): Promise<CategoryResponse> {
+  return apiRequest(`/api/admin/categories/${id}`);
+}
+
+export function createCategory(body: CategoryRequest): Promise<CategoryResponse> {
+  return apiRequest('/api/admin/categories', { method: 'POST', body });
+}
+
+export function updateCategory(id: number, body: CategoryRequest): Promise<CategoryResponse> {
+  return apiRequest(`/api/admin/categories/${id}`, { method: 'PUT', body });
+}
+
+export function deleteCategory(id: number): Promise<void> {
+  return apiRequest(`/api/admin/categories/${id}`, { method: 'DELETE' });
+}
+
+// ---- Бренды ----
+
+export function listBrands(): Promise<BrandResponse[]> {
+  return apiRequest('/api/admin/brands');
+}
+
+export function createBrand(body: BrandRequest): Promise<BrandResponse> {
+  return apiRequest('/api/admin/brands', { method: 'POST', body });
+}
+
+export function updateBrand(id: number, body: BrandRequest): Promise<BrandResponse> {
+  return apiRequest(`/api/admin/brands/${id}`, { method: 'PUT', body });
+}
+
+export function deleteBrand(id: number): Promise<void> {
+  return apiRequest(`/api/admin/brands/${id}`, { method: 'DELETE' });
+}
+
+// ---- Атрибуты ----
+
+export function listAttributes(): Promise<AttributeResponse[]> {
+  return apiRequest('/api/admin/attributes');
+}
+
+export function createAttribute(body: AttributeRequest): Promise<AttributeResponse> {
+  return apiRequest('/api/admin/attributes', { method: 'POST', body });
+}
+
+export function updateAttribute(id: number, body: AttributeRequest): Promise<AttributeResponse> {
+  return apiRequest(`/api/admin/attributes/${id}`, { method: 'PUT', body });
+}
+
+export function deleteAttribute(id: number): Promise<void> {
+  return apiRequest(`/api/admin/attributes/${id}`, { method: 'DELETE' });
+}
+
+// ---- Значения OPTION-атрибутов ----
+
+export function listAttributeOptions(attributeId: number): Promise<AttributeOptionResponse[]> {
+  return apiRequest(`/api/admin/attributes/${attributeId}/options`);
+}
+
+export function createAttributeOption(
+  attributeId: number,
+  body: AttributeOptionRequest,
+): Promise<AttributeOptionResponse> {
+  return apiRequest(`/api/admin/attributes/${attributeId}/options`, { method: 'POST', body });
+}
+
+export function updateAttributeOption(
+  attributeId: number,
+  optionId: number,
+  body: AttributeOptionRequest,
+): Promise<AttributeOptionResponse> {
+  return apiRequest(`/api/admin/attributes/${attributeId}/options/${optionId}`, { method: 'PUT', body });
+}
+
+export function deleteAttributeOption(attributeId: number, optionId: number): Promise<void> {
+  return apiRequest(`/api/admin/attributes/${attributeId}/options/${optionId}`, { method: 'DELETE' });
+}
+
+// ---- Привязка атрибутов к категории ----
+
+export function listCategoryAttributes(categoryId: number): Promise<CategoryAttributeResponse[]> {
+  return apiRequest(`/api/admin/categories/${categoryId}/attributes`);
+}
+
+export function createCategoryAttribute(
+  categoryId: number,
+  body: CategoryAttributeRequest,
+): Promise<CategoryAttributeResponse> {
+  return apiRequest(`/api/admin/categories/${categoryId}/attributes`, { method: 'POST', body });
+}
+
+export function updateCategoryAttribute(
+  categoryId: number,
+  attributeId: number,
+  body: CategoryAttributeUpdateRequest,
+): Promise<CategoryAttributeResponse> {
+  return apiRequest(`/api/admin/categories/${categoryId}/attributes/${attributeId}`, {
+    method: 'PUT',
+    body,
+  });
+}
+
+export function deleteCategoryAttribute(categoryId: number, attributeId: number): Promise<void> {
+  return apiRequest(`/api/admin/categories/${categoryId}/attributes/${attributeId}`, {
+    method: 'DELETE',
+  });
+}
+
+// ---- Товары ----
+
+export interface ListProductsParams {
+  categoryId?: number;
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+export function listProducts(params: ListProductsParams): Promise<PageResponse<ProductResponse>> {
+  return apiRequest('/api/admin/products', {
+    searchParams: { categoryId: params.categoryId, page: params.page, size: params.size, sort: params.sort },
+  });
+}
+
+export function getProduct(id: number): Promise<ProductResponse> {
+  return apiRequest(`/api/admin/products/${id}`);
+}
+
+export function createProduct(body: ProductRequest): Promise<ProductResponse> {
+  return apiRequest('/api/admin/products', { method: 'POST', body });
+}
+
+export function updateProduct(id: number, body: ProductRequest): Promise<ProductResponse> {
+  return apiRequest(`/api/admin/products/${id}`, { method: 'PUT', body });
+}
+
+export function deleteProduct(id: number): Promise<void> {
+  return apiRequest(`/api/admin/products/${id}`, { method: 'DELETE' });
+}
+
+// ---- Варианты товара ----
+
+export function listProductVariants(productId: number): Promise<ProductVariantResponse[]> {
+  return apiRequest(`/api/admin/products/${productId}/variants`);
+}
+
+export function getProductVariant(productId: number, id: number): Promise<ProductVariantResponse> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${id}`);
+}
+
+export function createProductVariant(
+  productId: number,
+  body: ProductVariantRequest,
+): Promise<ProductVariantResponse> {
+  return apiRequest(`/api/admin/products/${productId}/variants`, { method: 'POST', body });
+}
+
+export function updateProductVariant(
+  productId: number,
+  id: number,
+  body: ProductVariantRequest,
+): Promise<ProductVariantResponse> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${id}`, { method: 'PUT', body });
+}
+
+export function deleteProductVariant(productId: number, id: number): Promise<void> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${id}`, { method: 'DELETE' });
+}
+
+// ---- Заказы (только просмотр — смены статуса пока нет) ----
+
+export interface ListOrdersParams {
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+export function listOrders(params: ListOrdersParams): Promise<PageResponse<OrderResponse>> {
+  return apiRequest('/api/admin/orders', {
+    searchParams: { page: params.page, size: params.size, sort: params.sort },
+  });
+}
+
+export function getOrder(id: number): Promise<OrderResponse> {
+  return apiRequest(`/api/admin/orders/${id}`);
+}
