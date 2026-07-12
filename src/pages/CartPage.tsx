@@ -70,12 +70,9 @@ export function CartPage() {
           <span>Итого</span>
           <Price value={totalPrice} size="lg" />
         </div>
-        <Button disabled title="Оформление заказов появится, когда бэкенд будет поддерживать создание заказов">
-          Оформить заказ
-        </Button>
-        <p className="cart-page__note">
-          Оформление заказов пока недоступно — в API магазина ещё нет эндпоинта для создания заказа.
-        </p>
+        <Link to="/checkout">
+          <Button>Оформить заказ</Button>
+        </Link>
       </div>
     </div>
   );

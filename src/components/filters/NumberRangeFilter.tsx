@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import type { CatalogFilterAttributeResponse } from '@/api/types';
 import './Filters.css';
@@ -10,15 +10,29 @@ interface NumberRangeFilterProps {
   onChange: (min: number | undefined, max: number | undefined) => void;
 }
 
+function decimalPlaces(value: number): number {
+  if (!Number.isFinite(value) || Number.isInteger(value)) return 0;
+  const [, fraction] = value.toString().split('.');
+  return fraction?.length ?? 0;
+}
+
 export function NumberRangeFilter({ attribute, min, max, onChange }: NumberRangeFilterProps) {
   const boundsMin = attribute.minValue ?? 0;
   const boundsMax = attribute.maxValue ?? 100;
+  // Шаг подбирается по точности границ — иначе при дробных min/max (напр. 3.5–6)
+  // нативный слайдер с шагом по умолчанию (1) не даёт дотянуть ползунок до края.
+  const precision = Math.max(decimalPlaces(boundsMin), decimalPlaces(boundsMax));
+  const step = precision > 0 ? Number((1 / 10 ** precision).toFixed(precision)) : 1;
+  const round = (value: number) => (precision > 0 ? Number(value.toFixed(precision)) : value);
 
   const [localMin, setLocalMin] = useState(min ?? boundsMin);
   const [localMax, setLocalMax] = useState(max ?? boundsMax);
   const [prevMin, setPrevMin] = useState(min);
   const [prevMax, setPrevMax] = useState(max);
-  const debounced = useDebouncedValue({ localMin, localMax }, 300);
+  // useMemo даёт стабильную ссылку, пока сами значения не изменились — иначе объектный
+  // литерал пересоздавался бы на каждый рендер (в т.ч. посторонний) и постоянно сбрасывал debounce.
+  const localValue = useMemo(() => ({ localMin, localMax }), [localMin, localMax]);
+  const debounced = useDebouncedValue(localValue, 300);
   const isFirstRun = useRef(true);
 
   // Синхронизация с внешним значением (напр. при сбросе фильтров) без useEffect —
@@ -59,8 +73,9 @@ export function NumberRangeFilter({ attribute, min, max, onChange }: NumberRange
           type="range"
           min={boundsMin}
           max={boundsMax}
+          step={step}
           value={localMin}
-          onChange={(e) => setLocalMin(Math.min(Number(e.target.value), localMax))}
+          onChange={(e) => setLocalMin(Math.min(round(Number(e.target.value)), localMax))}
           className="range-slider__input"
           aria-label={`${attribute.name} — от`}
         />
@@ -68,8 +83,9 @@ export function NumberRangeFilter({ attribute, min, max, onChange }: NumberRange
           type="range"
           min={boundsMin}
           max={boundsMax}
+          step={step}
           value={localMax}
-          onChange={(e) => setLocalMax(Math.max(Number(e.target.value), localMin))}
+          onChange={(e) => setLocalMax(Math.max(round(Number(e.target.value)), localMin))}
           className="range-slider__input"
           aria-label={`${attribute.name} — до`}
         />

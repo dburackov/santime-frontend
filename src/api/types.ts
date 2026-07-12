@@ -102,7 +102,7 @@ export interface VariantDetailResponse {
   variantOptions: VariantOptionGroup[];
 }
 
-// ---- Категории / бренды (админское API, используется витриной только для чтения) ----
+// ---- Админское API ----
 
 export interface CategoryResponse {
   id: number;
@@ -113,9 +113,156 @@ export interface CategoryResponse {
   updatedAt: string;
 }
 
+export interface CategoryRequest {
+  name: string;
+  slug: string;
+  parentCategoryId: number | null;
+}
+
 export interface BrandResponse {
   id: number;
   name: string;
   slug: string;
   createdAt: string;
+}
+
+export interface BrandRequest {
+  name: string;
+  slug: string;
+}
+
+export interface AttributeResponse {
+  id: number;
+  name: string;
+  slug: string;
+  type: AttributeType;
+  unit: string | null;
+}
+
+export interface AttributeRequest {
+  name: string;
+  slug: string;
+  type: AttributeType;
+  unit?: string | null;
+}
+
+export interface AttributeOptionResponse {
+  id: number;
+  value: string;
+}
+
+export interface AttributeOptionRequest {
+  value: string;
+}
+
+export interface CategoryAttributeResponse {
+  attributeId: number;
+  attributeName: string;
+  attributeSlug: string;
+  attributeType: AttributeType;
+  required: boolean;
+  isFilter: boolean;
+  isVariant: boolean;
+  sortOrder: number;
+}
+
+export interface CategoryAttributeRequest {
+  attributeId: number;
+  required: boolean;
+  isFilter: boolean;
+  isVariant: boolean;
+  sortOrder: number;
+}
+
+export type CategoryAttributeUpdateRequest = Omit<CategoryAttributeRequest, 'attributeId'>;
+
+export interface ProductResponse {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  categoryId: number;
+  brandId: number | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductRequest {
+  name: string;
+  slug: string;
+  description?: string | null;
+  categoryId: number;
+  brandId?: number | null;
+  active: boolean;
+}
+
+export interface ProductVariantResponse {
+  id: number;
+  productId: number;
+  slug: string;
+  sku: string;
+  price: number;
+  stockQuantity: number;
+  weightKg: number | null;
+  attributes: Record<string, AttributeValue>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductVariantRequest {
+  slug: string;
+  sku: string;
+  price: number;
+  stockQuantity: number;
+  weightKg?: number | null;
+  attributes: Record<string, AttributeValue>;
+}
+
+// ---- Заказы ----
+
+export interface OrderItemRequest {
+  productVariantId: number;
+  quantity: number;
+}
+
+export interface OrderRequest {
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  postalCode?: string | null;
+  city?: string | null;
+  paymentMethod: string;
+  deliveryMethod: string;
+  comment?: string | null;
+  items: OrderItemRequest[];
+}
+
+export interface OrderItemResponse {
+  id: number;
+  productVariantId: number;
+  productName: string;
+  sku: string;
+  price: number;
+  quantity: number;
+}
+
+export interface OrderResponse {
+  id: number;
+  status: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  postalCode: string | null;
+  city: string | null;
+  paymentMethod: string;
+  deliveryMethod: string;
+  comment: string | null;
+  totalPrice: number;
+  createdAt: string;
+  items: OrderItemResponse[];
 }

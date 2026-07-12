@@ -1,4 +1,6 @@
 :root {
+  color-scheme: light;
+
   /* ---- Цвет: светлая тема (по умолчанию) ---- */
   --color-bg: #FAFAF9;
   --color-surface: #FFFFFF;
@@ -50,6 +52,8 @@
 }
 
 :root[data-theme='dark'] {
+  color-scheme: dark;
+
   --color-bg: #15181A;
   --color-surface: #1D2124;
   --color-ink: #F2F1EE;

@@ -22,6 +22,15 @@
   color: var(--color-slate);
 }
 
+.footer__admin-link {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
+
+.footer__admin-link:hover {
+  color: var(--color-accent);
+}
+
 @media (min-width: 640px) {
   .footer__inner {
     flex-direction: row;

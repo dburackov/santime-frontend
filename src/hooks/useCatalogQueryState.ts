@@ -17,7 +17,8 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
   const priceMaxRaw = searchParams.get('priceMax');
   const priceMin = priceMinRaw ? Number(priceMinRaw) : undefined;
   const priceMax = priceMaxRaw ? Number(priceMaxRaw) : undefined;
-  const inStock = searchParams.get('inStock') === 'true';
+  const inStockRaw = searchParams.get('inStock');
+  const inStock = inStockRaw === null ? true : inStockRaw === 'true';
   const brandIdRaw = searchParams.get('brandId');
   const brandId = brandIdRaw ? Number(brandIdRaw) : undefined;
 
@@ -80,7 +81,7 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
     Object.keys(attributeRangeFilters).length > 0 ||
     priceMin !== undefined ||
     priceMax !== undefined ||
-    inStock ||
+    inStockRaw === 'false' ||
     brandId !== undefined;
 
   return {

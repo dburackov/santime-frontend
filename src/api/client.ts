@@ -17,7 +17,7 @@ export class ApiError extends Error {
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: unknown;
-  searchParams?: Record<string, string | number | boolean | undefined | null>;
+  searchParams?: { [key: string]: string | number | boolean | undefined | null };
 }
 
 function buildUrl(path: string, searchParams?: RequestOptions['searchParams']): string {

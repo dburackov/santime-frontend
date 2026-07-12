@@ -65,14 +65,31 @@
   margin-left: auto;
 }
 
+.category-page__sort-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
 .category-page__sort {
-  padding: 8px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 36px 8px 12px;
   border-radius: var(--radius-sm);
   border: var(--border);
   background: var(--color-surface);
   color: var(--color-ink);
   font-size: var(--text-sm);
+  font-family: inherit;
   min-height: 40px;
+}
+
+.category-page__sort-chevron {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--color-slate);
+  pointer-events: none;
 }
 
 .category-page__grid {

@@ -16,7 +16,7 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { SkeletonCard, SkeletonRow } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { FilterIcon } from '@/components/ui/icons';
+import { FilterIcon, ChevronDownIcon } from '@/components/ui/icons';
 import type { CatalogSort } from '@/api/types';
 
 const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
@@ -99,18 +99,21 @@ export function CategoryPage() {
             </span>
 
             <div className="category-page__toolbar-right">
-              <select
-                className="category-page__sort"
-                value={state.sort}
-                onChange={(e) => state.updateParams({ sort: e.target.value })}
-                aria-label="Сортировка"
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <span className="category-page__sort-wrap">
+                <select
+                  className="category-page__sort"
+                  value={state.sort}
+                  onChange={(e) => state.updateParams({ sort: e.target.value })}
+                  aria-label="Сортировка"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon width={16} height={16} className="category-page__sort-chevron" />
+              </span>
               <ViewToggle value={viewMode} onChange={setViewMode} />
             </div>
           </div>

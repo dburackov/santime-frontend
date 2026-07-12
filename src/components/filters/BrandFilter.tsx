@@ -1,4 +1,5 @@
 import type { BrandResponse } from '@/api/types';
+import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import './Filters.css';
 
 interface BrandFilterProps {
@@ -13,18 +14,13 @@ export function BrandFilter({ brands, brandId, onChange }: BrandFilterProps) {
   return (
     <div className="filter-block">
       <div className="filter-block__title">Бренд</div>
-      <select
-        className="filter-select"
-        value={brandId ?? ''}
-        onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)}
-      >
-        <option value="">Все бренды</option>
-        {brands.map((brand) => (
-          <option key={brand.id} value={brand.id}>
-            {brand.name}
-          </option>
-        ))}
-      </select>
+      <SearchableSelect
+        options={brands.map((brand) => ({ value: String(brand.id), label: brand.name }))}
+        selected={brandId !== undefined ? [String(brandId)] : []}
+        onChange={(values) => onChange(values[0] ? Number(values[0]) : undefined)}
+        placeholder="Все бренды"
+        searchPlaceholder="Поиск бренда…"
+      />
     </div>
   );
 }

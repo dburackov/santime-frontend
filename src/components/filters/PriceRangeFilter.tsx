@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import './Filters.css';
 
@@ -13,7 +13,10 @@ export function PriceRangeFilter({ priceMin, priceMax, onChange }: PriceRangeFil
   const [localMax, setLocalMax] = useState(priceMax?.toString() ?? '');
   const [prevPriceMin, setPrevPriceMin] = useState(priceMin);
   const [prevPriceMax, setPrevPriceMax] = useState(priceMax);
-  const debounced = useDebouncedValue({ localMin, localMax }, 400);
+  // useMemo даёт стабильную ссылку, пока сами значения не изменились — иначе объектный
+  // литерал пересоздавался бы на каждый рендер (в т.ч. посторонний) и постоянно сбрасывал debounce.
+  const localValue = useMemo(() => ({ localMin, localMax }), [localMin, localMax]);
+  const debounced = useDebouncedValue(localValue, 400);
   const isFirstRun = useRef(true);
 
   // Синхронизация с внешним значением (напр. при сбросе фильтров) без useEffect —
@@ -38,7 +41,9 @@ export function PriceRangeFilter({ priceMin, priceMax, onChange }: PriceRangeFil
 
   return (
     <div className="filter-block">
-      <div className="filter-block__title">Цена, ₽</div>
+      <div className="filter-block__title">
+        Цена
+      </div>
       <div className="price-range-inputs">
         <input
           type="number"

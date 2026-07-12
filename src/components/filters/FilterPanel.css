@@ -57,9 +57,15 @@
 }
 
 .filter-drawer__body {
-  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
+}
+
+.filter-drawer__filters {
+  padding: var(--space-4);
 }
 
 .filter-drawer__footer {
@@ -71,15 +77,23 @@
   flex-shrink: 0;
 }
 
-.filter-drawer__reset {
+.filter-panel__reset {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  flex-shrink: 0;
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  text-align: right;
   font-size: var(--text-sm);
-  color: var(--color-slate);
-  padding: var(--space-2);
-  min-height: 44px;
+  color: var(--color-accent);
+  background: var(--color-surface);
+  border-top: var(--border);
 }
 
-.filter-drawer__reset:hover {
-  color: var(--color-ink);
+.filter-panel__reset:hover {
+  text-decoration: underline;
 }
 
 .filter-drawer__apply {
