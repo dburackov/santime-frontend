@@ -1,0 +1,23 @@
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.view-toggle__btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--color-slate);
+}
+
+.view-toggle__btn--active {
+  background: var(--color-line);
+  color: var(--color-ink);
+}

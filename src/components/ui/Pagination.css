@@ -1,0 +1,35 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin-top: var(--space-8);
+}
+
+.pagination__nav,
+.pagination__page {
+  min-width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.pagination__nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pagination__page--active {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.pagination__ellipsis {
+  color: var(--color-slate);
+  padding: 0 4px;
+}

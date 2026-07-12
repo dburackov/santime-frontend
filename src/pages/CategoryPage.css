@@ -1,0 +1,114 @@
+.category-page {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-12);
+}
+
+.category-page__title {
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.category-page__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.category-page__content {
+  min-width: 0;
+  flex: 1;
+}
+
+.category-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.category-page__filters-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+.category-page__filters-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.category-page__count {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+  order: 3;
+  width: 100%;
+}
+
+.category-page__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.category-page__sort {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: var(--border);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  min-height: 40px;
+}
+
+.category-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.category-page__list {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .category-page__grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .category-page__count {
+    order: 0;
+    width: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .category-page__layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .category-page__filters-btn {
+    display: none;
+  }
+
+  .category-page__grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}

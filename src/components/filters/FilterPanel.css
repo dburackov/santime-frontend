@@ -1,0 +1,121 @@
+.filter-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.filter-drawer--open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.filter-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity var(--motion-base);
+}
+
+.filter-drawer--open .filter-drawer__backdrop {
+  opacity: 1;
+}
+
+.filter-drawer__sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100%);
+  transition: transform var(--motion-base);
+}
+
+.filter-drawer--open .filter-drawer__sheet {
+  transform: translateY(0);
+}
+
+.filter-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: var(--border);
+  flex-shrink: 0;
+}
+
+.filter-drawer__header h2 {
+  font-size: var(--text-base);
+}
+
+.filter-drawer__body {
+  padding: var(--space-4);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.filter-drawer__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: var(--border);
+  flex-shrink: 0;
+}
+
+.filter-drawer__reset {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+  padding: var(--space-2);
+  min-height: 44px;
+}
+
+.filter-drawer__reset:hover {
+  color: var(--color-ink);
+}
+
+.filter-drawer__apply {
+  flex: 1;
+}
+
+@media (min-width: 1024px) {
+  .filter-drawer {
+    position: static;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: auto;
+    width: 268px;
+    flex-shrink: 0;
+  }
+
+  .filter-drawer__backdrop {
+    display: none;
+  }
+
+  .filter-drawer__sheet {
+    position: static;
+    max-height: none;
+    transform: none;
+    transition: none;
+    border-radius: var(--radius);
+    border: var(--border);
+    box-shadow: none;
+  }
+
+  .filter-drawer__header,
+  .filter-drawer__footer {
+    display: none;
+  }
+
+  .filter-drawer__body {
+    overflow-y: visible;
+  }
+}
