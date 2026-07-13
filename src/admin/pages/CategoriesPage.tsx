@@ -193,6 +193,7 @@ export function CategoriesPage() {
               ]}
               value={form.parentCategoryId}
               onChange={(value) => setForm((f) => ({ ...f, parentCategoryId: value }))}
+              portal
             />
           </div>
         </form>

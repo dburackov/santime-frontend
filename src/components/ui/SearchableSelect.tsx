@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDownIcon } from './icons';
 import './SearchableSelect.css';
 
@@ -26,6 +27,9 @@ interface SearchableSelectProps {
   allowClear?: boolean;
   ariaLabel?: string;
   id?: string;
+  /** Открывать панель в портале (document.body) с фиксированным позиционированием —
+   * чтобы её не обрезал overflow:auto у контейнера-предка (например, тело модалки). */
+  portal?: boolean;
 }
 
 export function SearchableSelect({
@@ -42,10 +46,14 @@ export function SearchableSelect({
   allowClear = true,
   ariaLabel,
   id,
+  portal = false,
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [panelStyle, setPanelStyle] = useState<{ top: number; left: number; width: number } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   function close() {
@@ -56,9 +64,10 @@ export function SearchableSelect({
   useEffect(() => {
     if (!open) return;
     function handlePointerDown(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        close();
-      }
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (panelRef.current?.contains(target)) return;
+      close();
     }
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') close();
@@ -74,6 +83,22 @@ export function SearchableSelect({
   useEffect(() => {
     if (open && searchable) searchInputRef.current?.focus();
   }, [open, searchable]);
+
+  useLayoutEffect(() => {
+    if (!open || !portal) return;
+    function updatePosition() {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPanelStyle({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    }
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [open, portal]);
 
   const filteredOptions = useMemo(() => {
     if (!searchable) return options;
@@ -101,24 +126,12 @@ export function SearchableSelect({
         ? selectedLabels.join(', ')
         : `${selectedLabels.slice(0, 2).join(', ')} +${selectedLabels.length - 2}`;
 
-  return (
-    <div className="searchable-select" ref={rootRef}>
-      <button
-        id={id}
-        type="button"
-        className={`searchable-select__trigger ${selectedLabels.length > 0 ? 'searchable-select__trigger--filled' : ''}`}
-        onClick={() => (open ? close() : setOpen(true))}
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        aria-label={ariaLabel}
-        title={selectedLabels.length > 2 ? selectedLabels.join(', ') : undefined}
-      >
-        <span className="searchable-select__summary">{summary}</span>
-        <ChevronDownIcon width={16} height={16} className="searchable-select__chevron" />
-      </button>
-
-      {open && (
-        <div className="searchable-select__panel">
+  const panel = open && (
+        <div
+          className={`searchable-select__panel ${portal ? 'searchable-select__panel--portal' : ''}`}
+          ref={panelRef}
+          style={portal && panelStyle ? { top: panelStyle.top, left: panelStyle.left, width: panelStyle.width } : undefined}
+        >
           {searchable && (
             <input
               ref={searchInputRef}
@@ -161,7 +174,26 @@ export function SearchableSelect({
             </button>
           )}
         </div>
-      )}
+      );
+
+  return (
+    <div className="searchable-select" ref={rootRef}>
+      <button
+        ref={triggerRef}
+        id={id}
+        type="button"
+        className={`searchable-select__trigger ${selectedLabels.length > 0 ? 'searchable-select__trigger--filled' : ''}`}
+        onClick={() => (open ? close() : setOpen(true))}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label={ariaLabel}
+        title={selectedLabels.length > 2 ? selectedLabels.join(', ') : undefined}
+      >
+        <span className="searchable-select__summary">{summary}</span>
+        <ChevronDownIcon width={16} height={16} className="searchable-select__chevron" />
+      </button>
+
+      {portal ? (panelStyle && createPortal(panel, document.body)) : panel}
     </div>
   );
 }

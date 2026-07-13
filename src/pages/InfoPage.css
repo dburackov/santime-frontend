@@ -1,0 +1,69 @@
+.info-page {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-16);
+  max-width: 760px;
+}
+
+.info-page__title {
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+.info-page__section {
+  margin-bottom: var(--space-8);
+}
+
+.info-page__section h2 {
+  margin-bottom: var(--space-4);
+}
+
+.info-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-left: var(--space-6);
+  list-style: disc;
+}
+
+.info-page__list li {
+  display: list-item;
+  color: var(--color-ink);
+  line-height: 1.5;
+}
+
+.info-page__list li::marker {
+  color: var(--color-gold);
+  font-weight: 700;
+}
+
+.info-page__table-wrap {
+  overflow-x: auto;
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.info-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.info-page__table th,
+.info-page__table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: var(--border);
+}
+
+.info-page__table th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  white-space: nowrap;
+}
+
+.info-page__table tbody tr:last-child td {
+  border-bottom: none;
+}

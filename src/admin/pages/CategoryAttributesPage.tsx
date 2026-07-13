@@ -222,6 +222,7 @@ export function CategoryAttributesPage() {
                 options={unboundAttributes?.map((a) => ({ value: String(a.id), label: `${a.name} (${a.type})` })) ?? []}
                 value={selectedAttributeId}
                 onChange={setSelectedAttributeId}
+                portal
               />
             </div>
           )}

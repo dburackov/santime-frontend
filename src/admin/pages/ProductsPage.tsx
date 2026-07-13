@@ -254,6 +254,7 @@ export function ProductsPage() {
                 value={form.categoryId}
                 onChange={(value) => setForm((f) => ({ ...f, categoryId: value }))}
                 placeholder="Выберите категорию"
+                portal
               />
             </div>
             <div className="admin-form-field">
@@ -263,6 +264,7 @@ export function ProductsPage() {
                 options={[{ value: '', label: 'Без бренда' }, ...(brands?.map((b) => ({ value: String(b.id), label: b.name })) ?? [])]}
                 value={form.brandId}
                 onChange={(value) => setForm((f) => ({ ...f, brandId: value }))}
+                portal
               />
             </div>
           </div>

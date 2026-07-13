@@ -28,6 +28,7 @@ export function getProducts(query: CatalogProductsQuery): Promise<PageResponse<V
     priceMin: query.priceMin,
     priceMax: query.priceMax,
     inStock: query.inStock,
+    name: query.name,
     sort: query.sort,
     page: query.page,
     size: query.size,

@@ -13,10 +13,12 @@ interface SelectProps {
   placeholder?: string;
   ariaLabel?: string;
   id?: string;
+  /** Открывать панель в портале — см. SearchableSelect. Используется в модалках админки. */
+  portal?: boolean;
 }
 
 /** Простой одиночный селект в стиле SearchableSelect — без поиска и без чекбоксов/радио. */
-export function Select({ options, value, onChange, placeholder = '', ariaLabel, id }: SelectProps) {
+export function Select({ options, value, onChange, placeholder = '', ariaLabel, id, portal }: SelectProps) {
   return (
     <SearchableSelect
       id={id}
@@ -30,6 +32,7 @@ export function Select({ options, value, onChange, placeholder = '', ariaLabel, 
       showIndicator={false}
       allowClear={false}
       ariaLabel={ariaLabel}
+      portal={portal}
     />
   );
 }

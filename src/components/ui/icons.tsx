@@ -100,12 +100,87 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function SearchIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.35-4.35" />
+    </Icon>
+  );
+}
+
+export function PhoneIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M4 4h4l2 5-2.5 2a11 11 0 0 0 5.5 5.5l2-2.5 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 2 6a2 2 0 0 1 2-2Z" />
+    </Icon>
+  );
+}
+
+export function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </Icon>
+  );
+}
+
 export function FilterIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Icon {...props}>
       <line x1="4" y1="6" x2="20" y2="6" />
       <line x1="7" y1="12" x2="17" y2="12" />
       <line x1="10" y1="18" x2="14" y2="18" />
+    </Icon>
+  );
+}
+
+export function TruckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M2 7h11v10H2z" />
+      <path d="M13 10h4l4 3.5V17h-8z" />
+      <circle cx="6.5" cy="18.5" r="1.6" />
+      <circle cx="17" cy="18.5" r="1.6" />
+    </Icon>
+  );
+}
+
+export function ShieldIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3Z" />
+      <path d="M9 12l2 2 4-4" />
+    </Icon>
+  );
+}
+
+export function CardIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
+    </Icon>
+  );
+}
+
+export function HeadsetIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M4 13v-1a8 8 0 0 1 16 0v1" />
+      <rect x="2" y="13" width="4" height="6" rx="1.5" />
+      <rect x="18" y="13" width="4" height="6" rx="1.5" />
+      <path d="M20 19v1a3 3 0 0 1-3 3h-4" />
+    </Icon>
+  );
+}
+
+export function StarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6Z" />
     </Icon>
   );
 }

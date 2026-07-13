@@ -69,7 +69,7 @@ export function ProductPage() {
     <div className="container product-page">
       <Breadcrumbs
         items={[
-          { label: 'Каталог', to: '/' },
+          { label: 'Каталог', to: '/catalog' },
           ...(category ? [{ label: category.name, to: `/category/${category.slug}` }] : []),
           { label: variant.productName },
         ]}

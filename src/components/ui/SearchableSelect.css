@@ -55,6 +55,11 @@
   overflow: hidden;
 }
 
+.searchable-select__panel--portal {
+  position: fixed;
+  z-index: 60;
+}
+
 .searchable-select__search {
   width: 100%;
   padding: 8px 12px;

@@ -199,6 +199,7 @@ export function AttributesPage() {
                 }))}
                 value={form.type}
                 onChange={(value) => setForm((f) => ({ ...f, type: value as AttributeType }))}
+                portal
               />
             </div>
             <div className="admin-form-field">

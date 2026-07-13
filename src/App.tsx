@@ -2,11 +2,14 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HomePage } from '@/pages/HomePage';
+import { CatalogPage } from '@/pages/CatalogPage';
 import { CategoryPage } from '@/pages/CategoryPage';
 import { ProductPage } from '@/pages/ProductPage';
 import { CartPage } from '@/pages/CartPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
 import { OrderConfirmationPage } from '@/pages/OrderConfirmationPage';
+import { DeliveryPage } from '@/pages/DeliveryPage';
+import { PaymentPage } from '@/pages/PaymentPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { AdminLayout } from '@/admin/AdminLayout';
 import { CategoriesPage } from '@/admin/pages/CategoriesPage';
@@ -49,11 +52,14 @@ function App() {
 
       <Route element={<StorefrontLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/catalog" element={<CatalogPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/product/:variantSlug" element={<ProductPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+        <Route path="/dostavka" element={<DeliveryPage />} />
+        <Route path="/oplata" element={<PaymentPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

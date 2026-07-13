@@ -67,7 +67,7 @@ export function CategoryPage() {
 
   return (
     <div className="container category-page">
-      <Breadcrumbs items={[{ label: 'Каталог', to: '/' }, { label: category?.name ?? '…' }]} />
+      <Breadcrumbs items={[{ label: 'Каталог', to: '/catalog' }, { label: category?.name ?? '…' }]} />
 
       <h1 className="category-page__title">{category?.name}</h1>
 
@@ -87,7 +87,7 @@ export function CategoryPage() {
           <div className="category-page__toolbar">
             <button
               type="button"
-              className="category-page__filters-btn touch-target"
+              className="category-page__filters-btn"
               onClick={() => setFiltersOpen(true)}
             >
               <FilterIcon width={16} height={16} />

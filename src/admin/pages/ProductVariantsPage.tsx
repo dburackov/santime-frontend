@@ -388,6 +388,7 @@ function AttributeField({ binding, value, options, onChange, error }: AttributeF
           ]}
           value={value}
           onChange={onChange}
+          portal
         />
         {error && <span className="admin-form-error">{error}</span>}
       </div>

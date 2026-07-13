@@ -52,6 +52,7 @@ export interface CatalogProductsQuery {
   priceMin?: number;
   priceMax?: number;
   inStock?: boolean;
+  name?: string;
   sort?: CatalogSort;
   page?: number;
   size?: number;

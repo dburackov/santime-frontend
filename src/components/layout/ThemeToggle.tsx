@@ -9,21 +9,21 @@ export function ThemeToggle() {
     <div className="theme-toggle" role="group" aria-label="Тема оформления">
       <button
         type="button"
-        className={`theme-toggle__btn touch-target ${theme === 'light' ? 'theme-toggle__btn--active' : ''}`}
+        className={`theme-toggle__btn ${theme === 'light' ? 'theme-toggle__btn--active' : ''}`}
         onClick={() => setTheme('light')}
         aria-pressed={theme === 'light'}
         title="Светлая тема"
       >
-        <SunIcon width={16} height={16} />
+        <SunIcon width={12} height={12} />
       </button>
       <button
         type="button"
-        className={`theme-toggle__btn touch-target ${theme === 'dark' ? 'theme-toggle__btn--active' : ''}`}
+        className={`theme-toggle__btn ${theme === 'dark' ? 'theme-toggle__btn--active' : ''}`}
         onClick={() => setTheme('dark')}
         aria-pressed={theme === 'dark'}
         title="Тёмная тема"
       >
-        <MoonIcon width={16} height={16} />
+        <MoonIcon width={12} height={12} />
       </button>
     </div>
   );
