@@ -13,8 +13,8 @@ export function getCategories(): Promise<CategoryResponse[]> {
   return apiRequest('/api/admin/categories');
 }
 
-export function getBrands(): Promise<BrandResponse[]> {
-  return apiRequest('/api/admin/brands');
+export function getCategoryBrands(categoryId: number): Promise<BrandResponse[]> {
+  return apiRequest(`/api/catalog/categories/${categoryId}/brands`);
 }
 
 export function getCategoryFilters(categoryId: number): Promise<CatalogFilterAttributeResponse[]> {
@@ -24,7 +24,7 @@ export function getCategoryFilters(categoryId: number): Promise<CatalogFilterAtt
 export function getProducts(query: CatalogProductsQuery): Promise<PageResponse<VariantCardResponse>> {
   const searchParams: Record<string, string | number | boolean | undefined> = {
     categoryId: query.categoryId,
-    brandId: query.brandId,
+    brandIds: query.brandIds?.length ? query.brandIds.join(',') : undefined,
     priceMin: query.priceMin,
     priceMax: query.priceMax,
     inStock: query.inStock,

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { getBrands } from '@/api/catalog';
+import { getCategoryBrands } from '@/api/catalog';
 
-export function useBrands() {
+export function useBrands(categoryId: number | undefined) {
   return useQuery({
-    queryKey: ['brands'],
-    queryFn: getBrands,
+    queryKey: ['brands', categoryId],
+    queryFn: () => getCategoryBrands(categoryId as number),
+    enabled: categoryId !== undefined,
     staleTime: 5 * 60 * 1000,
   });
 }

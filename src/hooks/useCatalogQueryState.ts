@@ -19,8 +19,8 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
   const priceMax = priceMaxRaw ? Number(priceMaxRaw) : undefined;
   const inStockRaw = searchParams.get('inStock');
   const inStock = inStockRaw === null ? true : inStockRaw === 'true';
-  const brandIdRaw = searchParams.get('brandId');
-  const brandId = brandIdRaw ? Number(brandIdRaw) : undefined;
+  const brandIdsRaw = searchParams.get('brandIds');
+  const brandIds = brandIdsRaw ? brandIdsRaw.split(',').map(Number).filter((n) => !Number.isNaN(n)) : [];
 
   const attributeFilters: Record<string, string> = {};
   const attributeRangeFilters: Record<string, { min?: number; max?: number }> = {};
@@ -43,7 +43,7 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
 
   const query: CatalogProductsQuery = {
     categoryId,
-    brandId,
+    brandIds,
     priceMin,
     priceMax,
     inStock: inStock || undefined,
@@ -82,7 +82,7 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
     priceMin !== undefined ||
     priceMax !== undefined ||
     inStockRaw === 'false' ||
-    brandId !== undefined;
+    brandIds.length > 0;
 
   return {
     query,
@@ -91,7 +91,7 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
     priceMin,
     priceMax,
     inStock,
-    brandId,
+    brandIds,
     attributeFilters,
     attributeRangeFilters,
     searchParams,

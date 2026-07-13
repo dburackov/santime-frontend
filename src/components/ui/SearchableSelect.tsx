@@ -16,6 +16,16 @@ interface SearchableSelectProps {
   placeholder: string;
   searchPlaceholder?: string;
   emptyLabel?: string;
+  /** Строка поиска в панели — скрыть для коротких списков (напр. числовых значений). */
+  searchable?: boolean;
+  /** Чекбокс/радио у пункта — скрыть, если достаточно подсветки выбранного цветом акцента. */
+  showIndicator?: boolean;
+  /** Подпись пункта "не выбрано" в одиночном списке — по умолчанию дублирует placeholder. */
+  clearLabel?: string;
+  /** Пункт "не выбрано" в одиночном списке — скрыть, если значение всегда должно быть выбрано. */
+  allowClear?: boolean;
+  ariaLabel?: string;
+  id?: string;
 }
 
 export function SearchableSelect({
@@ -26,6 +36,12 @@ export function SearchableSelect({
   placeholder,
   searchPlaceholder = 'Поиск…',
   emptyLabel = 'Ничего не найдено',
+  searchable = true,
+  showIndicator = true,
+  clearLabel = placeholder,
+  allowClear = true,
+  ariaLabel,
+  id,
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -56,14 +72,15 @@ export function SearchableSelect({
   }, [open]);
 
   useEffect(() => {
-    if (open) searchInputRef.current?.focus();
-  }, [open]);
+    if (open && searchable) searchInputRef.current?.focus();
+  }, [open, searchable]);
 
   const filteredOptions = useMemo(() => {
+    if (!searchable) return options;
     const query = search.trim().toLowerCase();
     if (!query) return options;
     return options.filter((option) => option.label.toLowerCase().includes(query));
-  }, [options, search]);
+  }, [options, search, searchable]);
 
   const selectedLabels = options.filter((option) => selected.includes(option.value)).map((option) => option.label);
 
@@ -87,11 +104,13 @@ export function SearchableSelect({
   return (
     <div className="searchable-select" ref={rootRef}>
       <button
+        id={id}
         type="button"
         className={`searchable-select__trigger ${selectedLabels.length > 0 ? 'searchable-select__trigger--filled' : ''}`}
         onClick={() => (open ? close() : setOpen(true))}
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-label={ariaLabel}
         title={selectedLabels.length > 2 ? selectedLabels.join(', ') : undefined}
       >
         <span className="searchable-select__summary">{summary}</span>
@@ -100,33 +119,39 @@ export function SearchableSelect({
 
       {open && (
         <div className="searchable-select__panel">
-          <input
-            ref={searchInputRef}
-            type="text"
-            className="searchable-select__search"
-            placeholder={searchPlaceholder}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          {searchable && (
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="searchable-select__search"
+              placeholder={searchPlaceholder}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          )}
           <div className="searchable-select__list" role="listbox" aria-multiselectable={multiple}>
-            {!multiple && (
+            {!multiple && allowClear && (
               <label
-                className="searchable-select__option"
+                className={`searchable-select__option ${selected.length === 0 ? 'searchable-select__option--selected' : ''}`}
                 onClick={() => {
                   onChange([]);
                   close();
                 }}
               >
-                <span className="searchable-select__option-label">{placeholder}</span>
-                <input type="radio" checked={selected.length === 0} readOnly />
+                <span className="searchable-select__option-label">{clearLabel}</span>
+                {showIndicator && <input type="radio" checked={selected.length === 0} readOnly />}
               </label>
             )}
             {filteredOptions.length === 0 && <div className="searchable-select__empty">{emptyLabel}</div>}
             {filteredOptions.map((option) => (
-              <label className="searchable-select__option" key={option.value} onClick={() => toggleValue(option.value)}>
+              <label
+                className={`searchable-select__option ${selected.includes(option.value) ? 'searchable-select__option--selected' : ''}`}
+                key={option.value}
+                onClick={() => toggleValue(option.value)}
+              >
                 <span className="searchable-select__option-label">{option.label}</span>
                 {option.count !== undefined && <span className="check-count">{option.count}</span>}
-                <input type={multiple ? 'checkbox' : 'radio'} checked={selected.includes(option.value)} readOnly />
+                {showIndicator && <input type={multiple ? 'checkbox' : 'radio'} checked={selected.includes(option.value)} readOnly />}
               </label>
             ))}
           </div>

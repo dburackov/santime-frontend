@@ -91,6 +91,11 @@
   background: var(--color-bg);
 }
 
+.searchable-select__option--selected {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
 .searchable-select__option-label {
   overflow: hidden;
   text-overflow: ellipsis;

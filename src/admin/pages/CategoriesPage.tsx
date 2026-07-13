@@ -10,6 +10,7 @@ import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
@@ -184,21 +185,15 @@ export function CategoriesPage() {
           </div>
           <div className="admin-form-field">
             <label htmlFor="cat-parent">Родительская категория</label>
-            <select
+            <Select
               id="cat-parent"
-              className="filter-select"
+              options={[
+                { value: '', label: 'Нет (корневая категория)' },
+                ...(items?.filter((c) => c.id !== editing?.id).map((c) => ({ value: String(c.id), label: c.name })) ?? []),
+              ]}
               value={form.parentCategoryId}
-              onChange={(e) => setForm((f) => ({ ...f, parentCategoryId: e.target.value }))}
-            >
-              <option value="">Нет (корневая категория)</option>
-              {items
-                ?.filter((c) => c.id !== editing?.id)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-            </select>
+              onChange={(value) => setForm((f) => ({ ...f, parentCategoryId: value }))}
+            />
           </div>
         </form>
       </Modal>

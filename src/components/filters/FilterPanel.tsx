@@ -41,8 +41,8 @@ export function FilterPanel({ filters, brands, state, open, onClose, resultCount
 
             <BrandFilter
               brands={brands}
-              brandId={state.brandId}
-              onChange={(brandId) => state.updateParams({ brandId: brandId?.toString() })}
+              brandIds={state.brandIds}
+              onChange={(brandIds) => state.updateParams({ brandIds: brandIds.join(',') || undefined })}
             />
 
             {filters.map((attribute) => {

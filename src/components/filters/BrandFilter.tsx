@@ -4,11 +4,11 @@ import './Filters.css';
 
 interface BrandFilterProps {
   brands: BrandResponse[];
-  brandId: number | undefined;
-  onChange: (brandId: number | undefined) => void;
+  brandIds: number[];
+  onChange: (brandIds: number[]) => void;
 }
 
-export function BrandFilter({ brands, brandId, onChange }: BrandFilterProps) {
+export function BrandFilter({ brands, brandIds, onChange }: BrandFilterProps) {
   if (brands.length === 0) return null;
 
   return (
@@ -16,8 +16,9 @@ export function BrandFilter({ brands, brandId, onChange }: BrandFilterProps) {
       <div className="filter-block__title">Бренд</div>
       <SearchableSelect
         options={brands.map((brand) => ({ value: String(brand.id), label: brand.name }))}
-        selected={brandId !== undefined ? [String(brandId)] : []}
-        onChange={(values) => onChange(values[0] ? Number(values[0]) : undefined)}
+        selected={brandIds.map(String)}
+        onChange={(values) => onChange(values.map(Number))}
+        multiple
         placeholder="Все бренды"
         searchPlaceholder="Поиск бренда…"
       />

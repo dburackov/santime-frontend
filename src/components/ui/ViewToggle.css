@@ -1,15 +1,18 @@
 .view-toggle {
   display: flex;
+  align-items: center;
   gap: 4px;
+  height: 40px;
   background: var(--color-surface);
   border: var(--border);
   border-radius: var(--radius-sm);
-  padding: 3px;
+  padding: 2px;
+  box-sizing: border-box;
 }
 
 .view-toggle__btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -18,6 +18,7 @@ import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
+import { Select } from '@/components/ui/Select';
 import { formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
@@ -216,19 +217,12 @@ export function CategoryAttributesPage() {
           {!editing && (
             <div className="admin-form-field">
               <label htmlFor="ca-attribute">Атрибут</label>
-              <select
+              <Select
                 id="ca-attribute"
-                className="filter-select"
+                options={unboundAttributes?.map((a) => ({ value: String(a.id), label: `${a.name} (${a.type})` })) ?? []}
                 value={selectedAttributeId}
-                onChange={(e) => setSelectedAttributeId(e.target.value)}
-                required
-              >
-                {unboundAttributes?.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name} ({a.type})
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedAttributeId}
+              />
             </div>
           )}
 

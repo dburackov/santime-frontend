@@ -28,8 +28,7 @@ export interface CatalogFilterAttributeResponse {
   type: AttributeType;
   unit: string | null;
   options: CatalogFilterOption[] | null;
-  minValue: number | null;
-  maxValue: number | null;
+  values: string[] | null;
 }
 
 export interface VariantCardResponse {
@@ -49,7 +48,7 @@ export type CatalogSort = 'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC';
 
 export interface CatalogProductsQuery {
   categoryId?: number;
-  brandId?: number;
+  brandIds?: number[];
   priceMin?: number;
   priceMax?: number;
   inStock?: boolean;

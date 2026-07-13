@@ -16,7 +16,8 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { SkeletonCard, SkeletonRow } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { FilterIcon, ChevronDownIcon } from '@/components/ui/icons';
+import { Select } from '@/components/ui/Select';
+import { FilterIcon } from '@/components/ui/icons';
 import type { CatalogSort } from '@/api/types';
 
 const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
@@ -32,7 +33,7 @@ export function CategoryPage() {
   const category = useMemo(() => categories?.find((c) => c.slug === slug), [categories, slug]);
 
   const { data: filters } = useCategoryFilters(category?.id);
-  const { data: brands } = useBrands();
+  const { data: brands } = useBrands(category?.id);
   const state = useCatalogQueryState(category?.id ?? 0, filters);
   const { viewMode, setViewMode } = useViewMode();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -99,21 +100,12 @@ export function CategoryPage() {
             </span>
 
             <div className="category-page__toolbar-right">
-              <span className="category-page__sort-wrap">
-                <select
-                  className="category-page__sort"
-                  value={state.sort}
-                  onChange={(e) => state.updateParams({ sort: e.target.value })}
-                  aria-label="Сортировка"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDownIcon width={16} height={16} className="category-page__sort-chevron" />
-              </span>
+              <Select
+                options={SORT_OPTIONS}
+                value={state.sort}
+                onChange={(value) => state.updateParams({ sort: value })}
+                ariaLabel="Сортировка"
+              />
               <ViewToggle value={viewMode} onChange={setViewMode} />
             </div>
           </div>

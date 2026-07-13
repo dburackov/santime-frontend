@@ -10,6 +10,7 @@ import { createOrder } from '@/api/orders';
 import type { OrderRequest } from '@/api/types';
 import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
 
 const PAYMENT_METHODS = [
@@ -180,33 +181,23 @@ export function CheckoutPage() {
           <div className="admin-form-row">
             <div className="admin-form-field">
               <label htmlFor="co-delivery">Способ доставки</label>
-              <select
+              <Select
                 id="co-delivery"
-                className="filter-select"
+                options={DELIVERY_METHODS}
                 value={form.deliveryMethod}
-                onChange={(e) => setForm((f) => ({ ...f, deliveryMethod: e.target.value }))}
-              >
-                {DELIVERY_METHODS.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((f) => ({ ...f, deliveryMethod: value }))}
+                ariaLabel="Способ доставки"
+              />
             </div>
             <div className="admin-form-field">
               <label htmlFor="co-payment">Способ оплаты</label>
-              <select
+              <Select
                 id="co-payment"
-                className="filter-select"
+                options={PAYMENT_METHODS}
                 value={form.paymentMethod}
-                onChange={(e) => setForm((f) => ({ ...f, paymentMethod: e.target.value }))}
-              >
-                {PAYMENT_METHODS.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((f) => ({ ...f, paymentMethod: value }))}
+                ariaLabel="Способ оплаты"
+              />
             </div>
           </div>
 

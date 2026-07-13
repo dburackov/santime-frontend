@@ -18,6 +18,7 @@ import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Pagination } from '@/components/ui/Pagination';
+import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
@@ -116,22 +117,15 @@ export function ProductsPage() {
 
       <div className="admin-form-field" style={{ maxWidth: 280, marginBottom: 'var(--space-4)' }}>
         <label htmlFor="product-category-filter">Категория</label>
-        <select
+        <Select
           id="product-category-filter"
-          className="filter-select"
+          options={[{ value: '', label: 'Все категории' }, ...(categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? [])]}
           value={categoryFilter}
-          onChange={(e) => {
-            setCategoryFilter(e.target.value);
+          onChange={(value) => {
+            setCategoryFilter(value);
             setPage(0);
           }}
-        >
-          <option value="">Все категории</option>
-          {categories?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        />
       </div>
 
       {isError && <ErrorState description="Не удалось загрузить товары." onRetry={refetch} />}
@@ -207,7 +201,7 @@ export function ProductsPage() {
             <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Отмена
             </Button>
-            <Button size="sm" onClick={handleSubmit} disabled={activeMutation.isPending}>
+            <Button size="sm" onClick={handleSubmit} disabled={activeMutation.isPending || !form.categoryId}>
               Сохранить
             </Button>
           </>
@@ -254,38 +248,22 @@ export function ProductsPage() {
           <div className="admin-form-row">
             <div className="admin-form-field">
               <label htmlFor="product-category">Категория</label>
-              <select
+              <Select
                 id="product-category"
-                className="filter-select"
+                options={categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? []}
                 value={form.categoryId}
-                onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-                required
-              >
-                <option value="" disabled>
-                  Выберите категорию
-                </option>
-                {categories?.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((f) => ({ ...f, categoryId: value }))}
+                placeholder="Выберите категорию"
+              />
             </div>
             <div className="admin-form-field">
               <label htmlFor="product-brand">Бренд</label>
-              <select
+              <Select
                 id="product-brand"
-                className="filter-select"
+                options={[{ value: '', label: 'Без бренда' }, ...(brands?.map((b) => ({ value: String(b.id), label: b.name })) ?? [])]}
                 value={form.brandId}
-                onChange={(e) => setForm((f) => ({ ...f, brandId: e.target.value }))}
-              >
-                <option value="">Без бренда</option>
-                {brands?.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((f) => ({ ...f, brandId: value }))}
+              />
             </div>
           </div>
           <label className="admin-form-checkbox">

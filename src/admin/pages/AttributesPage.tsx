@@ -10,6 +10,7 @@ import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
@@ -190,18 +191,15 @@ export function AttributesPage() {
           <div className="admin-form-row">
             <div className="admin-form-field">
               <label htmlFor="attr-type">Тип</label>
-              <select
+              <Select
                 id="attr-type"
-                className="filter-select"
+                options={(Object.keys(TYPE_LABELS) as AttributeType[]).map((type) => ({
+                  value: type,
+                  label: TYPE_LABELS[type],
+                }))}
                 value={form.type}
-                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as AttributeType }))}
-              >
-                {(Object.keys(TYPE_LABELS) as AttributeType[]).map((type) => (
-                  <option key={type} value={type}>
-                    {TYPE_LABELS[type]}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((f) => ({ ...f, type: value as AttributeType }))}
+              />
             </div>
             <div className="admin-form-field">
               <label htmlFor="attr-unit">Единица измерения</label>

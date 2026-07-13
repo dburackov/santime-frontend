@@ -12,7 +12,7 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
     <div className="view-toggle" role="group" aria-label="Режим отображения">
       <button
         type="button"
-        className={`view-toggle__btn touch-target ${value === 'grid' ? 'view-toggle__btn--active' : ''}`}
+        className={`view-toggle__btn ${value === 'grid' ? 'view-toggle__btn--active' : ''}`}
         onClick={() => onChange('grid')}
         aria-pressed={value === 'grid'}
         title="Сетка"
@@ -21,7 +21,7 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
       </button>
       <button
         type="button"
-        className={`view-toggle__btn touch-target ${value === 'list' ? 'view-toggle__btn--active' : ''}`}
+        className={`view-toggle__btn ${value === 'list' ? 'view-toggle__btn--active' : ''}`}
         onClick={() => onChange('list')}
         aria-pressed={value === 'list'}
         title="Список"

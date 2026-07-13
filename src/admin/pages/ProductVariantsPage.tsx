@@ -25,6 +25,7 @@ import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
+import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
@@ -380,14 +381,14 @@ function AttributeField({ binding, value, options, onChange, error }: AttributeF
     return (
       <div className="admin-form-field">
         <label>{label}</label>
-        <select className="filter-select" value={value} onChange={(e) => onChange(e.target.value)}>
-          <option value="">— не выбрано —</option>
-          {options?.map((option) => (
-            <option key={option.id} value={option.value}>
-              {option.value}
-            </option>
-          ))}
-        </select>
+        <Select
+          options={[
+            { value: '', label: '— не выбрано —' },
+            ...(options?.map((option) => ({ value: option.value, label: option.value })) ?? []),
+          ]}
+          value={value}
+          onChange={onChange}
+        />
         {error && <span className="admin-form-error">{error}</span>}
       </div>
     );
