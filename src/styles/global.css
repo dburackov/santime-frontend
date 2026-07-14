@@ -93,6 +93,10 @@ a {
   justify-content: center;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 ::selection {
   background: var(--color-accent);
   color: #fff;

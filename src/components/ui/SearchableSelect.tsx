@@ -50,7 +50,10 @@ export function SearchableSelect({
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [panelStyle, setPanelStyle] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [panelStyle, setPanelStyle] = useState<{ top?: number; bottom?: number; left: number; width: number } | null>(
+    null,
+  );
+  const [openUp, setOpenUp] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -81,22 +84,63 @@ export function SearchableSelect({
   }, [open]);
 
   useEffect(() => {
-    if (open && searchable) searchInputRef.current?.focus();
+    // preventScroll — иначе браузер сам решает прокрутить ближайший скроллящийся
+    // предок к полю поиска, конфликтуя с нашим позиционированием панели (см. portal).
+    if (open && searchable) searchInputRef.current?.focus({ preventScroll: true });
   }, [open, searchable]);
 
   useLayoutEffect(() => {
-    if (!open || !portal) return;
-    function updatePosition() {
+    if (!open) return;
+
+    let rafId: number | null = null;
+    let lastRect: { top: number; bottom: number; left: number; width: number } | null = null;
+
+    function measurePosition() {
+      rafId = null;
       const rect = triggerRef.current?.getBoundingClientRect();
       if (!rect) return;
-      setPanelStyle({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+
+      // Скролл где угодно на странице (capture: true) долетает сюда, даже если
+      // триггер не сдвинулся ни на пиксель — не пересчитываем позицию впустую.
+      if (
+        lastRect &&
+        lastRect.top === rect.top &&
+        lastRect.bottom === rect.bottom &&
+        lastRect.left === rect.left &&
+        lastRect.width === rect.width
+      ) {
+        return;
+      }
+      lastRect = { top: rect.top, bottom: rect.bottom, left: rect.left, width: rect.width };
+
+      const panelHeight = panelRef.current?.offsetHeight ?? 0;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      // Раскрываем вверх, только если снизу панель не помещается, а сверху места больше —
+      // иначе по умолчанию всегда вниз, даже если наверху чуть просторнее.
+      const shouldOpenUp = spaceBelow < panelHeight + 4 && spaceAbove > spaceBelow;
+      setOpenUp(shouldOpenUp);
+      if (portal) {
+        setPanelStyle(
+          shouldOpenUp
+            ? { bottom: window.innerHeight - rect.top + 4, left: rect.left, width: rect.width }
+            : { top: rect.bottom + 4, left: rect.left, width: rect.width },
+        );
+      }
     }
-    updatePosition();
-    window.addEventListener('resize', updatePosition);
-    window.addEventListener('scroll', updatePosition, true);
+
+    function scheduleUpdate() {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(measurePosition);
+    }
+
+    measurePosition();
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('scroll', scheduleUpdate, { capture: true, passive: true });
     return () => {
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', scheduleUpdate);
+      window.removeEventListener('scroll', scheduleUpdate, true);
     };
   }, [open, portal]);
 
@@ -107,7 +151,10 @@ export function SearchableSelect({
     return options.filter((option) => option.label.toLowerCase().includes(query));
   }, [options, search, searchable]);
 
-  const selectedLabels = options.filter((option) => selected.includes(option.value)).map((option) => option.label);
+  const selectedLabels = useMemo(
+    () => options.filter((option) => selected.includes(option.value)).map((option) => option.label),
+    [options, selected],
+  );
 
   function toggleValue(value: string) {
     if (multiple) {
@@ -128,9 +175,9 @@ export function SearchableSelect({
 
   const panel = open && (
         <div
-          className={`searchable-select__panel ${portal ? 'searchable-select__panel--portal' : ''}`}
+          className={`searchable-select__panel ${portal ? 'searchable-select__panel--portal' : ''} ${openUp ? 'searchable-select__panel--up' : ''}`}
           ref={panelRef}
-          style={portal && panelStyle ? { top: panelStyle.top, left: panelStyle.left, width: panelStyle.width } : undefined}
+          style={portal ? (panelStyle ?? { top: 0, left: 0, visibility: 'hidden' }) : undefined}
         >
           {searchable && (
             <input
@@ -193,7 +240,7 @@ export function SearchableSelect({
         <ChevronDownIcon width={16} height={16} className="searchable-select__chevron" />
       </button>
 
-      {portal ? (panelStyle && createPortal(panel, document.body)) : panel}
+      {portal ? createPortal(panel, document.body) : panel}
     </div>
   );
 }

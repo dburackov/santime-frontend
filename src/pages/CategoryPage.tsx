@@ -17,7 +17,6 @@ import { SkeletonCard, SkeletonRow } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
-import { FilterIcon } from '@/components/ui/icons';
 import type { CatalogSort } from '@/api/types';
 
 const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
@@ -78,6 +77,7 @@ export function CategoryPage() {
             brands={brands ?? []}
             state={state}
             open={filtersOpen}
+            onOpen={() => setFiltersOpen(true)}
             onClose={() => setFiltersOpen(false)}
             resultCount={page?.totalElements}
           />
@@ -85,16 +85,6 @@ export function CategoryPage() {
 
         <div className="category-page__content">
           <div className="category-page__toolbar">
-            <button
-              type="button"
-              className="category-page__filters-btn"
-              onClick={() => setFiltersOpen(true)}
-            >
-              <FilterIcon width={16} height={16} />
-              Фильтры
-              {state.hasActiveFilters && <span className="category-page__filters-dot" />}
-            </button>
-
             <span className="category-page__count">
               {page ? `Найдено ${page.totalElements} товаров` : ''}
             </span>
