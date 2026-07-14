@@ -17,7 +17,6 @@ import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 const QUERY_KEY = ['admin-attributes'];
 
 const TYPE_LABELS: Record<AttributeType, string> = {
-  STRING: 'Текст (STRING)',
   NUMBER: 'Число (NUMBER)',
   BOOLEAN: 'Да/нет (BOOLEAN)',
   OPTION: 'Список значений (OPTION)',
@@ -30,7 +29,7 @@ interface FormState {
   unit: string;
 }
 
-const EMPTY_FORM: FormState = { name: '', slug: '', type: 'STRING', unit: '' };
+const EMPTY_FORM: FormState = { name: '', slug: '', type: 'NUMBER', unit: '' };
 
 export function AttributesPage() {
   const { items, isError, refetch, createMutation, updateMutation, deleteMutation } = useAdminResource<

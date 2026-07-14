@@ -1,7 +1,6 @@
 import './FilterPanel.css';
 import { CloseIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
-import { StringFilter } from './StringFilter';
 import { NumberRangeFilter } from './NumberRangeFilter';
 import { BooleanFilter } from './BooleanFilter';
 import { OptionFilter } from './OptionFilter';
@@ -47,15 +46,6 @@ export function FilterPanel({ filters, brands, state, open, onClose, resultCount
 
             {filters.map((attribute) => {
               switch (attribute.type) {
-                case 'STRING':
-                  return (
-                    <StringFilter
-                      key={attribute.slug}
-                      attribute={attribute}
-                      value={state.attributeFilters[attribute.slug]}
-                      onChange={(value) => state.updateParams({ [attribute.slug]: value })}
-                    />
-                  );
                 case 'NUMBER':
                   return (
                     <NumberRangeFilter

@@ -1,4 +1,4 @@
-export type AttributeType = 'STRING' | 'NUMBER' | 'BOOLEAN' | 'OPTION';
+export type AttributeType = 'NUMBER' | 'BOOLEAN' | 'OPTION';
 
 export type AttributeValue = string | number | boolean;
 
@@ -56,7 +56,7 @@ export interface CatalogProductsQuery {
   sort?: CatalogSort;
   page?: number;
   size?: number;
-  /** slug -> "value" or "value1,value2" (equality/OR) for STRING/OPTION/BOOLEAN */
+  /** slug -> "value" or "value1,value2" (equality/OR) for OPTION/BOOLEAN */
   attributeFilters?: Record<string, string>;
   /** slug -> {min?, max?} for NUMBER attributes */
   attributeRangeFilters?: Record<string, { min?: number; max?: number }>;
