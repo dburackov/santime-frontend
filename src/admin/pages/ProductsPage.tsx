@@ -162,6 +162,9 @@ export function ProductsPage() {
                       <Link to={`/admin/products/${product.id}/variants`} className="admin-table__link-btn">
                         Варианты
                       </Link>
+                      <Link to={`/admin/products/${product.id}/images`} className="admin-table__link-btn">
+                        Фото
+                      </Link>
                       <button
                         type="button"
                         className="admin-table__icon-btn touch-target"

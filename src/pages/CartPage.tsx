@@ -27,7 +27,7 @@ export function CartPage() {
         {items.map((item) => (
           <div className="cart-item" key={item.variantId}>
             <Link to={`/product/${item.variantSlug}`} className="cart-item__link">
-              <ProductPhoto alt={item.productName} size="thumb" />
+              <ProductPhoto image={item.image} alt={item.productName} size="thumb" />
               <span className="cart-item__name">{item.productName}</span>
             </Link>
 

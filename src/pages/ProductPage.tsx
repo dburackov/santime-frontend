@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.css';
 import '@/components/ui/Skeleton.css';
@@ -12,6 +12,7 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { VariantOptions } from '@/components/product/VariantOptions';
 import { AttributesTable } from '@/components/product/AttributesTable';
+import { pickSrcsetUrl } from '@/utils/images';
 
 export function ProductPage() {
   const { variantSlug } = useParams<{ variantSlug: string }>();
@@ -25,6 +26,32 @@ export function ProductPage() {
     () => categories?.find((c) => c.id === variant?.categoryId),
     [categories, variant],
   );
+
+  const productName = variant?.productName;
+  const price = variant?.price;
+  const heroSrcset = variant?.images?.[0]?.srcset;
+  const heroFallback = variant?.images?.[0]?.fallback;
+
+  useEffect(() => {
+    if (!productName || price === undefined || !heroSrcset) return;
+
+    const zoomUrl = pickSrcsetUrl(heroSrcset, 1200) ?? heroFallback;
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify({
+      '@context': 'https://schema.org/',
+      '@type': 'Product',
+      name: productName,
+      image: [zoomUrl],
+      offers: { '@type': 'Offer', price: String(price), priceCurrency: 'BYN' },
+    });
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+    // зависим от конкретных примитивов, а не от variant целиком — react-query отдаёт
+    // новый объект на каждый рефетч, даже когда сами данные не изменились
+  }, [productName, price, heroSrcset, heroFallback]);
 
   if (isError) {
     return (
@@ -58,6 +85,7 @@ export function ProductPage() {
         productName: variant.productName,
         price: variant.price,
         attributes: variant.attributes,
+        image: variant.images?.[0] ?? null,
       },
       quantity,
     );
@@ -76,7 +104,7 @@ export function ProductPage() {
       />
 
       <div className="product-page__layout">
-        <ProductPhoto alt={variant.productName} size="detail" />
+        <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="detail" priority />
 
         <div className="product-page__info">
           <h1 className="product-page__title">{variant.productName}</h1>

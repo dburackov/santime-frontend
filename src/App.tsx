@@ -19,6 +19,7 @@ import { AttributesPage } from '@/admin/pages/AttributesPage';
 import { AttributeOptionsPage } from '@/admin/pages/AttributeOptionsPage';
 import { ProductsPage } from '@/admin/pages/ProductsPage';
 import { ProductVariantsPage } from '@/admin/pages/ProductVariantsPage';
+import { ProductImagesPage } from '@/admin/pages/ProductImagesPage';
 import { OrdersPage } from '@/admin/pages/OrdersPage';
 import { OrderDetailPage } from '@/admin/pages/OrderDetailPage';
 
@@ -46,6 +47,7 @@ function App() {
         <Route path="attributes/:attributeId/options" element={<AttributeOptionsPage />} />
         <Route path="products" element={<ProductsPage />} />
         <Route path="products/:productId/variants" element={<ProductVariantsPage />} />
+        <Route path="products/:productId/images" element={<ProductImagesPage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="orders/:orderId" element={<OrderDetailPage />} />
       </Route>

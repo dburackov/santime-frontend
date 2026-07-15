@@ -31,6 +31,18 @@ export interface CatalogFilterAttributeResponse {
   values: string[] | null;
 }
 
+/**
+ * Готовый набор для рендера одного фото (см. IMAGE-PIPELINE-SPEC.md, 5.3).
+ * Бэкенд подписывает URL и собирает srcset сам — фронт только подставляет значения.
+ * Опционально, т.к. пока бэкенд эту секцию не отдаёт (нет фото) — компонент фото
+ * должен уметь показать плейсхолдер при отсутствии этого поля.
+ */
+export interface ProductImageResponse {
+  alt: string;
+  srcset: string;
+  fallback: string;
+}
+
 export interface VariantCardResponse {
   variantId: number;
   variantSlug: string;
@@ -42,6 +54,7 @@ export interface VariantCardResponse {
   price: number;
   inStock: boolean;
   attributes: Record<string, AttributeValue>;
+  images?: ProductImageResponse[];
 }
 
 export type CatalogSort = 'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC';
@@ -100,6 +113,7 @@ export interface VariantDetailResponse {
   brandId: number | null;
   attributeMetadata: VariantDetailAttributeMeta[];
   variantOptions: VariantOptionGroup[];
+  images?: ProductImageResponse[];
 }
 
 // ---- Админское API ----
@@ -217,6 +231,29 @@ export interface ProductVariantRequest {
   stockQuantity: number;
   weightKg?: number | null;
   attributes: Record<string, AttributeValue>;
+}
+
+// ---- Фото товара (админка) ----
+
+/**
+ * Ответ на загрузку/список фото в админке (IMAGE-PIPELINE-SPEC.md, 5.4/5.5/9.2).
+ * originalUrl — прямая ссылка на оригинал в MinIO (бакет публичный на чтение,
+ * см. раздел 2 спеки) — нужна только для превью в виджете точки фокуса,
+ * реальные srcset для витрины строит бэкенд отдельно (ProductImageResponse).
+ */
+export interface ProductImageAdminResponse {
+  id: number;
+  sortOrder: number;
+  focalX: number;
+  focalY: number;
+  altText: string | null;
+  originalUrl: string;
+}
+
+export interface ProductImageFocalPointRequest {
+  focalX: number;
+  focalY: number;
+  altText?: string | null;
 }
 
 // ---- Заказы ----

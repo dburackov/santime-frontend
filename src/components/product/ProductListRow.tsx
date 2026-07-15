@@ -23,7 +23,7 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
   return (
     <div className="product-row">
       <Link to={`/product/${variant.variantSlug}`} className="product-row__link">
-        <ProductPhoto alt={variant.productName} size="thumb" />
+        <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="thumb" />
         <div className="product-row__main">
           <div className="product-row__title">{variant.productName}</div>
           {attrLine && <div className="product-row__attrs">{attrLine}</div>}
@@ -43,6 +43,7 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
               productName: variant.productName,
               price: variant.price,
               attributes: variant.attributes,
+              image: variant.images?.[0] ?? null,
             })
           }
         >

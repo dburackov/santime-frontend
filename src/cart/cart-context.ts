@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { AttributeValue } from '@/api/types';
+import type { AttributeValue, ProductImageResponse } from '@/api/types';
 
 export interface CartItem {
   variantId: number;
@@ -9,6 +9,8 @@ export interface CartItem {
   quantity: number;
   /** снапшот ключевых атрибутов на момент добавления, для отображения в корзине */
   attributes: Record<string, AttributeValue>;
+  /** снапшот главного фото на момент добавления, если оно было у товара */
+  image?: ProductImageResponse | null;
 }
 
 export interface CartContextValue {

@@ -13,6 +13,8 @@ import type {
   CategoryResponse,
   OrderResponse,
   PageResponse,
+  ProductImageAdminResponse,
+  ProductImageFocalPointRequest,
   ProductRequest,
   ProductResponse,
   ProductVariantRequest,
@@ -190,6 +192,30 @@ export function updateProductVariant(
 
 export function deleteProductVariant(productId: number, id: number): Promise<void> {
   return apiRequest(`/api/admin/products/${productId}/variants/${id}`, { method: 'DELETE' });
+}
+
+// ---- Фото товара (IMAGE-PIPELINE-SPEC.md, раздел 5.4/5.5) ----
+
+export function listProductImages(productId: number): Promise<ProductImageAdminResponse[]> {
+  return apiRequest(`/api/admin/products/${productId}/images`);
+}
+
+export function uploadProductImage(productId: number, file: File): Promise<ProductImageAdminResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest(`/api/admin/products/${productId}/images`, { method: 'POST', body: formData });
+}
+
+export function updateProductImageFocalPoint(
+  productId: number,
+  imageId: number,
+  body: ProductImageFocalPointRequest,
+): Promise<ProductImageAdminResponse> {
+  return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'PATCH', body });
+}
+
+export function deleteProductImage(productId: number, imageId: number): Promise<void> {
+  return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'DELETE' });
 }
 
 // ---- Заказы (только просмотр — смены статуса пока нет) ----

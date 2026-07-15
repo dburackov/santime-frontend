@@ -15,7 +15,7 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   searchParams?: { [key: string]: string | number | boolean | undefined | null };
 }
@@ -33,11 +33,13 @@ function buildUrl(path: string, searchParams?: RequestOptions['searchParams']): 
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const url = buildUrl(path, options.searchParams);
+  const isFormData = options.body instanceof FormData;
 
   const response = await fetch(url, {
     method: options.method ?? 'GET',
-    headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    // для FormData браузер сам проставит Content-Type с корректным boundary
+    headers: options.body && !isFormData ? { 'Content-Type': 'application/json' } : undefined,
+    body: isFormData ? (options.body as FormData) : options.body ? JSON.stringify(options.body) : undefined,
   });
 
   if (!response.ok) {
