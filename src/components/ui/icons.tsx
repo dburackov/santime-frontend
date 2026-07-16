@@ -130,9 +130,10 @@ export function MenuIcon(props: SVGProps<SVGSVGElement>) {
 export function FilterIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Icon {...props}>
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="7" y1="12" x2="17" y2="12" />
-      <line x1="10" y1="18" x2="14" y2="18" />
+      <line x1="4" y1="8" x2="20" y2="8" />
+      <circle cx="9" cy="8" r="2" fill="currentColor" />
+      <line x1="4" y1="16" x2="20" y2="16" />
+      <circle cx="15" cy="16" r="2" fill="currentColor" />
     </Icon>
   );
 }

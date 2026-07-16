@@ -12,9 +12,14 @@
   flex-direction: column;
 }
 
+/* auto 1fr (не 1fr auto!) — во второй строке на мобильном только 2 ячейки:
+   счётчик количества (auto, по контенту) и группа "цена + удалить" (1fr,
+   прижата вправо). Раньше тут было 2 колонки на 3 элемента (qty/price/remove)
+   без явного размещения — grid растягивал qty на всю 1fr-колонку, а remove
+   не помещался и уезжал на отдельную строку. */
 .cart-item {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
   gap: var(--space-2) var(--space-3);
   align-items: center;
@@ -63,9 +68,15 @@
   font-size: var(--text-sm);
 }
 
+.cart-item__end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 .cart-item__remove {
   color: var(--color-slate);
-  justify-self: end;
 }
 
 .cart-item__remove:hover {
@@ -96,7 +107,7 @@
 
 @media (min-width: 640px) {
   .cart-item {
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr auto auto;
     grid-template-rows: auto;
   }
 

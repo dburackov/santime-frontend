@@ -218,6 +218,44 @@ export function deleteProductImage(productId: number, imageId: number): Promise<
   return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'DELETE' });
 }
 
+// ---- Фото варианта товара (api.md, раздел 2.9) — идентично фото товара (2.8),
+// но привязано к конкретному варианту (напр. другой цвет), путь с /variants/{variantId} ----
+
+export function listVariantImages(productId: number, variantId: number): Promise<ProductImageAdminResponse[]> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images`);
+}
+
+export function uploadVariantImage(
+  productId: number,
+  variantId: number,
+  file: File,
+): Promise<ProductImageAdminResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export function updateVariantImageFocalPoint(
+  productId: number,
+  variantId: number,
+  imageId: number,
+  body: ProductImageFocalPointRequest,
+): Promise<ProductImageAdminResponse> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/${imageId}`, {
+    method: 'PATCH',
+    body,
+  });
+}
+
+export function deleteVariantImage(productId: number, variantId: number, imageId: number): Promise<void> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/${imageId}`, {
+    method: 'DELETE',
+  });
+}
+
 // ---- Заказы (только просмотр — смены статуса пока нет) ----
 
 export interface ListOrdersParams {

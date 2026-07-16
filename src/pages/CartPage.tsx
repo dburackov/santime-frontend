@@ -51,16 +51,18 @@ export function CartPage() {
               </button>
             </div>
 
-            <Price value={item.price * item.quantity} size="md" />
+            <div className="cart-item__end">
+              <Price value={item.price * item.quantity} size="md" />
 
-            <button
-              type="button"
-              className="cart-item__remove touch-target"
-              onClick={() => removeItem(item.variantId)}
-              aria-label="Удалить из корзины"
-            >
-              <CloseIcon width={16} height={16} />
-            </button>
+              <button
+                type="button"
+                className="cart-item__remove touch-target"
+                onClick={() => removeItem(item.variantId)}
+                aria-label="Удалить из корзины"
+              >
+                <CloseIcon width={16} height={16} />
+              </button>
+            </div>
           </div>
         ))}
       </div>

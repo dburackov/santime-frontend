@@ -13,6 +13,43 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { VariantOptions } from '@/components/product/VariantOptions';
 import { AttributesTable } from '@/components/product/AttributesTable';
 import { pickSrcsetUrl } from '@/utils/images';
+import type { ProductImageResponse } from '@/api/types';
+
+interface ProductGalleryProps {
+  images: ProductImageResponse[];
+  productName: string;
+}
+
+/** key={variant.variantId} на месте использования сбрасывает activeIndex при смене
+ * варианта (другой цвет — свой набор фото) через ремонт компонента, без лишнего эффекта. */
+function ProductGallery({ images, productName }: ProductGalleryProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeImage = images[activeIndex] ?? images[0];
+
+  return (
+    <div className="product-page__gallery">
+      <ProductPhoto image={activeImage} alt={productName} size="detail" priority />
+
+      {images.length > 1 && (
+        <div className="product-page__thumbs" role="tablist" aria-label="Фото товара">
+          {images.map((image, index) => (
+            <button
+              key={image.id}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-label={`Фото ${index + 1}`}
+              className={`product-page__thumb${index === activeIndex ? ' product-page__thumb--active' : ''}`}
+              onClick={() => setActiveIndex(index)}
+            >
+              <ProductPhoto image={image} alt={productName} size="thumb" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ProductPage() {
   const { variantSlug } = useParams<{ variantSlug: string }>();
@@ -27,10 +64,12 @@ export function ProductPage() {
     [categories, variant],
   );
 
+  const images = variant?.images ?? [];
+
   const productName = variant?.productName;
   const price = variant?.price;
-  const heroSrcset = variant?.images?.[0]?.srcset;
-  const heroFallback = variant?.images?.[0]?.fallback;
+  const heroSrcset = images[0]?.srcset;
+  const heroFallback = images[0]?.fallback;
 
   useEffect(() => {
     if (!productName || price === undefined || !heroSrcset) return;
@@ -104,7 +143,7 @@ export function ProductPage() {
       />
 
       <div className="product-page__layout">
-        <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="detail" priority />
+        <ProductGallery key={variant.variantId} images={images} productName={variant.productName} />
 
         <div className="product-page__info">
           <h1 className="product-page__title">{variant.productName}</h1>

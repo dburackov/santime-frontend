@@ -1,14 +1,14 @@
 .product-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-3) 0;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
   border-bottom: var(--border);
 }
 
 .product-row__link {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-4);
   min-width: 0;
 }
 
@@ -16,19 +16,53 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
 }
 
 .product-row__title {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 500;
   color: var(--color-ink);
 }
 
+/* Каждая характеристика — отдельная строка (не через "·"), т.к. на отдельной
+   строке нет соседних значений для контекста и нужна собственная подпись
+   (см. formatAttributeLine). Список считается в 2 колонки только когда не
+   помещается по высоте фото (170px) — column-fill: auto заполняет первую
+   колонку целиком и переносит остаток во вторую только при переполнении,
+   короткие списки остаются в одну колонку. При --text-xs/1.5 и gap в 4px
+   в 170px помещается около 7-8 строк.
+   columns: 160px 2 (не голый column-count: 2!) — иначе браузер всегда режет
+   ширину пополам под 2 колонки-трека, даже когда фактически используется
+   только первая (пустая вторая всё равно "съедает" половину ширины). На узком
+   мобильном экране, где на весь блок и так мало места, это ужимало каждую
+   строку вдвое и переносило двухсловные характеристики. column-width: 160px
+   заставляет браузер посчитать, сколько колонок реально помещается по ширине
+   (на мобильном — одна на всю ширину, на десктопе — до двух). */
 .product-row__attrs {
+  columns: 160px 2;
+  column-fill: auto;
+  column-gap: var(--space-4);
+  max-height: 170px;
+  margin: 0;
+  padding-left: 1.1em;
+  list-style: disc;
   font-size: var(--text-xs);
+  line-height: 1.5;
   color: var(--color-slate);
+}
+
+.product-row__attrs li {
+  break-inside: avoid;
+}
+
+.product-row__attrs li:not(:last-child) {
+  margin-bottom: var(--space-1);
+}
+
+.product-row__attrs li::marker {
+  color: var(--color-gold);
 }
 
 .product-row__oos {
@@ -48,17 +82,22 @@
   .product-row {
     flex-direction: row;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-6);
   }
 
   .product-row__link {
     flex: 1;
-    align-items: center;
+    align-items: flex-start;
+  }
+
+  .product-row__main {
+    flex: 1;
+    min-width: 0;
   }
 
   .product-row__attrs {
-    width: 200px;
-    flex-shrink: 0;
+    width: 100%;
+    max-width: 520px;
   }
 
   .product-row__end {

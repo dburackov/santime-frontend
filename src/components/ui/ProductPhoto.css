@@ -1,5 +1,5 @@
 .product-photo {
-  background: var(--color-photo-bg);
+  background: var(--color-photo-surface);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
@@ -15,14 +15,18 @@
 }
 
 .product-photo__placeholder {
-  color: var(--color-slate);
-  opacity: 0.5;
+  color: var(--color-photo-ink);
+  opacity: 0.6;
 }
 
+/* Бэкенд отдаёт srcset/fallback/zoom всегда квадратными (imgproxy rs:fill:W:W —
+   ширина всегда равна высоте на каждом брейкпоинте, см. ImageBreakpoints/ImgproxyUrlBuilder).
+   Раньше контейнер был прямоугольным (фиксированная высота при ширине во всю колонку
+   сетки), и квадратное фото внутри него на object-fit: contain оставляло огромные
+   пустые поля слева/справа — контейнер квадратный вслед за реальной формой фото. */
 .product-photo--card {
-  height: 160px;
+  aspect-ratio: 1 / 1;
   width: 100%;
-  padding: var(--space-3);
 }
 
 .product-photo--card .product-photo__placeholder {
@@ -33,7 +37,6 @@
 .product-photo--thumb {
   height: 60px;
   width: 60px;
-  padding: var(--space-2);
 }
 
 .product-photo--thumb .product-photo__placeholder {
@@ -41,19 +44,22 @@
   height: 24px;
 }
 
+.product-photo--row {
+  height: 170px;
+  width: 170px;
+}
+
+.product-photo--row .product-photo__placeholder {
+  width: 56px;
+  height: 56px;
+}
+
 .product-photo--detail {
-  height: 320px;
+  aspect-ratio: 1 / 1;
   width: 100%;
-  padding: var(--space-8);
 }
 
 .product-photo--detail .product-photo__placeholder {
   width: 72px;
   height: 72px;
-}
-
-@media (min-width: 640px) {
-  .product-photo--card {
-    height: 180px;
-  }
 }

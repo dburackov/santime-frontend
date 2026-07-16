@@ -4,7 +4,13 @@ import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import './ProductImagesPage.css';
-import { listProductImages, uploadProductImage, deleteProductImage, getProduct } from '@/api/admin';
+import {
+  listProductImages,
+  uploadProductImage,
+  updateProductImageFocalPoint,
+  deleteProductImage,
+  getProduct,
+} from '@/api/admin';
 import type { ProductImageAdminResponse } from '@/api/types';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { FocalPointEditor } from '@/admin/components/FocalPointEditor';
@@ -92,7 +98,7 @@ export function ProductImagesPage() {
               </div>
               <div className="product-image-card__actions">
                 <button type="button" className="admin-table__link-btn" onClick={() => setEditingImage(image)}>
-                  Точка фокуса
+                  Редактировать
                 </button>
                 <button
                   type="button"
@@ -111,8 +117,8 @@ export function ProductImagesPage() {
 
       {editingImage && (
         <FocalPointEditor
-          productId={productId}
           image={editingImage}
+          onSave={(body) => updateProductImageFocalPoint(productId, editingImage.id, body)}
           onClose={() => setEditingImage(null)}
           onSaved={() => {
             invalidate();

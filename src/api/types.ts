@@ -38,9 +38,11 @@ export interface CatalogFilterAttributeResponse {
  * должен уметь показать плейсхолдер при отсутствии этого поля.
  */
 export interface ProductImageResponse {
+  id: number;
   alt: string;
   srcset: string;
   fallback: string;
+  zoom: string;
 }
 
 export interface VariantCardResponse {

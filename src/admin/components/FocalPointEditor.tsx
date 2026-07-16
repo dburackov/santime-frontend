@@ -4,13 +4,13 @@ import { useMutation } from '@tanstack/react-query';
 import './FocalPointEditor.css';
 import { Modal } from './Modal';
 import { Button } from '@/components/ui/Button';
-import { updateProductImageFocalPoint } from '@/api/admin';
-import type { ProductImageAdminResponse } from '@/api/types';
+import type { ProductImageAdminResponse, ProductImageFocalPointRequest } from '@/api/types';
 import { formError } from '@/admin/formErrors';
 
 interface FocalPointEditorProps {
-  productId: number;
   image: ProductImageAdminResponse;
+  /** Сохраняет точку фокуса/alt — вызывающая сторона решает, товар это фото или фото варианта (api.md, 2.8/2.9). */
+  onSave: (body: ProductImageFocalPointRequest) => Promise<ProductImageAdminResponse>;
   onClose: () => void;
   onSaved: () => void;
 }
@@ -19,24 +19,16 @@ function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
 
-const PREVIEW_SHAPES = [
-  { modifier: 'tile', label: 'Плитка каталога' },
-  { modifier: 'card', label: 'Карточка товара' },
-] as const;
+const PREVIEW_SHAPES = [{ modifier: 'tile', label: 'Плитка каталога' }] as const;
 
 /** Виджет выбора точки фокуса с живым превью (IMAGE-PIPELINE-SPEC.md, 9.2). */
-export function FocalPointEditor({ productId, image, onClose, onSaved }: FocalPointEditorProps) {
+export function FocalPointEditor({ image, onSave, onClose, onSaved }: FocalPointEditorProps) {
   const [focal, setFocal] = useState({ x: image.focalX, y: image.focalY });
   const [altText, setAltText] = useState(image.altText ?? '');
   const imgRef = useRef<HTMLImageElement>(null);
 
   const saveMutation = useMutation({
-    mutationFn: () =>
-      updateProductImageFocalPoint(productId, image.id, {
-        focalX: focal.x,
-        focalY: focal.y,
-        altText: altText || null,
-      }),
+    mutationFn: () => onSave({ focalX: focal.x, focalY: focal.y, altText: altText || null }),
     onSuccess: onSaved,
   });
 

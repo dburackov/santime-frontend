@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
@@ -204,6 +204,12 @@ export function ProductVariantsPage() {
                   </td>
                   <td>
                     <div className="admin-table__actions">
+                      <Link
+                        to={`/admin/products/${productId}/variants/${variant.id}/images`}
+                        className="admin-table__link-btn"
+                      >
+                        Фото
+                      </Link>
                       <button
                         type="button"
                         className="admin-table__icon-btn touch-target"
