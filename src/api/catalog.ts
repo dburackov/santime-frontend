@@ -10,7 +10,7 @@ import type {
 } from './types';
 
 export function getCategories(): Promise<CategoryResponse[]> {
-  return apiRequest('/api/admin/categories');
+  return apiRequest('/api/catalog/categories');
 }
 
 export function getCategoryBrands(categoryId: number): Promise<BrandResponse[]> {

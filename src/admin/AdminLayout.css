@@ -3,6 +3,21 @@
   background: var(--color-bg);
 }
 
+.admin-shell--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-slate);
+  font-size: var(--text-sm);
+}
+
+.admin-header__logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 .admin-header {
   background: var(--color-surface);
   border-bottom: var(--border);

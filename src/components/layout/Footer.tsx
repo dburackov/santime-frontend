@@ -22,9 +22,6 @@ export function Footer() {
         <nav className="footer__links" aria-label="Информация">
           <Link to="/dostavka">Доставка</Link>
           <Link to="/oplata">Оплата</Link>
-          <Link to="/admin" className="footer__admin-link">
-            Админ-панель
-          </Link>
         </nav>
       </div>
     </footer>

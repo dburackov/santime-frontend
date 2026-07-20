@@ -12,6 +12,9 @@ import { DeliveryPage } from '@/pages/DeliveryPage';
 import { PaymentPage } from '@/pages/PaymentPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { AdminLayout } from '@/admin/AdminLayout';
+import { LoginPage } from '@/admin/pages/LoginPage';
+import { ChangePasswordPage } from '@/admin/pages/ChangePasswordPage';
+import { AdminsPage } from '@/admin/pages/AdminsPage';
 import { CategoriesPage } from '@/admin/pages/CategoriesPage';
 import { CategoryAttributesPage } from '@/admin/pages/CategoryAttributesPage';
 import { BrandsPage } from '@/admin/pages/BrandsPage';
@@ -39,8 +42,12 @@ function StorefrontLayout() {
 function App() {
   return (
     <Routes>
+      <Route path="/admin/login" element={<LoginPage />} />
+
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Navigate to="categories" replace />} />
+        <Route path="change-password" element={<ChangePasswordPage />} />
+        <Route path="admins" element={<AdminsPage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="categories/:categoryId/attributes" element={<CategoryAttributesPage />} />
         <Route path="brands" element={<BrandsPage />} />

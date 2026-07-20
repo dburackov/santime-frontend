@@ -6,6 +6,7 @@ import './index.css';
 import App from './App.tsx';
 import { ThemeProvider } from './theme/ThemeProvider';
 import { CartProvider } from './cart/CartContext';
+import { AuthProvider } from './auth/AuthProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,13 +20,15 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <CartProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </CartProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </CartProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

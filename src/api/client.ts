@@ -1,4 +1,5 @@
-import type { ErrorResponse } from './types';
+import type { AuthResponse, ErrorResponse } from './types';
+import { getAccessToken, setAccessToken } from '@/auth/tokenStore';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -31,30 +32,93 @@ function buildUrl(path: string, searchParams?: RequestOptions['searchParams']): 
   return url.toString();
 }
 
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+function buildHeaders(hasJsonBody: boolean): HeadersInit | undefined {
+  const headers: Record<string, string> = {};
+  if (hasJsonBody) headers['Content-Type'] = 'application/json';
+  const token = getAccessToken();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return Object.keys(headers).length > 0 ? headers : undefined;
+}
+
+async function doFetch(path: string, options: RequestOptions): Promise<Response> {
   const url = buildUrl(path, options.searchParams);
   const isFormData = options.body instanceof FormData;
 
-  const response = await fetch(url, {
+  return fetch(url, {
     method: options.method ?? 'GET',
     // для FormData браузер сам проставит Content-Type с корректным boundary
-    headers: options.body && !isFormData ? { 'Content-Type': 'application/json' } : undefined,
+    headers: buildHeaders(Boolean(options.body) && !isFormData),
     body: isFormData ? (options.body as FormData) : options.body ? JSON.stringify(options.body) : undefined,
+    // refresh token уходит только через HttpOnly cookie (ADMIN-AUTH-SPEC.md §4) —
+    // credentials нужны, даже если фронт и бэк на одном origin в dev через vite proxy
+    credentials: 'include',
   });
+}
+
+// Эндпоинты авторизации сами не должны провоцировать retry-через-refresh —
+// иначе неверный логин/просроченный refresh зациклится сам на себя.
+function isAuthEndpoint(path: string): boolean {
+  return path.startsWith('/api/admin/auth/');
+}
+
+let refreshPromise: Promise<boolean> | null = null;
+
+// Общий refresh, разделяемый между параллельными 401 — иначе несколько
+// одновременных запросов вызвали бы несколько /refresh и словили ротацию
+// друг у друга (см. ADMIN-AUTH-SPEC.md §5, п.6 про переиспользование токена).
+function tryRefresh(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = doFetch('/api/admin/auth/refresh', { method: 'POST' })
+      .then(async (response) => {
+        if (!response.ok) {
+          setAccessToken(null);
+          return false;
+        }
+        const data: AuthResponse = await response.json();
+        setAccessToken(data.accessToken);
+        return true;
+      })
+      .catch(() => {
+        setAccessToken(null);
+        return false;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
+async function parseError(response: Response): Promise<ApiError> {
+  let errorBody: ErrorResponse;
+  try {
+    errorBody = await response.json();
+  } catch {
+    errorBody = { message: `Ошибка запроса (${response.status})`, errors: null };
+  }
+  return new ApiError(response.status, errorBody);
+}
+
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  let response = await doFetch(path, options);
+
+  if (response.status === 401 && path.startsWith('/api/admin/') && !isAuthEndpoint(path)) {
+    const refreshed = await tryRefresh();
+    if (refreshed) {
+      response = await doFetch(path, options);
+    }
+  }
 
   if (!response.ok) {
-    let errorBody: ErrorResponse;
-    try {
-      errorBody = await response.json();
-    } catch {
-      errorBody = { message: `Ошибка запроса (${response.status})`, errors: null };
-    }
-    throw new ApiError(response.status, errorBody);
+    throw await parseError(response);
   }
 
   if (response.status === 204) {
     return undefined as T;
   }
 
-  return response.json() as Promise<T>;
+  // Некоторые эндпоинты (напр. /change-password) отвечают 200 с пустым телом —
+  // response.json() на пустой строке кидает SyntaxError, поэтому читаем текст сами.
+  const text = await response.text();
+  return (text ? JSON.parse(text) : undefined) as T;
 }

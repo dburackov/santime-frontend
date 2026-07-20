@@ -7,6 +7,32 @@ export interface ErrorResponse {
   errors: Record<string, string> | null;
 }
 
+// ---- Авторизация администратора (ADMIN-AUTH-SPEC.md, api.md §0) ----
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  mustChangePassword: boolean;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface CreateAdminRequest {
+  email: string;
+}
+
+export interface CreateAdminResponse {
+  email: string;
+  temporaryPassword: string;
+}
+
 export interface PageResponse<T> {
   content: T[];
   page: number;

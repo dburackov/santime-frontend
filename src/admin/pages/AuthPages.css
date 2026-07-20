@@ -1,0 +1,23 @@
+.auth-page {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  padding: var(--space-4);
+}
+
+.auth-page__card {
+  width: 100%;
+  max-width: 360px;
+  padding: var(--space-6);
+  border-radius: var(--radius-sm);
+  border: var(--border);
+  background: var(--color-surface);
+}
+
+.auth-page__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+}
