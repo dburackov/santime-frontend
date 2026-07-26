@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 
 import type { ReactNode } from 'react';
 import { AuthContext } from './auth-context';
 import { getAccessToken, setAccessToken, subscribeAccessToken } from './tokenStore';
-import { login as apiLogin, logout as apiLogout, refresh as apiRefresh } from '@/api/auth';
+import { login as apiLogin, logout as apiLogout } from '@/api/auth';
+import { refreshSession } from '@/api/client';
 
 function subscribe(listener: () => void) {
   return subscribeAccessToken(listener);
@@ -17,18 +18,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // сессию нужно молча восстановить через /refresh (cookie). mustChangePassword
   // тоже приходит заново — бэкенд читает его свежо из БД при каждом /refresh
   // (api.md §0.2), поэтому этот флаг корректно переживает reload.
+  //
+  // Строго через refreshSession, а не собственным вызовом /refresh: он один на всё
+  // приложение и склеивает параллельные вызовы. Иначе этот эффект гонится сам с собой
+  // (StrictMode вызывает его дважды) и с retry-после-401 в apiRequest — два /refresh
+  // с одной cookie бэкенд трактует как переиспользование токена и отзывает все сессии.
+  // Сам токен кладёт в память тоже refreshSession — здесь остаётся только
+  // mustChangePassword и снятие флага инициализации.
   useEffect(() => {
     let cancelled = false;
-    apiRefresh()
+    refreshSession()
       .then((res) => {
         if (cancelled) return;
-        setAccessToken(res.accessToken);
-        setMustChangePassword(res.mustChangePassword);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setAccessToken(null);
-        setMustChangePassword(false);
+        setMustChangePassword(res?.mustChangePassword ?? false);
       })
       .finally(() => {
         if (!cancelled) setIsInitializing(false);

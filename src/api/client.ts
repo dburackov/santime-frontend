@@ -61,26 +61,34 @@ function isAuthEndpoint(path: string): boolean {
   return path.startsWith('/api/admin/auth/');
 }
 
-let refreshPromise: Promise<boolean> | null = null;
+let refreshPromise: Promise<AuthResponse | null> | null = null;
 
-// Общий refresh, разделяемый между параллельными 401 — иначе несколько
-// одновременных запросов вызвали бы несколько /refresh и словили ротацию
-// друг у друга (см. ADMIN-AUTH-SPEC.md §5, п.6 про переиспользование токена).
-function tryRefresh(): Promise<boolean> {
+/**
+ * Единственная точка входа в /refresh во всём приложении. Параллельные вызовы
+ * разделяют один запрос — иначе два одновременных /refresh уйдут с одной и той же
+ * cookie, бэкенд отротирует токен на первом и увидит второй как переиспользование
+ * уже отозванного, а на это он отзывает ВСЕ сессии админа (AdminAuthService,
+ * missingOrReused; ADMIN-AUTH-SPEC.md §5, п.6 — спека прямо называет гонку
+ * параллельных /refresh ожидаемым источником такого исхода).
+ *
+ * Возвращает весь AuthResponse, а не флаг: восстановлению сессии при загрузке
+ * страницы нужен ещё и mustChangePassword.
+ */
+export function refreshSession(): Promise<AuthResponse | null> {
   if (!refreshPromise) {
     refreshPromise = doFetch('/api/admin/auth/refresh', { method: 'POST' })
       .then(async (response) => {
         if (!response.ok) {
           setAccessToken(null);
-          return false;
+          return null;
         }
         const data: AuthResponse = await response.json();
         setAccessToken(data.accessToken);
-        return true;
+        return data;
       })
       .catch(() => {
         setAccessToken(null);
-        return false;
+        return null;
       })
       .finally(() => {
         refreshPromise = null;
@@ -103,7 +111,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   let response = await doFetch(path, options);
 
   if (response.status === 401 && path.startsWith('/api/admin/') && !isAuthEndpoint(path)) {
-    const refreshed = await tryRefresh();
+    const refreshed = await refreshSession();
     if (refreshed) {
       response = await doFetch(path, options);
     }

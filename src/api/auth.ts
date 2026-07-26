@@ -11,9 +11,9 @@ export function login(body: LoginRequest): Promise<AuthResponse> {
   return apiRequest('/api/admin/auth/login', { method: 'POST', body });
 }
 
-export function refresh(): Promise<AuthResponse> {
-  return apiRequest('/api/admin/auth/refresh', { method: 'POST' });
-}
+// Обёртки над /refresh здесь намеренно нет: единственный вход в этот эндпоинт —
+// refreshSession() в client.ts, который склеивает параллельные вызовы. Второй путь
+// к /refresh мимо неё возвращает гонку, отзывающую все сессии админа.
 
 export function logout(): Promise<void> {
   return apiRequest('/api/admin/auth/logout', { method: 'POST' });
