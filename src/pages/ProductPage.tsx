@@ -12,6 +12,7 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { VariantOptions } from '@/components/product/VariantOptions';
 import { AttributesTable } from '@/components/product/AttributesTable';
+import { ProductLightbox } from '@/components/product/ProductLightbox';
 import { pickSrcsetUrl } from '@/utils/images';
 import type { ProductImageResponse } from '@/api/types';
 
@@ -21,14 +22,32 @@ interface ProductGalleryProps {
 }
 
 /** key={variant.variantId} на месте использования сбрасывает activeIndex при смене
- * варианта (другой цвет — свой набор фото) через ремонт компонента, без лишнего эффекта. */
+ * варианта (другой цвет — свой набор фото) через ремонт компонента, без лишнего эффекта.
+ * Он же закрывает открытый лайтбокс: тот размонтируется вместе с галереей. */
 function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const activeImage = images[activeIndex] ?? images[0];
+  const hasImages = images.length > 0;
+
+  const photo = <ProductPhoto image={activeImage} alt={productName} size="detail" priority />;
 
   return (
     <div className="product-page__gallery">
-      <ProductPhoto image={activeImage} alt={productName} size="detail" priority />
+      {/* Кнопка-обёртка, а не onClick на ProductPhoto: у него шесть мест использования,
+          клик нужен одному. Без фото кнопки нет — открывать нечего. */}
+      {hasImages ? (
+        <button
+          type="button"
+          className="product-page__zoom"
+          onClick={() => setLightboxOpen(true)}
+          aria-label="Открыть фото на весь экран"
+        >
+          {photo}
+        </button>
+      ) : (
+        photo
+      )}
 
       {images.length > 1 && (
         <div className="product-page__thumbs" role="tablist" aria-label="Фото товара">
@@ -46,6 +65,17 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
             </button>
           ))}
         </div>
+      )}
+
+      {/* position: fixed — вне потока, gap галереи его не задевает. */}
+      {lightboxOpen && hasImages && (
+        <ProductLightbox
+          images={images}
+          index={activeIndex}
+          productName={productName}
+          onIndexChange={setActiveIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
       )}
     </div>
   );

@@ -17,6 +17,15 @@
   min-width: 0;
 }
 
+/* Обёртка вокруг главного фото: клик открывает лайтбокс. Фокус-ринг даёт
+   глобальное правило :focus-visible из global.css. */
+.product-page__zoom {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius);
+  cursor: zoom-in;
+}
+
 .product-page__thumbs {
   display: flex;
   gap: var(--space-2);
