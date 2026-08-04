@@ -6,6 +6,7 @@ import type {
   CategoryResponse,
   PageResponse,
   VariantCardResponse,
+  SitemapResponse,
   VariantDetailResponse,
 } from './types';
 
@@ -62,4 +63,8 @@ export function getProductBySlug(
   opts: CatalogFetchOptions = {},
 ): Promise<VariantDetailResponse> {
   return apiRequest(`/api/catalog/products/${encodeURIComponent(variantSlug)}`, opts);
+}
+
+export function getSitemap(opts: CatalogFetchOptions = {}): Promise<SitemapResponse> {
+  return apiRequest('/api/catalog/sitemap', opts);
 }

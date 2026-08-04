@@ -1,10 +1,14 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/config/siteInfo';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      allow: '/',
+      // Пагинация — единственный query-параметр, ведущий на действительно другой
+      // контент, поэтому она исключена из общего запрета ниже. Allow должен идти
+      // раньше Disallow: при равной длине правил приоритет у первого совпадения.
+      allow: ['/', '/*?page='],
       disallow: [
         '/admin',
         '/api/admin',
@@ -12,11 +16,11 @@ export default function robots(): MetadataRoute.Robots {
         '/checkout',
         '/order-confirmation',
         // Фильтры категории живут в query-string и дают бесконечное число почти
-        // одинаковых URL. Серверный noindex для них поставить нельзя: чтение
-        // searchParams выключило бы ISR всего роута (см. category/[slug]/page.tsx),
-        // поэтому отсекаем их здесь. Каноническим остаётся чистый адрес категории.
+        // одинаковых URL. Серверный noindex для них тоже стоит, но до страницы
+        // лучше вовсе не пускать — экономия краулингового бюджета.
         '/*?*',
       ],
     },
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

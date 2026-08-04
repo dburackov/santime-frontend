@@ -2,14 +2,18 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import '@/index.css';
 import { THEME_INIT_SCRIPT } from '@/theme/theme-script';
+import { SITE_NAME, SITE_URL } from '@/config/siteInfo';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
+  // Относительные canonical и og:url резолвятся против metadataBase — без него
+  // Next оставил бы их относительными.
+  metadataBase: new URL(SITE_URL),
   // Шаблон: страницы задают только свою часть заголовка через generateMetadata,
   // а если не задают — показывается default.
   title: {
-    default: 'Santime — интернет-магазин сантехники',
-    template: '%s — Santime',
+    default: `${SITE_NAME} — интернет-магазин сантехники`,
+    template: `%s — ${SITE_NAME}`,
   },
   icons: { icon: '/favicon.svg' },
 };

@@ -33,7 +33,9 @@ interface FormState {
   active: boolean;
 }
 
-const EMPTY_FORM: FormState = { name: '', slug: '', description: '', categoryId: '', brandId: '', active: true };
+const EMPTY_FORM: FormState = {
+  name: '', slug: '', description: '', categoryId: '', brandId: '', active: true,
+};
 
 export function ProductsPage() {
   const queryClient = useQueryClient();

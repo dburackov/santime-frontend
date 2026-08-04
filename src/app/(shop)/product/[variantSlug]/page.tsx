@@ -4,7 +4,9 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getCategories, getProductBySlug } from '@/api/catalog';
 import { ApiError } from '@/api/client';
 import { createServerQueryClient } from '@/app/query-client';
-import { buildProductJsonLd } from '@/utils/productJsonLd';
+import { buildBreadcrumbJsonLd, buildProductCrumbs, buildProductJsonLd } from '@/utils/productJsonLd';
+import { resolveProductMeta } from '@/utils/seo';
+import { SITE_NAME } from '@/config/siteInfo';
 import { ProductPage } from '@/views/ProductPage';
 import type { VariantDetailResponse } from '@/api/types';
 
@@ -48,16 +50,28 @@ export async function generateMetadata({
   const variant = await loadVariant(variantSlug);
   if (!variant) return { title: 'Товар не найден' };
 
-  const description =
-    variant.description?.slice(0, 160) ??
-    `${variant.productName} — цена ${variant.price} BYN, характеристики и наличие. Доставка по Беларуси, гарантия.`;
+  const { title, description } = resolveProductMeta(variant);
+  const path = `/product/${variant.variantSlug}`;
+  const image = variant.images?.[0]?.zoom;
 
   return {
-    title: variant.productName,
+    title,
     description,
     // Варианты одного товара считаем самостоятельными страницами: у них разные
     // SKU, цены и характеристики, поэтому каждый канонизируется сам на себя.
-    alternates: { canonical: `/product/${variant.variantSlug}` },
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      siteName: SITE_NAME,
+      locale: 'ru_BY',
+      // 'product' типизированный API Next не принимает, а для мессенджеров
+      // достаточно title/description/image.
+      type: 'website',
+      ...(image ? { images: [image] } : {}),
+    },
+    twitter: { card: 'summary_large_image', title, description, ...(image ? { images: [image] } : {}) },
   };
 }
 
@@ -73,19 +87,27 @@ export default async function Page({ params }: { params: Promise<{ variantSlug: 
   // Ключ обязан совпадать с useProductDetail, иначе клиент сходит за данными
   // заново, а в HTML уедет скелетон вместо товара.
   queryClient.setQueryData(['product-detail', variantSlug], variant);
-  // Категории нужны хлебным крошкам.
-  await queryClient.prefetchQuery({
+  // Категории нужны хлебным крошкам — и разметке, и самой странице.
+  const categories = await queryClient.fetchQuery({
     queryKey: ['categories'],
     queryFn: () => getCategories({ revalidate }),
   });
 
-  const jsonLd = buildProductJsonLd(variant);
+  const { description } = resolveProductMeta(variant);
+  const jsonLd = [
+    buildProductJsonLd(variant, description),
+    buildBreadcrumbJsonLd(buildProductCrumbs(variant, categories)),
+  ];
 
   return (
     <>
-      {jsonLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      )}
+      {jsonLd.map((block, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }}
+        />
+      ))}
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ProductPage />
       </HydrationBoundary>

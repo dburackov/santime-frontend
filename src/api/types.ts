@@ -85,6 +85,16 @@ export interface VariantCardResponse {
   images?: ProductImageResponse[];
 }
 
+export interface SitemapEntryResponse {
+  slug: string;
+  updatedAt: string;
+}
+
+export interface SitemapResponse {
+  categories: SitemapEntryResponse[];
+  products: SitemapEntryResponse[];
+}
+
 export type CatalogSort = 'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC';
 
 export interface CatalogProductsQuery {
@@ -139,6 +149,7 @@ export interface VariantDetailResponse {
   description: string | null;
   categoryId: number;
   brandId: number | null;
+  brandName: string | null;
   attributeMetadata: VariantDetailAttributeMeta[];
   variantOptions: VariantOptionGroup[];
   images?: ProductImageResponse[];

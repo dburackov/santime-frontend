@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getCategories, getCategoryBrands, getCategoryFilters, getProducts } from '@/api/catalog';
 import { buildCatalogQuery } from '@/hooks/catalogQuery';
+import { buildBreadcrumbJsonLd } from '@/utils/productJsonLd';
+import { resolveCategoryMeta } from '@/utils/seo';
+import { SITE_NAME } from '@/config/siteInfo';
 import { createServerQueryClient } from '@/app/query-client';
 import { CategoryPage } from '@/views/CategoryPage';
 import type { CategoryResponse } from '@/api/types';
@@ -52,15 +55,19 @@ export async function generateMetadata({
   const category = await findCategory(slug);
   if (!category) return { title: 'Категория не найдена' };
 
+  const { title, description } = resolveCategoryMeta(category);
+  const path = `/category/${category.slug}`;
+
   // Комбинаций фильтров бесконечно много, а контент у них почти одинаковый.
-  // Canonical всегда указывает на чистый адрес категории, а отфильтрованные
-  // версии дополнительно закрываются noindex (и robots.txt, см. app/robots.ts).
-  const hasFilters = Object.keys(await searchParams).length > 0;
+  // Пагинация — исключение: это разные товары, её оставляем индексируемой
+  // (то же исключение продублировано в app/robots.ts).
+  const hasFilters = Object.keys(await searchParams).some((key) => key !== 'page');
 
   return {
-    title: category.name,
-    description: `${category.name} — каталог, цены и характеристики в интернет-магазине Santime. Доставка по Беларуси, гарантия.`,
-    alternates: { canonical: `/category/${category.slug}` },
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title, description, url: path, siteName: SITE_NAME, locale: 'ru_BY', type: 'website' },
     ...(hasFilters ? { robots: { index: false, follow: true } } : {}),
   };
 }
@@ -105,9 +112,18 @@ export default async function Page({
     queryFn: () => getProducts(query),
   });
 
+  const crumbs = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'Каталог', path: '/catalog' },
+    { name: category.name, path: `/category/${category.slug}` },
+  ]);
+
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <CategoryPage />
-    </HydrationBoundary>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <CategoryPage />
+      </HydrationBoundary>
+    </>
   );
 }

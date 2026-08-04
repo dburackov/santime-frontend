@@ -1,9 +1,21 @@
 import type { Metadata } from 'next';
+import { SITE_NAME } from '@/config/siteInfo';
 export { DeliveryPage as default } from '@/views/DeliveryPage';
 
+const TITLE = 'Доставка';
+const DESCRIPTION =
+  'Условия и сроки доставки сантехники по Минску и Беларуси: зоны, стоимость, самовывоз.';
+
 export const metadata: Metadata = {
-  title: 'Доставка',
-  description:
-    'Условия и сроки доставки сантехники по Минску и Беларуси: зоны, стоимость, самовывоз.',
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: '/dostavka' },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: '/dostavka',
+    siteName: SITE_NAME,
+    locale: 'ru_BY',
+    type: 'website',
+  },
 };

@@ -1,24 +1,63 @@
-import { pickSrcsetUrl } from '@/utils/images';
-import type { VariantDetailResponse } from '@/api/types';
+import { SITE_URL } from '@/config/siteInfo';
+import type { CategoryResponse, VariantDetailResponse } from '@/api/types';
 
-/**
- * schema.org/Product для карточки товара.
- *
- * Состав полей намеренно повторяет прежнюю клиентскую версию один-в-один:
- * задача переезда — не потерять разметку, а не расширить её. Обогащение
- * (sku, brand, availability, description) относится к отдельной SEO-задаче.
- */
-export function buildProductJsonLd(variant: VariantDetailResponse): Record<string, unknown> | null {
-  const hero = variant.images?.[0];
-  if (!hero) return null;
+type JsonLd = Record<string, unknown>;
 
-  const zoomUrl = pickSrcsetUrl(hero.srcset, 1200) ?? hero.fallback;
+/** schema.org/Product для карточки товара. */
+export function buildProductJsonLd(variant: VariantDetailResponse, description: string): JsonLd {
+  const url = `${SITE_URL}/product/${variant.variantSlug}`;
+  // Первое изображение — главное: бэкенд отдаёт сначала фото варианта, затем
+  // общие фото товара. zoom — готовый вариант 1200px.
+  const heroZoom = variant.images?.[0]?.zoom;
 
   return {
-    '@context': 'https://schema.org/',
+    '@context': 'https://schema.org',
     '@type': 'Product',
+    '@id': url,
     name: variant.productName,
-    image: [zoomUrl],
-    offers: { '@type': 'Offer', price: String(variant.price), priceCurrency: 'BYN' },
+    description,
+    sku: variant.sku,
+    url,
+    ...(heroZoom ? { image: [heroZoom] } : {}),
+    ...(variant.brandName ? { brand: { '@type': 'Brand', name: variant.brandName } } : {}),
+    offers: {
+      '@type': 'Offer',
+      url,
+      price: String(variant.price),
+      priceCurrency: 'BYN',
+      availability:
+        variant.stockQuantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
   };
+}
+
+export interface Crumb {
+  name: string;
+  path: string;
+}
+
+export function buildBreadcrumbJsonLd(crumbs: Crumb[]): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((crumb, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: crumb.name,
+      item: `${SITE_URL}${crumb.path}`,
+    })),
+  };
+}
+
+export function buildProductCrumbs(
+  variant: VariantDetailResponse,
+  categories: CategoryResponse[] | undefined,
+): Crumb[] {
+  const category = categories?.find((c) => c.id === variant.categoryId);
+  return [
+    { name: 'Главная', path: '/' },
+    { name: 'Каталог', path: '/catalog' },
+    ...(category ? [{ name: category.name, path: `/category/${category.slug}` }] : []),
+    { name: variant.productName, path: `/product/${variant.variantSlug}` },
+  ];
 }
