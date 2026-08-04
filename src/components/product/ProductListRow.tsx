@@ -26,7 +26,11 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
       <Link href={`/product/${variant.variantSlug}`} className="product-row__link">
         <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="row" />
         <div className="product-row__main">
-          <div className="product-row__title">{variant.productName}</div>
+          {/* h3, а не div — тот же уровень, что у product-card__title в сетке:
+              иначе при переключении вида товары пропадали из навигации по
+              заголовкам. Визуально ничего не меняется: reset.css обнуляет
+              отступы у h1–h4, а размер и насыщенность задаёт сам класс. */}
+          <h3 className="product-row__title">{variant.productName}</h3>
           {!variant.inStock && <div className="product-row__oos">Нет в наличии</div>}
           {attrLines.length > 0 && (
             <ul className="product-row__attrs">

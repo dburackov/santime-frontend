@@ -86,6 +86,15 @@ export function CategoryPage() {
         )}
 
         <div className="category-page__content">
+          {/* Заголовок списка товаров. Визуально скрыт (макет его не
+              предусматривает), но нужен структурно: единственный h2 на странице —
+              «Фильтры» внутри FilterPanel, а он не доходит до дерева доступности
+              ни в одной раскладке. На десктопе .filter-drawer__header убран через
+              display: none, на мобильном закрытая шторка скрыта через
+              visibility: hidden — оба свойства выкидывают содержимое из дерева.
+              Без этого h2 после h1 сразу шли h3 карточек. */}
+          <h2 className="visually-hidden">Товары</h2>
+
           <div className="category-page__toolbar">
             <span className="category-page__count">
               {page ? `Найдено ${page.totalElements} товаров` : ''}
