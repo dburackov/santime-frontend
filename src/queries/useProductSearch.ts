@@ -1,3 +1,5 @@
+'use client';
+
 import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '@/api/catalog';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';

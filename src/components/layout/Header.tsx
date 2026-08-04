@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import './Header.css';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBox } from './SearchBox';
@@ -9,21 +12,21 @@ import { NAV_LINKS, SITE_PHONES } from '@/config/siteInfo';
 
 export function Header() {
   const { totalCount } = useCart();
-  const location = useLocation();
+  const pathname = usePathname() ?? '';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [lastPathname, setLastPathname] = useState(location.pathname);
+  const [lastPathname, setLastPathname] = useState(pathname);
 
-  if (location.pathname !== lastPathname) {
-    setLastPathname(location.pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setMobileMenuOpen(false);
     setMobileSearchOpen(false);
   }
 
   function isNavLinkActive(to: string) {
-    if (to === '/') return location.pathname === '/';
-    if (to === '/catalog') return location.pathname === '/catalog' || location.pathname.startsWith('/category/');
-    return location.pathname === to;
+    if (to === '/') return pathname === '/';
+    if (to === '/catalog') return pathname === '/catalog' || pathname.startsWith('/category/');
+    return pathname === to;
   }
 
   return (
@@ -64,19 +67,19 @@ export function Header() {
                 <MenuIcon width={20} height={20} />
               </button>
 
-              <Link to="/" className="header__logo">
+              <Link href="/" className="header__logo">
                 santime
               </Link>
 
               <nav className="header__nav" aria-label="Основная навигация">
                 {NAV_LINKS.map((link) => (
-                  <NavLink
+                  <Link
                     key={link.to}
-                    to={link.to}
+                    href={link.to}
                     className={`header__nav-link ${isNavLinkActive(link.to) ? 'header__nav-link--active' : ''}`}
                   >
                     {link.label}
-                  </NavLink>
+                  </Link>
                 ))}
               </nav>
 
@@ -94,7 +97,7 @@ export function Header() {
                   <SearchIcon width={20} height={20} />
                 </button>
 
-                <Link to="/cart" className="header__cart touch-target" aria-label="Корзина">
+                <Link href="/cart" className="header__cart touch-target" aria-label="Корзина">
                   <CartIcon width={18} height={18} />
                   {totalCount > 0 && <span className="header__cart-count">{totalCount}</span>}
                 </Link>
@@ -119,13 +122,13 @@ export function Header() {
 
             <nav className="header__drawer-nav" aria-label="Основная навигация">
               {NAV_LINKS.map((link) => (
-                <NavLink
+                <Link
                   key={link.to}
-                  to={link.to}
+                  href={link.to}
                   className={isNavLinkActive(link.to) ? 'header__drawer-nav-link--active' : ''}
                 >
                   {link.label}
-                </NavLink>
+                </Link>
               ))}
             </nav>
 

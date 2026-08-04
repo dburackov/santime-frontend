@@ -1,6 +1,9 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
@@ -49,7 +52,7 @@ function buildEmptyForm(bindings: CategoryAttributeResponse[] | undefined): Form
 }
 
 export function ProductVariantsPage() {
-  const { productId: productIdParam } = useParams<{ productId: string }>();
+  const { productId: productIdParam } = useRouteParams<{ productId: string }>();
   const productId = Number(productIdParam);
   const queryClient = useQueryClient();
 
@@ -205,7 +208,7 @@ export function ProductVariantsPage() {
                   <td>
                     <div className="admin-table__actions">
                       <Link
-                        to={`/admin/products/${productId}/variants/${variant.id}/images`}
+                        href={`/admin/products/${productId}/variants/${variant.id}/images`}
                         className="admin-table__link-btn"
                       >
                         Фото

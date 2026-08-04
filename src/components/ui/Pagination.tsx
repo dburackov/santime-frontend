@@ -1,3 +1,5 @@
+'use client';
+
 import './Pagination.css';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
 

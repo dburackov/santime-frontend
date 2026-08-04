@@ -1,3 +1,5 @@
+'use client';
+
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getProducts } from '@/api/catalog';
 import type { CatalogProductsQuery } from '@/api/types';

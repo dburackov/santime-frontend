@@ -1,3 +1,5 @@
+'use client';
+
 import './ThemeToggle.css';
 import { useTheme } from '@/theme/useTheme';
 import { MoonIcon, SunIcon } from '@/components/ui/icons';

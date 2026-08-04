@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 
 export function useDebouncedValue<T>(value: T, delayMs = 400): T {

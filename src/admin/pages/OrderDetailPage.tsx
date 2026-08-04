@@ -1,4 +1,6 @@
-import { useParams } from 'react-router-dom';
+'use client';
+
+import { useRouteParams } from '@/hooks/useRouteParams';
 import { useQuery } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import './OrderDetailPage.css';
@@ -8,7 +10,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Price } from '@/components/ui/Price';
 
 export function OrderDetailPage() {
-  const { orderId: orderIdParam } = useParams<{ orderId: string }>();
+  const { orderId: orderIdParam } = useRouteParams<{ orderId: string }>();
   const orderId = Number(orderIdParam);
 
   const { data: order, isError, refetch } = useQuery({

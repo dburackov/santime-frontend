@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
@@ -32,7 +34,7 @@ interface FlagsFormState {
 const EMPTY_FLAGS: FlagsFormState = { required: false, isFilter: false, isVariant: false, sortOrder: '0' };
 
 export function CategoryAttributesPage() {
-  const { categoryId: categoryIdParam } = useParams<{ categoryId: string }>();
+  const { categoryId: categoryIdParam } = useRouteParams<{ categoryId: string }>();
   const categoryId = Number(categoryIdParam);
   const queryClient = useQueryClient();
 

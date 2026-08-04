@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+'use client';
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { CartContext, type CartContextValue, type CartItem } from './cart-context';
 
@@ -16,9 +18,29 @@ function loadCart(): CartItem[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(loadCart);
+  // Стартуем всегда с пустой корзины: на сервере localStorage нет, а если
+  // читать его в инициализаторе useState, серверная и клиентская разметка
+  // разойдутся. Настоящее содержимое подтягивается эффектом после монтирования.
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const hydrated = useRef(false);
 
   useEffect(() => {
+    // Это и есть паттерн гидрации: localStorage существует только в браузере,
+    // поэтому первый рендер обязан совпасть с серверным (пустая корзина), а
+    // реальное содержимое подставляется ровно одним дополнительным рендером
+    // после монтирования. Читать хранилище в инициализаторе useState нельзя —
+    // на сервере это падение, на клиенте расхождение при гидрации.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems(loadCart());
+    hydrated.current = true;
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    // Без этой проверки первый прогон эффекта затёр бы сохранённую корзину
+    // пустым массивом ещё до того, как её успели прочитать.
+    if (!hydrated.current) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
@@ -50,8 +72,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartContextValue>(() => {
     const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
     const totalPrice = items.reduce((sum, i) => sum + i.quantity * i.price, 0);
-    return { items, totalCount, totalPrice, addItem, removeItem, setQuantity, clear };
-  }, [items, addItem, removeItem, setQuantity, clear]);
+    return { items, isHydrated, totalCount, totalPrice, addItem, removeItem, setQuantity, clear };
+  }, [items, isHydrated, addItem, removeItem, setQuantity, clear]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

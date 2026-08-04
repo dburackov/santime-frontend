@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
 import { listAttributes, createAttribute, updateAttribute, deleteAttribute } from '@/api/admin';
@@ -112,7 +114,7 @@ export function AttributesPage() {
                   <td>
                     <div className="admin-table__actions">
                       {attribute.type === 'OPTION' && (
-                        <Link to={`/admin/attributes/${attribute.id}/options`} className="admin-table__link-btn">
+                        <Link href={`/admin/attributes/${attribute.id}/options`} className="admin-table__link-btn">
                           Значения
                         </Link>
                       )}

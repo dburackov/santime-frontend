@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
 import { listCategories, createCategory, updateCategory, deleteCategory } from '@/api/admin';
@@ -109,7 +111,7 @@ export function CategoriesPage() {
                   <td>{items.find((c) => c.id === category.parentCategoryId)?.name ?? '—'}</td>
                   <td>
                     <div className="admin-table__actions">
-                      <Link to={`/admin/categories/${category.id}/attributes`} className="admin-table__link-btn">
+                      <Link href={`/admin/categories/${category.id}/attributes`} className="admin-table__link-btn">
                         Атрибуты
                       </Link>
                       <button

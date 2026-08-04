@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';

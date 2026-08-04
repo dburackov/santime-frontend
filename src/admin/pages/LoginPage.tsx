@@ -1,6 +1,9 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import '@/admin/admin.css';
 import './AuthPages.css';
 import { useAuth } from '@/auth/useAuth';
@@ -9,17 +12,24 @@ import { ApiError } from '@/api/client';
 
 export function LoginPage() {
   const { isAuthenticated, isInitializing, login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const searchParams = useSearchParams() ?? new URLSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!isInitializing && isAuthenticated) {
-    const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? '/admin';
-    return <Navigate to={from} replace />;
-  }
+  // Куда вернуть после входа. AdminLayout кладёт исходный путь в ?from=;
+  // принимаем только внутренние пути, чтобы параметр нельзя было использовать
+  // как открытый редирект на чужой домен.
+  const fromParam = searchParams.get('from');
+  const from = fromParam && fromParam.startsWith('/') && !fromParam.startsWith('//') ? fromParam : '/admin';
+
+  const alreadySignedIn = !isInitializing && isAuthenticated;
+
+  useEffect(() => {
+    if (alreadySignedIn) router.replace(from);
+  }, [alreadySignedIn, from, router]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -27,7 +37,7 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(email, password);
-      navigate('/admin', { replace: true });
+      router.replace(from);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Что-то пошло не так.');
     } finally {

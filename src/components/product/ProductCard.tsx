@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import './ProductCard.css';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
@@ -18,7 +18,7 @@ export function ProductCard({ variant, displayAttributes = [] }: ProductCardProp
     .join(' · ');
 
   return (
-    <Link to={`/product/${variant.variantSlug}`} className="product-card">
+    <Link href={`/product/${variant.variantSlug}`} className="product-card">
       <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="card" />
       <div className="product-card__body">
         <h3 className="product-card__title">{variant.productName}</h3>

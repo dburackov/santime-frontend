@@ -1,3 +1,5 @@
+'use client';
+
 import './StateCard.css';
 import { BoxIcon } from './icons';
 import { Button } from './Button';

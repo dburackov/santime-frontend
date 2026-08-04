@@ -1,4 +1,6 @@
-import { useCallback, useState } from 'react';
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
 
 export type ViewMode = 'grid' | 'list';
 
@@ -10,7 +12,16 @@ function getStoredViewMode(): ViewMode {
 }
 
 export function useViewMode() {
-  const [viewMode, setViewModeState] = useState<ViewMode>(getStoredViewMode);
+  // Как и в корзине: серверный рендер не знает про localStorage, поэтому
+  // стартуем с дефолта и подтягиваем сохранённый режим после монтирования.
+  const [viewMode, setViewModeState] = useState<ViewMode>('grid');
+
+  useEffect(() => {
+    // Паттерн гидрации, см. пояснение в CartContext: сохранённый режим доступен
+    // только в браузере, поэтому подставляется одним рендером после монтирования.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setViewModeState(getStoredViewMode());
+  }, []);
 
   const setViewMode = useCallback((mode: ViewMode) => {
     setViewModeState(mode);

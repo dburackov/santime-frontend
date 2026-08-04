@@ -1,7 +1,17 @@
 import type { AuthResponse, ErrorResponse } from './types';
 import { getAccessToken, setAccessToken } from '@/auth/tokenStore';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+const IS_SERVER = typeof window === 'undefined';
+
+/**
+ * В браузере база пустая — запросы уходят на /api того же origin, а Next
+ * проксирует их в Spring через rewrites() (next.config.ts). На сервере
+ * относительного адреса не существует, поэтому серверные компоненты ходят в
+ * Spring напрямую по абсолютному URL, минуя собственный HTTP-слой Next.
+ */
+const BASE_URL = IS_SERVER
+  ? process.env.API_BASE_URL || 'http://localhost:8080'
+  : (process.env.NEXT_PUBLIC_API_BASE_URL ?? '');
 
 export class ApiError extends Error {
   status: number;
@@ -15,14 +25,23 @@ export class ApiError extends Error {
   }
 }
 
-interface RequestOptions {
+export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   searchParams?: { [key: string]: string | number | boolean | undefined | null };
+  /**
+   * Окно кэширования для серверных вызовов, в секундах. Задаётся страницами
+   * витрины и должно совпадать с их `export const revalidate`: в Next 15+ fetch
+   * по умолчанию не кэшируется, а некэшируемый запрос переводит весь роут в
+   * динамический рендеринг. В браузере игнорируется.
+   */
+  revalidate?: number;
 }
 
 function buildUrl(path: string, searchParams?: RequestOptions['searchParams']): string {
-  const url = new URL(`${BASE_URL}${path}`, window.location.origin);
+  // На сервере BASE_URL абсолютный, поэтому второй аргумент не используется;
+  // в браузере он подставляет текущий origin к относительному пути.
+  const url = new URL(`${BASE_URL}${path}`, IS_SERVER ? undefined : window.location.origin);
   if (searchParams) {
     for (const [key, value] of Object.entries(searchParams)) {
       if (value === undefined || value === null || value === '') continue;
@@ -50,8 +69,13 @@ async function doFetch(path: string, options: RequestOptions): Promise<Response>
     headers: buildHeaders(Boolean(options.body) && !isFormData),
     body: isFormData ? (options.body as FormData) : options.body ? JSON.stringify(options.body) : undefined,
     // refresh token уходит только через HttpOnly cookie (ADMIN-AUTH-SPEC.md §4) —
-    // credentials нужны, даже если фронт и бэк на одном origin в dev через vite proxy
+    // credentials нужны, даже если фронт и бэк на одном origin
     credentials: 'include',
+    // Кэширование данных Next: включаем только на сервере и только там, где
+    // страница явно попросила (см. RequestOptions.revalidate).
+    ...(IS_SERVER && options.revalidate !== undefined
+      ? { next: { revalidate: options.revalidate } }
+      : {}),
   });
 }
 

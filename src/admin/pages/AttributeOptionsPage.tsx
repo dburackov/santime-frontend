@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useRouteParams } from '@/hooks/useRouteParams';
 import { useQuery } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
@@ -22,7 +24,7 @@ import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
 export function AttributeOptionsPage() {
-  const { attributeId: attributeIdParam } = useParams<{ attributeId: string }>();
+  const { attributeId: attributeIdParam } = useRouteParams<{ attributeId: string }>();
   const attributeId = Number(attributeIdParam);
 
   const { data: attributes } = useQuery({ queryKey: ['admin-attributes'], queryFn: listAttributes });

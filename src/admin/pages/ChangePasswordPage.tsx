@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
@@ -11,7 +13,7 @@ import { Button } from '@/components/ui/Button';
 
 export function ChangePasswordPage() {
   const { mustChangePassword, markPasswordChanged } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,7 +23,7 @@ export function ChangePasswordPage() {
     mutationFn: () => changePassword({ currentPassword, newPassword }),
     onSuccess: () => {
       markPasswordChanged();
-      navigate('/admin', { replace: true });
+      router.replace('/admin');
     },
   });
 

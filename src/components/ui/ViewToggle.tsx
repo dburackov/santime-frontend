@@ -1,3 +1,5 @@
+'use client';
+
 import './ViewToggle.css';
 import { GridIcon, ListIcon } from './icons';
 import type { ViewMode } from '@/hooks/useViewMode';

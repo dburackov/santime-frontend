@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon } from './icons';
@@ -240,7 +242,10 @@ export function SearchableSelect({
         <ChevronDownIcon width={16} height={16} className="searchable-select__chevron" />
       </button>
 
-      {portal ? createPortal(panel, document.body) : panel}
+      {/* panel === false, пока список закрыт. Проверка на него обязательна:
+          без неё createPortal дёргал бы document.body и на сервере, где его нет.
+          Открыть список можно только кликом, то есть уже в браузере. */}
+      {portal && panel ? createPortal(panel, document.body) : panel}
     </div>
   );
 }

@@ -1,5 +1,7 @@
+'use client';
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import { listOrders } from '@/api/admin';
@@ -55,7 +57,7 @@ export function OrdersPage() {
                   </td>
                   <td className="mono-num">{new Date(order.createdAt).toLocaleString('ru-RU')}</td>
                   <td>
-                    <Link to={`/admin/orders/${order.id}`} className="admin-table__link-btn">
+                    <Link href={`/admin/orders/${order.id}`} className="admin-table__link-btn">
                       Открыть
                     </Link>
                   </td>

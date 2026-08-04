@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
 import './ProductListRow.css';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
@@ -21,7 +23,7 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
 
   return (
     <div className="product-row">
-      <Link to={`/product/${variant.variantSlug}`} className="product-row__link">
+      <Link href={`/product/${variant.variantSlug}`} className="product-row__link">
         <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="row" />
         <div className="product-row__main">
           <div className="product-row__title">{variant.productName}</div>

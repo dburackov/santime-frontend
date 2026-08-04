@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
@@ -159,10 +161,10 @@ export function ProductsPage() {
                   </td>
                   <td>
                     <div className="admin-table__actions">
-                      <Link to={`/admin/products/${product.id}/variants`} className="admin-table__link-btn">
+                      <Link href={`/admin/products/${product.id}/variants`} className="admin-table__link-btn">
                         Варианты
                       </Link>
-                      <Link to={`/admin/products/${product.id}/images`} className="admin-table__link-btn">
+                      <Link href={`/admin/products/${product.id}/images`} className="admin-table__link-btn">
                         Фото
                       </Link>
                       <button

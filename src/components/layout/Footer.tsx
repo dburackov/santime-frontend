@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import './Footer.css';
 import { SITE_PHONES } from '@/config/siteInfo';
 
@@ -20,8 +20,8 @@ export function Footer() {
         </div>
 
         <nav className="footer__links" aria-label="Информация">
-          <Link to="/dostavka">Доставка</Link>
-          <Link to="/oplata">Оплата</Link>
+          <Link href="/dostavka">Доставка</Link>
+          <Link href="/oplata">Оплата</Link>
         </nav>
       </div>
     </footer>

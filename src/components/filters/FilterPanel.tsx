@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from 'react';
 import './FilterPanel.css';
 import { CloseIcon, FilterIcon, RefreshIcon } from '@/components/ui/icons';

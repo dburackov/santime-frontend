@@ -15,6 +15,12 @@ export interface CartItem {
 
 export interface CartContextValue {
   items: CartItem[];
+  /**
+   * Прочитана ли корзина из localStorage. До этого `items` заведомо пуст (на
+   * сервере хранилища нет), поэтому решения вида «корзина пустая — уводим на
+   * /cart» до гидрации принимать нельзя.
+   */
+  isHydrated: boolean;
   totalCount: number;
   totalPrice: number;
   addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;

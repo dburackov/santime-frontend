@@ -1,79 +1,56 @@
-import { useSearchParams } from 'react-router-dom';
-import type { CatalogFilterAttributeResponse, CatalogProductsQuery, CatalogSort } from '@/api/types';
+'use client';
 
-const PAGE_SIZE = 20;
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { buildCatalogQuery, parseCatalogParams } from './catalogQuery';
+import type { CatalogFilterAttributeResponse } from '@/api/types';
 
 /**
  * Кодирует состояние фильтров/сортировки/страницы категории в query-string URL,
  * чтобы список товаров переживал refresh и был доступен по ссылке (api.md п.1.2, ТЗ п.3.2.4).
+ *
+ * Имена и формат параметров менять нельзя: их напрямую разбирает бэкенд
+ * (CatalogProductService.RESERVED_PARAMS плюс произвольные слаги атрибутов),
+ * и на них же завязаны уже разосланные ссылки.
  */
 export function useCatalogQueryState(categoryId: number, filters: CatalogFilterAttributeResponse[] | undefined) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname() ?? '';
+  const searchParams = useSearchParams() ?? new URLSearchParams();
 
-  const sort = (searchParams.get('sort') as CatalogSort) || 'NAME_ASC';
-  const pageParam = Number(searchParams.get('page') ?? '1');
-  const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-  const priceMinRaw = searchParams.get('priceMin');
-  const priceMaxRaw = searchParams.get('priceMax');
-  const priceMin = priceMinRaw ? Number(priceMinRaw) : undefined;
-  const priceMax = priceMaxRaw ? Number(priceMaxRaw) : undefined;
-  const inStockRaw = searchParams.get('inStock');
-  const inStock = inStockRaw === null ? true : inStockRaw === 'true';
-  const brandIdsRaw = searchParams.get('brandIds');
-  const brandIds = brandIdsRaw ? brandIdsRaw.split(',').map(Number).filter((n) => !Number.isNaN(n)) : [];
-
-  const attributeFilters: Record<string, string> = {};
-  const attributeRangeFilters: Record<string, { min?: number; max?: number }> = {};
-
-  for (const attribute of filters ?? []) {
-    if (attribute.type === 'NUMBER') {
-      const min = searchParams.get(`${attribute.slug}_min`);
-      const max = searchParams.get(`${attribute.slug}_max`);
-      if (min !== null || max !== null) {
-        attributeRangeFilters[attribute.slug] = {
-          min: min !== null ? Number(min) : undefined,
-          max: max !== null ? Number(max) : undefined,
-        };
-      }
-    } else {
-      const value = searchParams.get(attribute.slug);
-      if (value) attributeFilters[attribute.slug] = value;
-    }
+  /**
+   * В Next useSearchParams только на чтение, поэтому запись идёт через роутер.
+   * scroll: false сохраняет позицию списка при смене фильтра — раньше это
+   * обеспечивал setSearchParams(..., { replace: true }) в react-router.
+   */
+  function commit(next: URLSearchParams) {
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  const query: CatalogProductsQuery = {
-    categoryId,
-    brandIds,
-    priceMin,
-    priceMax,
-    inStock: inStock || undefined,
-    sort,
-    page,
-    size: PAGE_SIZE,
-    attributeFilters,
-    attributeRangeFilters,
-  };
+  const { sort, page, priceMin, priceMax, inStock, inStockRaw, brandIds, attributeFilters, attributeRangeFilters } =
+    parseCatalogParams(searchParams, filters);
+
+  const query = buildCatalogQuery(categoryId, searchParams, filters);
 
   function updateParams(patch: Record<string, string | undefined>, options: { resetPage?: boolean } = {}) {
-    const next = new URLSearchParams(searchParams);
+    const next = new URLSearchParams(searchParams.toString());
     for (const [key, value] of Object.entries(patch)) {
       if (value === undefined || value === '') next.delete(key);
       else next.set(key, value);
     }
     if (options.resetPage !== false) next.delete('page');
-    setSearchParams(next, { replace: true });
+    commit(next);
   }
 
   function resetAllFilters() {
-    const next = new URLSearchParams();
-    setSearchParams(next, { replace: true });
+    commit(new URLSearchParams());
   }
 
   function setPage(nextPage: number) {
-    const next = new URLSearchParams(searchParams);
+    const next = new URLSearchParams(searchParams.toString());
     if (nextPage <= 0) next.delete('page');
     else next.set('page', String(nextPage + 1));
-    setSearchParams(next, { replace: true });
+    commit(next);
   }
 
   const hasActiveFilters =

@@ -1,6 +1,8 @@
+'use client';
+
 import { useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import './ProductImagesPage.css';
@@ -21,7 +23,7 @@ import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { formError } from '@/admin/formErrors';
 
 export function ProductImagesPage() {
-  const { productId: productIdParam } = useParams<{ productId: string }>();
+  const { productId: productIdParam } = useRouteParams<{ productId: string }>();
   const productId = Number(productIdParam);
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);

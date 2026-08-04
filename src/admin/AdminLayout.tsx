@@ -1,4 +1,9 @@
-import { NavLink, Navigate, Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+'use client';
+
+import { useEffect } from 'react';
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import './AdminLayout.css';
 import { ChevronLeftIcon } from '@/components/ui/icons';
 import { useAuth } from '@/auth/useAuth';
@@ -12,33 +17,53 @@ const NAV_ITEMS = [
   { to: '/admin/admins', label: 'Админы' },
 ];
 
-export function AdminLayout() {
+export function AdminLayout({ children }: { children: ReactNode }) {
   const { isAuthenticated, isInitializing, mustChangePassword, logout } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname() ?? '';
+  const router = useRouter();
 
-  if (isInitializing) {
+  const needsLogin = !isInitializing && !isAuthenticated;
+  const needsPasswordChange =
+    !isInitializing && isAuthenticated && mustChangePassword && pathname !== '/admin/change-password';
+
+  // Раньше это были <Navigate>, которые react-router умел рендерить прямо в
+  // дереве. В Next перенаправление клиентского компонента — побочный эффект,
+  // поэтому оно уходит в useEffect, а рендер ниже отдаёт заглушку, чтобы панель
+  // не мелькнула до перехода.
+  //
+  // Проверка остаётся здесь, а не в middleware: access token живёт в памяти
+  // вкладки (tokenStore), на сервере его нет и быть не должно.
+  useEffect(() => {
+    if (needsLogin) {
+      // Куда вернуть после входа — раньше передавалось через state роутера,
+      // которого в Next нет; кладём в query-параметр.
+      router.replace(`/admin/login?from=${encodeURIComponent(pathname)}`);
+    } else if (needsPasswordChange) {
+      router.replace('/admin/change-password');
+    }
+  }, [needsLogin, needsPasswordChange, pathname, router]);
+
+  if (isInitializing || needsLogin || needsPasswordChange) {
     return <div className="admin-shell admin-shell--loading">Загрузка…</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace state={{ from: location }} />;
-  }
-
-  if (mustChangePassword && location.pathname !== '/admin/change-password') {
-    return <Navigate to="/admin/change-password" replace />;
   }
 
   async function handleLogout() {
     await logout();
-    navigate('/admin/login', { replace: true });
+    router.replace('/admin/login');
+  }
+
+  function navLinkClass(to: string) {
+    // NavLink в react-router подсвечивался и на вложенных путях (без пропа end),
+    // поэтому /admin/products/5/variants продолжает подсвечивать «Товары».
+    const isActive = pathname === to || pathname.startsWith(`${to}/`);
+    return `admin-header__nav-link ${isActive ? 'admin-header__nav-link--active' : ''}`;
   }
 
   return (
     <div className="admin-shell">
       <header className="admin-header">
         <div className="container admin-header__bar">
-          <Link to="/" className="admin-header__back touch-target">
+          <Link href="/" className="admin-header__back touch-target">
             <ChevronLeftIcon width={16} height={16} />
             Витрина
           </Link>
@@ -46,29 +71,20 @@ export function AdminLayout() {
         </div>
         <nav className="container admin-header__nav" aria-label="Разделы админ-панели">
           {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `admin-header__nav-link ${isActive ? 'admin-header__nav-link--active' : ''}`}
-            >
+            <Link key={item.to} href={item.to} className={navLinkClass(item.to)}>
               {item.label}
-            </NavLink>
+            </Link>
           ))}
-          <NavLink
-            to="/admin/change-password"
-            className={({ isActive }) => `admin-header__nav-link ${isActive ? 'admin-header__nav-link--active' : ''}`}
-          >
+          <Link href="/admin/change-password" className={navLinkClass('/admin/change-password')}>
             Сменить пароль
-          </NavLink>
+          </Link>
           <button type="button" className="admin-header__nav-link admin-header__logout" onClick={handleLogout}>
             Выйти
           </button>
         </nav>
       </header>
 
-      <main className="container admin-shell__main">
-        <Outlet />
-      </main>
+      <main className="container admin-shell__main">{children}</main>
     </div>
   );
 }

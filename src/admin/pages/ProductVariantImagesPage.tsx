@@ -1,6 +1,8 @@
+'use client';
+
 import { useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/admin/pages/ProductImagesPage.css';
@@ -24,7 +26,7 @@ import { formError } from '@/admin/formErrors';
 /** Фото, специфичные для конкретного варианта товара (напр. другой цвет) — api.md, 2.9.
  * На витрине показываются перед общими фото товара (см. ProductImagesPage). */
 export function ProductVariantImagesPage() {
-  const { productId: productIdParam, variantId: variantIdParam } = useParams<{
+  const { productId: productIdParam, variantId: variantIdParam } = useRouteParams<{
     productId: string;
     variantId: string;
   }>();

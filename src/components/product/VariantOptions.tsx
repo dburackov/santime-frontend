@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import './VariantOptions.css';
 import type { VariantOptionGroup } from '@/api/types';
 
@@ -14,7 +14,7 @@ export function VariantOptions({ groups }: { groups: VariantOptionGroup[] }) {
             {group.options.map((option) => (
               <Link
                 key={option.variantId}
-                to={`/product/${option.variantSlug}`}
+                href={`/product/${option.variantSlug}`}
                 className={[
                   'variant-options__pill',
                   option.current ? 'variant-options__pill--active' : '',

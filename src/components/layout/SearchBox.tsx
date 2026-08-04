@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import './SearchBox.css';
 import { CloseIcon, SearchIcon } from '@/components/ui/icons';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
@@ -15,7 +17,7 @@ interface SearchBoxProps {
 }
 
 export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBoxProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -44,7 +46,7 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
     setQuery('');
     setOpen(false);
     onNavigate?.();
-    navigate(`/product/${variantSlug}`);
+    router.push(`/product/${variantSlug}`);
   }
 
   function handleTrailingClick() {
