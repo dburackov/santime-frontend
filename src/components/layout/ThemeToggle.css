@@ -18,7 +18,12 @@
   color: var(--color-slate);
 }
 
-.theme-toggle__btn--active {
+/* Активная кнопка определяется атрибутом на <html>, а не классом от React:
+   инлайн-скрипт проставляет data-theme до первой отрисовки, поэтому тумблер
+   сразу рисуется правильно и не перескакивает после гидрации. Светлая тема —
+   это отсутствие атрибута, отсюда :not(). */
+:root:not([data-theme='dark']) .theme-toggle__btn--light,
+:root[data-theme='dark'] .theme-toggle__btn--dark {
   background: var(--color-accent);
   color: #fff;
 }

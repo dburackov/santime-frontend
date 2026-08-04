@@ -9,9 +9,15 @@ export function ThemeToggle() {
 
   return (
     <div className="theme-toggle" role="group" aria-label="Тема оформления">
+      {/* Подсветка активной кнопки намеренно НЕ зависит от состояния React:
+          на сервере тема неизвестна, состояние стартует со светлой, и тумблер
+          прыгал бы со светлой на тёмную после гидрации. Классы --light/--dark
+          статичны, а какой из них подсвечен, решает CSS по атрибуту data-theme
+          на <html> — его проставляет инлайн-скрипт до первой отрисовки, то есть
+          из того же источника, что и цвета всей страницы. */}
       <button
         type="button"
-        className={`theme-toggle__btn ${theme === 'light' ? 'theme-toggle__btn--active' : ''}`}
+        className="theme-toggle__btn theme-toggle__btn--light"
         onClick={() => setTheme('light')}
         aria-pressed={theme === 'light'}
         title="Светлая тема"
@@ -20,7 +26,7 @@ export function ThemeToggle() {
       </button>
       <button
         type="button"
-        className={`theme-toggle__btn ${theme === 'dark' ? 'theme-toggle__btn--active' : ''}`}
+        className="theme-toggle__btn theme-toggle__btn--dark"
         onClick={() => setTheme('dark')}
         aria-pressed={theme === 'dark'}
         title="Тёмная тема"

@@ -22,6 +22,11 @@ export const THEME_INIT_SCRIPT = `
     if (theme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
+    // Помимо атрибута сразу сообщаем браузеру реальную схему. Иначе до
+    // применения нашего CSS он красит холст по системной настройке (мы объявили
+    // <meta name="color-scheme" content="light dark">), и на тёмной системе
+    // первый кадр уходил тёмным даже при светлой теме в localStorage.
+    document.documentElement.style.colorScheme = theme;
   } catch (e) {}
 })();
 `;

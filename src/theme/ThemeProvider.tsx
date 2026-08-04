@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ThemeContext, type Theme } from './theme-context';
 import { THEME_STORAGE_KEY as STORAGE_KEY } from './theme-script';
@@ -32,6 +32,10 @@ function applyTheme(theme: Theme) {
   } else {
     document.documentElement.removeAttribute('data-theme');
   }
+  // Держим в синхроне с инлайн-стилем, который проставил скрипт из
+  // theme-script.ts: иначе после переключения тумблером у браузера осталась бы
+  // прежняя схема, и системные элементы (скроллбары, поля ввода) не переоделись бы.
+  document.documentElement.style.colorScheme = theme;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -41,24 +45,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // так что визуального мигания нет, меняется только состояние в React.
   const [theme, setThemeState] = useState<Theme>('light');
   const [isSystemTheme, setIsSystemTheme] = useState(true);
-  const hydrated = useRef(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Паттерн гидрации, см. пояснение в CartContext. Здесь он вдобавок не даёт
-    // визуального скачка: атрибут data-theme к моменту этого рендера уже
-    // проставлен инлайн-скриптом, синхронизируется только состояние React.
+    // Паттерн гидрации, см. пояснение в CartContext. Скачка не даёт: атрибут
+    // data-theme к этому моменту уже проставлен инлайн-скриптом, синхронизируется
+    // только состояние React.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(getAppliedTheme());
     setIsSystemTheme(getStoredTheme() === null);
-    hydrated.current = true;
+    setIsHydrated(true);
   }, []);
 
   useEffect(() => {
-    // До гидрации трогать <html> нельзя: там уже стоит значение от инлайн-скрипта,
-    // а состояние ещё держит заглушку 'light' и затёрло бы тёмную тему.
-    if (!hydrated.current) return;
+    // Флаг обязан быть состоянием, а не ref: ref меняется синхронно, поэтому
+    // этот эффект проходил бы проверку уже на монтировании — но `theme` в его
+    // замыкании ещё держит стартовое 'light' (перерендер от setThemeState выше
+    // ещё не случился). Он снимал бы data-theme, и тёмная тема моргала светлой
+    // до следующего рендера. Состояние переключается только вместе с темой,
+    // так что первый вызов applyTheme приходит уже с настоящим значением.
+    if (!isHydrated) return;
     applyTheme(theme);
-  }, [theme]);
+  }, [theme, isHydrated]);
 
   useEffect(() => {
     if (!isSystemTheme) return;
