@@ -313,6 +313,8 @@ export interface OrderRequest {
   paymentMethod: string;
   deliveryMethod: string;
   comment?: string | null;
+  /** Код промокода. Скидку сервер считает сам, с фронта сумма не принимается. */
+  promoCode?: string | null;
   items: OrderItemRequest[];
 }
 
@@ -338,7 +340,90 @@ export interface OrderResponse {
   paymentMethod: string;
   deliveryMethod: string;
   comment: string | null;
+  /** Снапшот применённого кода, null если промокода не было. */
+  promoCode: string | null;
+  /** Сумма позиций до скидки. */
+  subtotal: number;
+  discountAmount: number;
+  /** Итог к оплате, всегда subtotal - discountAmount. */
   totalPrice: number;
   createdAt: string;
   items: OrderItemResponse[];
+}
+
+// ---- Промокоды ----
+
+export type DiscountType = 'PERCENT' | 'FIXED_AMOUNT';
+
+export interface PromoCodeRequest {
+  code: string;
+  description?: string | null;
+  discountType: DiscountType;
+  discountValue: number;
+  /** Сравнивается с subtotal всей корзины, а не с суммой подходящих позиций. */
+  minOrderAmount?: number | null;
+  /**
+   * LocalDateTime без таймзоны: «2026-06-01T00:00». Это не момент времени в UTC,
+   * поэтому строку из <input type="datetime-local"> отправляем как есть — прогон
+   * через Date/toISOString сдвинул бы границу действия на смещение часового пояса.
+   */
+  validFrom?: string | null;
+  validUntil?: string | null;
+  active: boolean;
+  /** Показывать в слайдере на витрине. Независимо от active. */
+  publicVisible: boolean;
+  /** Область действия. Все три пустые = промокод на весь заказ. */
+  categoryIds: number[];
+  brandIds: number[];
+  productIds: number[];
+}
+
+export interface PromoCodeResponse {
+  id: number;
+  code: string;
+  description: string | null;
+  discountType: DiscountType;
+  discountValue: number;
+  minOrderAmount: number | null;
+  validFrom: string | null;
+  validUntil: string | null;
+  active: boolean;
+  publicVisible: boolean;
+  categoryIds: number[];
+  brandIds: number[];
+  productIds: number[];
+  createdAt: string;
+}
+
+export type PromoRejectionReason =
+  | 'NOT_FOUND'
+  | 'INACTIVE'
+  | 'NOT_STARTED'
+  | 'EXPIRED'
+  | 'MIN_ORDER_NOT_REACHED'
+  | 'NO_MATCHING_ITEMS';
+
+export interface PromoCodeValidateRequest {
+  code: string;
+  items: OrderItemRequest[];
+}
+
+/**
+ * Приходит со статусом 200 и при отказе тоже: «промокод не подошёл» — это
+ * результат проверки, а не ошибка запроса. Причина лежит в reason, готовый
+ * текст для покупателя — в message.
+ */
+export interface PromoCodeValidateResponse {
+  valid: boolean;
+  code: string;
+  reason: PromoRejectionReason | null;
+  message: string | null;
+  subtotal: number;
+  discountAmount: number;
+  totalPrice: number;
+}
+
+export interface PromoCodeBannerResponse {
+  code: string;
+  description: string | null;
 }

@@ -1,0 +1,91 @@
+.promo-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 320px;
+}
+
+.promo-field__form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+/* Рамка на контейнере, а не на инпуте — тот же приём, что в SearchBox. */
+.promo-field__control {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.promo-field__input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  text-transform: uppercase;
+}
+
+.promo-field__input::placeholder {
+  font-family: var(--font-body);
+  color: var(--color-slate);
+  text-transform: none;
+}
+
+.promo-field__control:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.promo-field__applied {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-success) 10%, transparent);
+}
+
+.promo-field__applied-text {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  /* Длинный код не должен выдавливать кнопку удаления за край. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.promo-field__code {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.promo-field__remove {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-slate);
+}
+
+.promo-field__remove:hover {
+  color: var(--color-danger);
+}
+
+.promo-field__error {
+  text-align: right;
+}

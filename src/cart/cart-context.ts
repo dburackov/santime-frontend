@@ -23,9 +23,17 @@ export interface CartContextValue {
   isHydrated: boolean;
   totalCount: number;
   totalPrice: number;
+  /**
+   * Введённый покупателем промокод — только строка. Сумма скидки здесь
+   * намеренно не хранится: корзину можно поменять в любой момент, и сохранённая
+   * скидка тут же станет враньём. Актуальную считает сервер, см. usePromoDiscount.
+   */
+  promoCode: string | null;
   addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
   removeItem: (variantId: number) => void;
   setQuantity: (variantId: number, quantity: number) => void;
+  setPromoCode: (code: string) => void;
+  clearPromoCode: () => void;
   clear: () => void;
 }
 

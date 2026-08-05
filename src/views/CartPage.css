@@ -105,6 +105,19 @@
   max-width: 320px;
 }
 
+.cart-page__total-values {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.cart-page__old-price {
+  color: var(--color-slate);
+  text-decoration: line-through;
+}
+
 @media (min-width: 640px) {
   .cart-item {
     grid-template-columns: 1fr auto auto;

@@ -37,6 +37,7 @@ export function OrdersPage() {
                 <th>Статус</th>
                 <th>Оплата</th>
                 <th>Доставка</th>
+                <th>Промокод</th>
                 <th>Сумма</th>
                 <th>Дата</th>
                 <th />
@@ -52,6 +53,7 @@ export function OrdersPage() {
                   <td>{order.status}</td>
                   <td>{order.paymentMethod}</td>
                   <td>{order.deliveryMethod}</td>
+                  <td className="mono-num">{order.promoCode ?? '—'}</td>
                   <td>
                     <Price value={order.totalPrice} size="sm" />
                   </td>

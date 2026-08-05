@@ -1,0 +1,89 @@
+/* Полоса промокодов под хедером. Высота совпадает с header__main-bar
+   (56px на мобильном, 64px на десктопе), чтобы шапка страницы читалась
+   как один блок. */
+.promo-slider {
+  border-bottom: var(--border);
+  background: color-mix(in srgb, var(--color-gold) 12%, var(--color-surface));
+}
+
+.promo-slider__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 56px;
+}
+
+.promo-slider__viewport {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Горизонтальный свайп обрабатываем сами, вертикальную прокрутку отдаём странице. */
+  touch-action: pan-y;
+}
+
+.promo-slider__text {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  text-align: center;
+  /* Длинное описание не должно ломать высоту полосы. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  animation: promo-slide-in var(--motion-base);
+}
+
+@keyframes promo-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Единственное золотое пятно: в DESIGN.md этот токен закреплён за метками
+   скидок с пометкой «точечно и редко», поэтому заливки во весь блок нет. */
+.promo-slider__code {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--color-gold);
+  letter-spacing: 0.02em;
+}
+
+.promo-slider__arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-slate);
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast), background var(--motion-fast);
+}
+
+.promo-slider__arrow:hover {
+  color: var(--color-ink);
+  background: color-mix(in srgb, var(--color-gold) 18%, transparent);
+}
+
+.promo-slider__arrow:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+@media (min-width: 1024px) {
+  .promo-slider__inner {
+    height: 64px;
+    gap: var(--space-4);
+  }
+
+  .promo-slider__text {
+    font-size: var(--text-base);
+  }
+}

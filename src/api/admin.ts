@@ -19,6 +19,8 @@ import type {
   ProductResponse,
   ProductVariantRequest,
   ProductVariantResponse,
+  PromoCodeRequest,
+  PromoCodeResponse,
 } from './types';
 
 // ---- Категории ----
@@ -272,4 +274,23 @@ export function listOrders(params: ListOrdersParams): Promise<PageResponse<Order
 
 export function getOrder(id: number): Promise<OrderResponse> {
   return apiRequest(`/api/admin/orders/${id}`);
+}
+
+// ---- Промокоды ----
+
+export function listPromoCodes(): Promise<PromoCodeResponse[]> {
+  return apiRequest('/api/admin/promo-codes');
+}
+
+export function createPromoCode(body: PromoCodeRequest): Promise<PromoCodeResponse> {
+  return apiRequest('/api/admin/promo-codes', { method: 'POST', body });
+}
+
+/** Область действия перезаписывается целиком — запрос описывает желаемое состояние, а не дельту. */
+export function updatePromoCode(id: number, body: PromoCodeRequest): Promise<PromoCodeResponse> {
+  return apiRequest(`/api/admin/promo-codes/${id}`, { method: 'PUT', body });
+}
+
+export function deletePromoCode(id: number): Promise<void> {
+  return apiRequest(`/api/admin/promo-codes/${id}`, { method: 'DELETE' });
 }

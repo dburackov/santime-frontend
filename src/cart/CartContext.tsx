@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { CartContext, type CartContextValue, type CartItem } from './cart-context';
 
 const STORAGE_KEY = 'santime-cart';
+const PROMO_STORAGE_KEY = 'santime-promo';
 
 function loadCart(): CartItem[] {
   try {
@@ -22,6 +23,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // читать его в инициализаторе useState, серверная и клиентская разметка
   // разойдутся. Настоящее содержимое подтягивается эффектом после монтирования.
   const [items, setItems] = useState<CartItem[]>([]);
+  const [promoCode, setPromoCodeState] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const hydrated = useRef(false);
 
@@ -33,6 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // на сервере это падение, на клиенте расхождение при гидрации.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(loadCart());
+    setPromoCodeState(window.localStorage.getItem(PROMO_STORAGE_KEY));
     hydrated.current = true;
     setIsHydrated(true);
   }, []);
@@ -43,6 +46,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!hydrated.current) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    if (promoCode) {
+      window.localStorage.setItem(PROMO_STORAGE_KEY, promoCode);
+    } else {
+      window.localStorage.removeItem(PROMO_STORAGE_KEY);
+    }
+  }, [promoCode]);
 
   const addItem = useCallback((item: Omit<CartItem, 'quantity'>, quantity = 1) => {
     setItems((prev) => {
@@ -67,13 +79,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const clear = useCallback(() => setItems([]), []);
+  // Код нормализуем сразу: сервер всё равно приводит его к верхнему регистру,
+  // и без этого «summer» и «SUMMER» дали бы два разных ключа запроса.
+  const setPromoCode = useCallback((code: string) => setPromoCodeState(code.trim().toUpperCase()), []);
+
+  const clearPromoCode = useCallback(() => setPromoCodeState(null), []);
+
+  const clear = useCallback(() => {
+    setItems([]);
+    setPromoCodeState(null);
+  }, []);
 
   const value = useMemo<CartContextValue>(() => {
     const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
     const totalPrice = items.reduce((sum, i) => sum + i.quantity * i.price, 0);
-    return { items, isHydrated, totalCount, totalPrice, addItem, removeItem, setQuantity, clear };
-  }, [items, isHydrated, addItem, removeItem, setQuantity, clear]);
+    return {
+      items,
+      isHydrated,
+      totalCount,
+      totalPrice,
+      promoCode,
+      addItem,
+      removeItem,
+      setQuantity,
+      setPromoCode,
+      clearPromoCode,
+      clear,
+    };
+  }, [items, isHydrated, promoCode, addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

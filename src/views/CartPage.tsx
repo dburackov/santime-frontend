@@ -2,15 +2,19 @@
 
 import Link from 'next/link';
 import './CartPage.css';
+import '@/admin/admin.css';
 import { useCart } from '@/cart/useCart';
+import { usePromoDiscount } from '@/cart/usePromoDiscount';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PromoCodeField } from '@/components/cart/PromoCodeField';
 import { CloseIcon } from '@/components/ui/icons';
 
 export function CartPage() {
   const { items, totalPrice, setQuantity, removeItem } = useCart();
+  const discount = usePromoDiscount();
 
   if (items.length === 0) {
     return (
@@ -70,9 +74,18 @@ export function CartPage() {
       </div>
 
       <div className="cart-page__summary">
+        <PromoCodeField />
+
         <div className="cart-page__total">
           <span>Итого</span>
-          <Price value={totalPrice} size="lg" />
+          {discount.isApplied ? (
+            <span className="cart-page__total-values">
+              <Price value={totalPrice} size="sm" className="cart-page__old-price" />
+              <Price value={discount.totalPrice} size="lg" />
+            </span>
+          ) : (
+            <Price value={totalPrice} size="lg" />
+          )}
         </div>
         <Link href="/checkout">
           <Button>Оформить заказ</Button>

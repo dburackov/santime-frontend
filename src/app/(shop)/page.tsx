@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getCategories, getProducts } from '@/api/catalog';
+import { getPublicPromoCodes } from '@/api/promo';
 import { createServerQueryClient } from '@/app/query-client';
+import { PUBLIC_PROMO_CODES_QUERY_KEY } from '@/queries/promoQueryKeys';
 import { buildOrganizationJsonLd } from '@/utils/organizationJsonLd';
 import { SITE_NAME } from '@/config/siteInfo';
+import { PromoSlider } from '@/components/layout/PromoSlider';
 import { HomePage } from '@/views/HomePage';
 
 export const revalidate = 3600;
@@ -40,6 +43,10 @@ export default async function Page() {
       queryKey: ['catalog-products', HITS_QUERY],
       queryFn: () => getProducts(HITS_QUERY, { revalidate }),
     }),
+    queryClient.prefetchQuery({
+      queryKey: PUBLIC_PROMO_CODES_QUERY_KEY,
+      queryFn: () => getPublicPromoCodes({ revalidate }),
+    }),
   ]);
 
   return (
@@ -49,6 +56,7 @@ export default async function Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
       />
       <HydrationBoundary state={dehydrate(queryClient)}>
+        <PromoSlider />
         <HomePage />
       </HydrationBoundary>
     </>

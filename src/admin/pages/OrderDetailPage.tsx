@@ -109,9 +109,27 @@ export function OrderDetailPage() {
                 </tbody>
               </table>
             </div>
-            <div className="order-detail__total">
-              <span>Итого</span>
-              <Price value={order.totalPrice} size="lg" />
+            <div className="order-detail__summary">
+              <div className="order-detail__line">
+                <span>Товары</span>
+                <Price value={order.subtotal} size="sm" />
+              </div>
+              {/* Строку показываем при любом снапшоте кода, даже с нулевой скидкой:
+                  «промокод был, но ничего не дал» — тоже ответ на вопрос админа. */}
+              {order.promoCode && (
+                <div className="order-detail__line order-detail__line--discount">
+                  <span>
+                    Промокод <span className="order-detail__promo-code">{order.promoCode}</span>
+                  </span>
+                  <span className="order-detail__discount-value">
+                    −<Price value={order.discountAmount} size="sm" />
+                  </span>
+                </div>
+              )}
+              <div className="order-detail__total">
+                <span>Итого</span>
+                <Price value={order.totalPrice} size="lg" />
+              </div>
             </div>
           </section>
         </div>

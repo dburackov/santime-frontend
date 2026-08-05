@@ -9,6 +9,7 @@ import './CheckoutPage.css';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
 import { useCart } from '@/cart/useCart';
+import { usePromoDiscount } from '@/cart/usePromoDiscount';
 import { createOrder } from '@/api/orders';
 import type { OrderRequest } from '@/api/types';
 import { Price } from '@/components/ui/Price';
@@ -53,7 +54,8 @@ const EMPTY_FORM: FormState = {
 };
 
 export function CheckoutPage() {
-  const { items, isHydrated, totalPrice, clear } = useCart();
+  const { items, isHydrated, totalPrice, promoCode, clear } = useCart();
+  const discount = usePromoDiscount();
   const router = useRouter();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
@@ -83,6 +85,10 @@ export function CheckoutPage() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    // Промокод, который сервер уже отклонил, отправлять незачем: заказ вернёт 409.
+    // Пусть покупатель сначала уберёт его в корзине.
+    if (discount.isRejected) return;
+
     const body: OrderRequest = {
       firstName: form.firstName,
       lastName: form.lastName,
@@ -94,6 +100,7 @@ export function CheckoutPage() {
       paymentMethod: form.paymentMethod,
       deliveryMethod: form.deliveryMethod,
       comment: form.comment || null,
+      promoCode: promoCode || null,
       items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
     };
     mutation.mutate(body);
@@ -225,7 +232,7 @@ export function CheckoutPage() {
             />
           </div>
 
-          <Button type="submit" disabled={mutation.isPending}>
+          <Button type="submit" disabled={mutation.isPending || discount.isRejected}>
             {mutation.isPending ? 'Оформляем...' : 'Подтвердить заказ'}
           </Button>
         </form>
@@ -242,10 +249,41 @@ export function CheckoutPage() {
               </li>
             ))}
           </ul>
+
+          {discount.isApplied && (
+            <>
+              <div className="checkout-page__line">
+                <span>Товары</span>
+                <Price value={totalPrice} size="sm" />
+              </div>
+              <div className="checkout-page__line checkout-page__line--discount">
+                <span>
+                  Промокод <span className="checkout-page__promo-code">{promoCode}</span>
+                </span>
+                <span className="checkout-page__discount-value">
+                  −<Price value={discount.discountAmount} size="sm" />
+                </span>
+              </div>
+            </>
+          )}
+
           <div className="checkout-page__total">
             <span>Итого</span>
-            <Price value={totalPrice} size="lg" />
+            {discount.isApplied ? (
+              <span className="checkout-page__total-values">
+                <Price value={totalPrice} size="sm" className="checkout-page__old-price" />
+                <Price value={discount.totalPrice} size="lg" />
+              </span>
+            ) : (
+              <Price value={totalPrice} size="lg" />
+            )}
           </div>
+
+          {discount.isRejected && (
+            <div className="admin-banner-error checkout-page__promo-error">
+              {discount.message} Уберите или замените промокод в корзине.
+            </div>
+          )}
         </aside>
       </div>
     </div>
