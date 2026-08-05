@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getCategories, getCategoryBrands, getCategoryFilters, getProducts } from '@/api/catalog';
@@ -7,6 +8,7 @@ import { buildBreadcrumbJsonLd } from '@/utils/productJsonLd';
 import { resolveCategoryMeta } from '@/utils/seo';
 import { SITE_NAME } from '@/config/siteInfo';
 import { createServerQueryClient } from '@/app/query-client';
+import { VIEW_MODE_COOKIE, parseViewMode } from '@/hooks/viewMode';
 import { CategoryPage } from '@/views/CategoryPage';
 import type { CategoryResponse } from '@/api/types';
 
@@ -107,6 +109,12 @@ export default async function Page({
 
   const query = buildCatalogQuery(category.id, toURLSearchParams(await searchParams), filters);
 
+  // Режим отображения нужен уже здесь: сетка и список — разные компоненты, и
+  // без него сервер отдал бы сетку, а клиент перерисовал бы её в список после
+  // гидрации. Динамике страницы чтение куки ничего не стоит — она и так
+  // force-dynamic.
+  const viewMode = parseViewMode((await cookies()).get(VIEW_MODE_COOKIE)?.value);
+
   await queryClient.prefetchQuery({
     queryKey: ['catalog-products', query],
     queryFn: () => getProducts(query),
@@ -122,7 +130,7 @@ export default async function Page({
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <CategoryPage />
+        <CategoryPage initialViewMode={viewMode} />
       </HydrationBoundary>
     </>
   );

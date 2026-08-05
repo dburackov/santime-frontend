@@ -1,4 +1,5 @@
 import { SITE_URL } from '@/config/siteInfo';
+import { formatPriceMachine } from '@/utils/price';
 import type { CategoryResponse, VariantDetailResponse } from '@/api/types';
 
 type JsonLd = Record<string, unknown>;
@@ -23,7 +24,9 @@ export function buildProductJsonLd(variant: VariantDetailResponse, description: 
     offers: {
       '@type': 'Offer',
       url,
-      price: String(variant.price),
+      // Не formatPrice: здесь нужен машинный формат с точкой. String(price)
+      // тоже не годится — он отдавал бы «159» там, где на странице «159,00».
+      price: formatPriceMachine(variant.price),
       priceCurrency: 'BYN',
       availability:
         variant.stockQuantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',

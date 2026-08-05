@@ -9,6 +9,7 @@ import { useBrands } from '@/queries/useBrands';
 import { useCatalogProducts } from '@/queries/useCatalogProducts';
 import { useCatalogQueryState } from '@/hooks/useCatalogQueryState';
 import { useViewMode } from '@/hooks/useViewMode';
+import type { ViewMode } from '@/hooks/viewMode';
 import { FilterPanel } from '@/components/filters/FilterPanel';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ProductListRow } from '@/components/product/ProductListRow';
@@ -28,7 +29,12 @@ const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
   { value: 'PRICE_DESC', label: 'Сначала дороже' },
 ];
 
-export function CategoryPage() {
+/**
+ * initialViewMode приходит с сервера (кука), а не подтягивается на клиенте:
+ * сетка и список — это разные компоненты, и без готового значения первый
+ * рендер рисовал бы сетку с последующим скачком. См. useViewMode.
+ */
+export function CategoryPage({ initialViewMode }: { initialViewMode: ViewMode }) {
   const { slug } = useRouteParams<{ slug: string }>();
   const { data: categories } = useCategories();
   const category = useMemo(() => categories?.find((c) => c.slug === slug), [categories, slug]);
@@ -36,7 +42,7 @@ export function CategoryPage() {
   const { data: filters } = useCategoryFilters(category?.id);
   const { data: brands } = useBrands(category?.id);
   const state = useCatalogQueryState(category?.id ?? 0, filters);
-  const { viewMode, setViewMode } = useViewMode();
+  const { viewMode, setViewMode } = useViewMode(initialViewMode);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const {
@@ -57,10 +63,10 @@ export function CategoryPage() {
   if (!category) {
     return (
       <div className="container category-page">
-        <div className="category-page__grid">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
+        <div className={viewMode === 'grid' ? 'category-page__grid' : 'category-page__list'}>
+          {Array.from({ length: viewMode === 'grid' ? 8 : 6 }).map((_, i) =>
+            viewMode === 'grid' ? <SkeletonCard key={i} /> : <SkeletonRow key={i} />,
+          )}
         </div>
       </div>
     );

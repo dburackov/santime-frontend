@@ -33,6 +33,7 @@ import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
 import { formatAttributeValue } from '@/utils/attributes';
+import { formatPrice } from '@/utils/price';
 
 interface FormState {
   slug: string;
@@ -197,7 +198,7 @@ export function ProductVariantsPage() {
                   <td className="mono-num">{variant.id}</td>
                   <td className="mono-num">{variant.slug}</td>
                   <td className="mono-num">{variant.sku}</td>
-                  <td className="mono-num">{variant.price}</td>
+                  <td className="mono-num">{formatPrice(variant.price)}</td>
                   <td className="mono-num">{variant.stockQuantity}</td>
                   <td>
                     {(bindings ?? [])

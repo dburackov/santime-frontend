@@ -1,4 +1,5 @@
 import { SITE_NAME } from '@/config/siteInfo';
+import { formatPrice } from '@/utils/price';
 import type { CategoryResponse, VariantDetailResponse } from '@/api/types';
 
 export interface ResolvedMeta {
@@ -8,9 +9,6 @@ export interface ResolvedMeta {
 
 /** Рекомендуемая длина description в выдаче. Мягкая: длиннее обрезается по границе слова. */
 export const META_DESCRIPTION_LIMIT = 160;
-
-/** Тот же формат, что показывает компонент Price, чтобы в сниппете не всплывало «159.0». */
-const priceFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
 
 /**
  * Значения атрибутов, которыми текущий вариант отличается от соседних —
@@ -51,7 +49,9 @@ export function resolveProductMeta(variant: VariantDetailResponse): ResolvedMeta
   const title =
     values.length > 0 ? `${variant.productName}, ${values.join(', ')}` : variant.productName;
 
-  const description = `${title}. Цена ${priceFormatter.format(variant.price)} BYN. Доставка по Беларуси, гарантия.`;
+  // Формат тот же, что показывает компонент Price, чтобы цена в сниппете
+  // совпадала с ценой на странице.
+  const description = `${title}. Цена ${formatPrice(variant.price)} BYN. Доставка по Беларуси, гарантия.`;
 
   return { title, description: truncate(description, META_DESCRIPTION_LIMIT) };
 }

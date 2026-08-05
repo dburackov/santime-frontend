@@ -1,7 +1,6 @@
 import './Price.css';
 import { CurrencySymbol } from './CurrencySymbol';
-
-const formatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
+import { formatPrice } from '@/utils/price';
 
 interface PriceProps {
   value: number;
@@ -12,7 +11,7 @@ interface PriceProps {
 export function Price({ value, size = 'md', className }: PriceProps) {
   return (
     <span className={`price price--${size} ${className ?? ''}`}>
-      {formatter.format(value)} <CurrencySymbol />
+      {formatPrice(value)} <CurrencySymbol />
     </span>
   );
 }
