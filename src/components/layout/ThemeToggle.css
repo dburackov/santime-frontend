@@ -1,8 +1,8 @@
 .theme-toggle {
   display: flex;
   gap: 2px;
-  background: var(--color-bg);
-  border: var(--border);
+  background: var(--color-tint-2);
+  border: 1px solid var(--color-line-2);
   border-radius: 999px;
   padding: 2px;
   flex-shrink: 0;
@@ -24,6 +24,34 @@
    это отсутствие атрибута, отсюда :not(). */
 :root:not([data-theme='dark']) .theme-toggle__btn--light,
 :root[data-theme='dark'] .theme-toggle__btn--dark {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Вариант для тёмной служебной полосы: там фон плашки тёмный в обеих темах,
+   поэтому и рамка, и неактивная иконка берутся из шкалы --color-on-dark-*. */
+.theme-toggle--on-dark {
+  background: transparent;
+  border-color: var(--color-on-dark-line);
+}
+
+.theme-toggle--on-dark .theme-toggle__btn {
+  color: var(--color-on-dark-subtle);
+}
+
+.theme-toggle--on-dark .theme-toggle__btn:hover {
+  color: var(--color-on-dark);
+}
+
+/* Подсветка активной кнопки на тёмной плашке разная по темам, и это не прихоть:
+   в светлой теме --color-accent (#1D3F5E) почти совпадает с фоном --color-bar
+   (#16324B) и кнопка перестаёт читаться как нажатая, поэтому там белая заливка. */
+:root:not([data-theme='dark']) .theme-toggle--on-dark .theme-toggle__btn--light {
+  background: var(--color-on-dark);
+  color: var(--color-bar);
+}
+
+:root[data-theme='dark'] .theme-toggle--on-dark .theme-toggle__btn--dark {
   background: var(--color-accent);
   color: #fff;
 }

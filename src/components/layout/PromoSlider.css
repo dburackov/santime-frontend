@@ -2,8 +2,13 @@
    (56px на мобильном, 64px на десктопе), чтобы шапка страницы читалась
    как один блок. */
 .promo-slider {
-  border-bottom: var(--border);
-  background: color-mix(in srgb, var(--color-gold) 12%, var(--color-surface));
+  border-bottom: 1px solid var(--color-line-gold);
+  background: linear-gradient(
+    90deg,
+    var(--color-promo-1) 0%,
+    var(--color-promo-2) 40%,
+    var(--color-tint-gold) 100%
+  );
 }
 
 .promo-slider__inner {
@@ -48,13 +53,18 @@
   }
 }
 
-/* Единственное золотое пятно: в DESIGN.md этот токен закреплён за метками
-   скидок с пометкой «точечно и редко», поэтому заливки во весь блок нет. */
+/* Пунктирная рамка читается как «купон» — код видно как то, что нужно скопировать,
+   а не как выделенное слово в предложении. */
 .promo-slider__code {
-  font-family: var(--font-mono);
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px dashed var(--color-promo-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-family: var(--font-body);
   font-weight: 500;
-  color: var(--color-gold);
-  letter-spacing: 0.02em;
+  color: var(--color-promo-ink);
+  letter-spacing: 0.06em;
 }
 
 .promo-slider__arrow {
@@ -62,14 +72,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-slate);
+  color: var(--color-promo-ink);
   border-radius: var(--radius-sm);
   transition: color var(--motion-fast), background var(--motion-fast);
 }
 
 .promo-slider__arrow:hover {
-  color: var(--color-ink);
-  background: color-mix(in srgb, var(--color-gold) 18%, transparent);
+  color: var(--color-promo-ink-strong);
+  background: var(--color-promo-hover);
 }
 
 .promo-slider__arrow:focus-visible {

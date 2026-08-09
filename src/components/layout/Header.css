@@ -14,8 +14,10 @@
 /* ---- Основной хедер ---- */
 
 .header__main-bar {
-  border-bottom: var(--border);
-  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-header-bg);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
 }
 
 .header__main-bar-inner {
@@ -27,8 +29,26 @@
   height: 56px;
 }
 
-.header__burger {
+.header__burger,
+.header__search-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
   color: var(--color-ink);
+  flex-shrink: 0;
+}
+
+/* Как у корзины: рамка 40px из макета, зона нажатия — 44px (DESIGN.md, п. 7).
+   .touch-target здесь не годится, его min-width/min-height растягивают кнопку. */
+.header__burger::after,
+.header__search-toggle::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
 }
 
 .header__logo {
@@ -36,9 +56,13 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-lg);
+  letter-spacing: -0.02em;
   color: var(--color-accent);
 }
 
@@ -56,10 +80,6 @@
   gap: var(--space-3);
 }
 
-.header__search-toggle {
-  color: var(--color-ink);
-}
-
 .header__cart {
   position: relative;
   display: flex;
@@ -67,10 +87,27 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: var(--border);
+  border: 1px solid var(--color-line-2);
   border-radius: var(--radius-sm);
-  color: var(--color-ink);
+  background: var(--color-surface);
+  color: var(--color-accent);
   flex-shrink: 0;
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+/* Рамка ровно 40px, как в макете, а зона нажатия расширяется до 44px невидимым
+   псевдоэлементом (DESIGN.md, п. 7). Класс .touch-target здесь не подходит: его
+   min-width/min-height перебивают width/height и растягивают саму рамку. */
+.header__cart::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+}
+
+.header__cart:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-accent);
 }
 
 .header__cart-count {
@@ -124,7 +161,7 @@
   padding: var(--space-6) var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-3);
   animation: header-drawer-in var(--motion-base);
 }
 
@@ -144,19 +181,27 @@
   color: var(--color-slate);
 }
 
+/* Пункты разделены собственными линиями, а не отступом — список читается как
+   перечень разделов, и линия последнего пункта же отбивает блок контактов. */
 .header__drawer-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
 }
 
 .header__drawer-nav a {
+  padding: var(--space-3) 0;
+  border-bottom: var(--border);
   font-size: var(--text-base);
   font-weight: 500;
   color: var(--color-slate);
 }
 
+.header__drawer-nav a:hover {
+  color: var(--color-ink);
+}
+
 .header__drawer-nav a.header__drawer-nav-link--active {
+  font-weight: 600;
   color: var(--color-ink);
 }
 
@@ -165,20 +210,31 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: var(--border);
+  padding-top: var(--space-3);
 }
 
-.header__drawer-section a {
-  font-size: var(--text-sm);
+.header__drawer-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.header__drawer-contacts a {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+.header__drawer-hours {
+  font-size: 0.8125rem;
   color: var(--color-slate);
 }
 
 @media (min-width: 1024px) {
   .header__util-bar {
     display: block;
-    background: var(--color-bg);
-    border-bottom: var(--border);
+    background: var(--color-bar);
+    color: var(--color-on-dark);
   }
 
   .header__util-bar-inner {
@@ -189,28 +245,40 @@
     font-size: var(--text-xs);
   }
 
-  .header__phones {
+  .header__phones,
+  .header__util-right {
     display: flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--space-4);
   }
 
   .header__phone-item {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--space-4);
   }
 
   .header__phone-item a {
-    color: var(--color-slate);
+    color: var(--color-on-dark-muted);
   }
 
   .header__phone-item a:hover {
-    color: var(--color-accent);
+    color: var(--color-gold-soft);
   }
 
-  .header__phone-dot {
-    color: var(--color-line);
+  .header__util-divider {
+    width: 1px;
+    height: 12px;
+    background: var(--color-on-dark-line);
+  }
+
+  .header__hours {
+    color: var(--color-on-dark-muted);
+  }
+
+  .header__hours strong {
+    font-weight: 600;
+    color: var(--color-on-dark);
   }
 
   .header__main-bar-inner {
@@ -241,15 +309,18 @@
     color: var(--color-slate);
     padding: var(--space-2) 0;
     border-bottom: 2px solid transparent;
+    transition: color var(--motion-fast), border-color var(--motion-fast);
   }
 
   .header__nav-link:hover {
     color: var(--color-ink);
+    border-bottom-color: var(--color-line-hover);
   }
 
   .header__nav-link--active {
     color: var(--color-ink);
-    border-bottom-color: var(--color-accent);
+    font-weight: 600;
+    border-bottom-color: var(--color-gold);
   }
 
   .header__search-slot {

@@ -1,0 +1,64 @@
+.home-category-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 96px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  /* Заливка держится нейтральной до 55% ширины и уходит в холодный тон только в
+     дальнем углу — плитка читается как поверхность со светом, а не как цветной блок. */
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    var(--color-surface) 55%,
+    var(--color-tint) 100%
+  );
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.home-category-tile:hover {
+  border-color: var(--color-accent-2);
+  box-shadow: var(--shadow-md);
+}
+
+.home-category-tile__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.home-category-tile__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  text-wrap: pretty;
+}
+
+.home-category-tile__count {
+  align-self: flex-start;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  background: var(--color-tint);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-accent-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-category-tile__chevron {
+  flex-shrink: 0;
+  color: var(--color-chevron);
+}
+
+/* Двойной класс намеренно: скелетон несёт ещё и .skeleton-block с собственным
+   фоном, и при одинаковой специфичности победитель зависел бы от порядка
+   склейки CSS. Здесь заливка плитки гасится однозначно. */
+.home-category-tile.home-category-tile--skeleton {
+  border: none;
+  background: var(--color-line);
+}

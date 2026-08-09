@@ -20,6 +20,55 @@
   --color-photo-surface: #F2F0EC;
   --color-photo-ink: #626A76;
 
+  /* Холодные тинты — фоны секций, чипов и полей ввода. Отдельная от --color-line
+     шкала: она уходит в синеву, а --color-line/--color-bg тёплые. */
+  --color-tint: #EEF3F8;
+  --color-tint-2: #F4F7FA;
+  --color-tint-3: #F4F8FB;
+  --color-tint-gold: #F6F1E7;
+
+  /* Линии на холодных фонах. --color-line остаётся линией по умолчанию. */
+  --color-line-2: #E2E8EE;
+  --color-line-3: #DBE6F0;
+  --color-line-hover: #CFE0EE;
+  --color-line-gold: #EADFC9;
+
+  /* Светлый акцент — ссылки, счётчики, рамка при наведении. --color-accent
+     остаётся за основным действием экрана (DESIGN.md, п. 1). */
+  --color-accent-2: #2F6D9E;
+  /* Тёмная плашка служебной полосы и футера. В светлой теме совпадает по
+     значению с --color-accent-hover, но в тёмной расходится — это разные роли. */
+  --color-bar: #16324B;
+  --color-chevron: #9FB3C6;
+
+  --color-gold-hover: #C19B60;
+  --color-gold-soft: #E3C491;
+  --color-gold-border: rgba(217, 180, 124, 0.45);
+  --color-gold-fill: rgba(176, 141, 87, 0.14);
+
+  --color-promo-1: #FAF5EC;
+  --color-promo-2: #FDFBF6;
+  --color-promo-ink: #8D7139;
+  --color-promo-ink-strong: #5D4A24;
+  --color-promo-border: #C9A267;
+  --color-promo-hover: #F0E6D3;
+
+  --color-hero-1: #132B41;
+  --color-hero-2: #1D3F5E;
+  --color-hero-3: #255578;
+  --color-hero-glow: rgba(87, 150, 201, 0.55);
+
+  --color-header-bg: rgba(255, 255, 255, 0.92);
+
+  /* Текст и линии на тёмных плашках (--color-bar, hero). Не переопределяются в
+     тёмной теме: плашка тёмная в обеих, и белый с той же прозрачностью на ней
+     читается одинаково. Собраны в токены, чтобы rgba(255,255,255,.xx) не
+     расползались по файлам компонентов. */
+  --color-on-dark: #FFFFFF;
+  --color-on-dark-muted: rgba(255, 255, 255, 0.78);
+  --color-on-dark-subtle: rgba(255, 255, 255, 0.6);
+  --color-on-dark-line: rgba(255, 255, 255, 0.18);
+
   --shadow-sm: 0 1px 2px rgba(21, 24, 29, 0.04);
   --shadow-md: 0 4px 16px rgba(21, 24, 29, 0.06);
   --shadow-lg: 0 12px 32px rgba(21, 24, 29, 0.10);
@@ -71,6 +120,39 @@
   --color-danger: #E5695F;
   --color-success: #5FA684;
   --color-photo-bg: #24282B;
+
+  --color-tint: #20272D;
+  --color-tint-2: #1C2226;
+  --color-tint-3: #191E22;
+  --color-tint-gold: #2A2418;
+
+  --color-line-2: #2F353A;
+  --color-line-3: #39434C;
+  --color-line-hover: #48657E;
+  --color-line-gold: #3D3423;
+
+  --color-accent-2: #7BA6C9;
+  --color-bar: #101416;
+  --color-chevron: #6B7C8C;
+
+  --color-gold-hover: #D8B781;
+  --color-gold-soft: #DCBD86;
+  --color-gold-border: rgba(201, 166, 110, 0.4);
+  --color-gold-fill: rgba(201, 166, 110, 0.16);
+
+  --color-promo-1: #251F14;
+  --color-promo-2: #1E2124;
+  --color-promo-ink: #D3AF74;
+  --color-promo-ink-strong: #EFD8AB;
+  --color-promo-border: #8A7038;
+  --color-promo-hover: #332B1D;
+
+  --color-hero-1: #0D1417;
+  --color-hero-2: #16242E;
+  --color-hero-3: #22394B;
+  --color-hero-glow: rgba(92, 135, 170, 0.42);
+
+  --color-header-bg: rgba(29, 33, 36, 0.92);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);

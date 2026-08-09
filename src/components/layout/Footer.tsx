@@ -7,7 +7,10 @@ export function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <div className="footer__brand">
-          <span className="footer__logo">santime</span>
+          <span className="footer__logo">
+            santime
+            <span className="logo-dot" aria-hidden="true" />
+          </span>
           <p className="footer__text">© {new Date().getFullYear()} Santime. Интернет-магазин.</p>
         </div>
 

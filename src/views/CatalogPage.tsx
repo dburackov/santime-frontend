@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import '@/views/HomePage.css';
 import '@/components/ui/Skeleton.css';
 import { useCategories } from '@/queries/useCategories';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { CategoryTile, CategoryTileSkeleton } from '@/components/catalog/CategoryTile';
 
 export function CatalogPage() {
   const { data: categories, isLoading, isError, refetch } = useCategories();
@@ -18,7 +18,7 @@ export function CatalogPage() {
       {isLoading && (
         <div className="home-categories__grid">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="skeleton-block home-category-tile home-category-tile--skeleton" />
+            <CategoryTileSkeleton key={i} />
           ))}
         </div>
       )}
@@ -26,9 +26,7 @@ export function CatalogPage() {
       {categories && (
         <div className="home-categories__grid">
           {categories.map((category) => (
-            <Link key={category.id} href={`/category/${category.slug}`} className="home-category-tile">
-              <span className="home-category-tile__name">{category.name}</span>
-            </Link>
+            <CategoryTile key={category.id} category={category} />
           ))}
         </div>
       )}

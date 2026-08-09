@@ -8,7 +8,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { SearchBox } from './SearchBox';
 import { CartIcon, CloseIcon, MenuIcon, SearchIcon } from '@/components/ui/icons';
 import { useCart } from '@/cart/useCart';
-import { NAV_LINKS, SITE_PHONES } from '@/config/siteInfo';
+import { NAV_LINKS, SITE_HOURS, SITE_PHONES } from '@/config/siteInfo';
 
 export function Header() {
   const { totalCount } = useCart();
@@ -36,12 +36,19 @@ export function Header() {
           <div className="header__phones">
             {SITE_PHONES.map((phone, i) => (
               <span key={phone.href} className="header__phone-item">
-                {i > 0 && <span className="header__phone-dot" aria-hidden="true">·</span>}
+                {i > 0 && <span className="header__util-divider" aria-hidden="true" />}
                 <a href={phone.href}>{phone.display}</a>
               </span>
             ))}
           </div>
-          <ThemeToggle />
+
+          <div className="header__util-right">
+            <span className="header__hours">
+              {SITE_HOURS.label} <strong>{SITE_HOURS.value}</strong>
+            </span>
+            <span className="header__util-divider" aria-hidden="true" />
+            <ThemeToggle onDark />
+          </div>
         </div>
       </div>
 
@@ -59,7 +66,7 @@ export function Header() {
             <>
               <button
                 type="button"
-                className="header__burger touch-target"
+                className="header__burger"
                 onClick={() => setMobileMenuOpen(true)}
                 aria-label="Открыть меню"
                 aria-expanded={mobileMenuOpen}
@@ -69,6 +76,7 @@ export function Header() {
 
               <Link href="/" className="header__logo">
                 santime
+                <span className="logo-dot" aria-hidden="true" />
               </Link>
 
               <nav className="header__nav" aria-label="Основная навигация">
@@ -90,14 +98,14 @@ export function Header() {
               <div className="header__actions">
                 <button
                   type="button"
-                  className="header__search-toggle touch-target"
+                  className="header__search-toggle"
                   onClick={() => setMobileSearchOpen(true)}
                   aria-label="Открыть поиск"
                 >
                   <SearchIcon width={20} height={20} />
                 </button>
 
-                <Link href="/cart" className="header__cart touch-target" aria-label="Корзина">
+                <Link href="/cart" className="header__cart" aria-label="Корзина">
                   <CartIcon width={18} height={18} />
                   {totalCount > 0 && <span className="header__cart-count">{totalCount}</span>}
                 </Link>
@@ -133,11 +141,16 @@ export function Header() {
             </nav>
 
             <div className="header__drawer-section">
-              {SITE_PHONES.map((phone) => (
-                <a key={phone.href} href={phone.href}>
-                  {phone.display}
-                </a>
-              ))}
+              <div className="header__drawer-contacts">
+                {SITE_PHONES.map((phone) => (
+                  <a key={phone.href} href={phone.href}>
+                    {phone.display}
+                  </a>
+                ))}
+                <span className="header__drawer-hours">
+                  {SITE_HOURS.label} {SITE_HOURS.value}
+                </span>
+              </div>
               <ThemeToggle />
             </div>
           </div>

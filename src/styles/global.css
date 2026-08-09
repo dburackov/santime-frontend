@@ -67,7 +67,19 @@ a {
   }
 }
 
-.price,
+/* Золотая точка логотипа — общая для хедера и футера: одна из четырёх
+   структурных точек золота на странице (ещё три — активный пункт меню, линия
+   под hero и линия над футером). */
+.logo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+
+/* Моноширинный остался за техническими данными — SKU, артикулы, габариты.
+   Цена набирается основным шрифтом, её стили целиком в Price.css. */
 .mono-num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;

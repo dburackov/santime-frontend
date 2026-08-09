@@ -162,6 +162,9 @@ export interface CategoryResponse {
   name: string;
   slug: string;
   parentCategoryId: number | null;
+  /** Число товаров в категории. Опционально: /api/catalog/categories пока его не
+      отдаёт — плитка категории рисует счётчик только когда поле пришло. */
+  productCount?: number;
   createdAt: string;
   updatedAt: string;
 }

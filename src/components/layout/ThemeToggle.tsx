@@ -4,11 +4,20 @@ import './ThemeToggle.css';
 import { useTheme } from '@/theme/useTheme';
 import { MoonIcon, SunIcon } from '@/components/ui/icons';
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  /** Тумблер стоит на тёмной плашке (служебная полоса) — переключает контрастную схему. */
+  onDark?: boolean;
+}
+
+export function ThemeToggle({ onDark = false }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="theme-toggle" role="group" aria-label="Тема оформления">
+    <div
+      className={`theme-toggle ${onDark ? 'theme-toggle--on-dark' : ''}`}
+      role="group"
+      aria-label="Тема оформления"
+    >
       {/* Подсветка активной кнопки намеренно НЕ зависит от состояния React:
           на сервере тема неизвестна, состояние стартует со светлой, и тумблер
           прыгал бы со светлой на тёмную после гидрации. Классы --light/--dark

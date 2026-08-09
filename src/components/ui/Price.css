@@ -1,10 +1,17 @@
 .price {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--color-ink);
+  color: var(--color-accent);
   white-space: nowrap;
+}
+
+/* Знак валюты — приглушённый спутник числа, а не его часть. Размер в em, чтобы
+   пропорция держалась во всех модификаторах (--sm/--md/--lg). */
+.price .currency-symbol {
+  font-size: 0.7em;
+  color: var(--color-slate);
 }
 
 .price--sm {

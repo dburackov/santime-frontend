@@ -31,6 +31,20 @@
   background: var(--color-accent-hover);
 }
 
+/* Золотая кнопка нужна только на тёмном hero: --color-accent там уходит в фон и
+   перестаёт читаться как основное действие. */
+.btn--gold {
+  background: var(--color-gold);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.btn--gold:hover:not(:disabled) {
+  background: var(--color-gold-hover);
+  color: #fff;
+}
+
 .btn--secondary {
   background: transparent;
   color: var(--color-ink);
