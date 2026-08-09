@@ -11,7 +11,7 @@ export function Footer() {
             santime
             <span className="logo-dot" aria-hidden="true" />
           </span>
-          <p className="footer__text">© {new Date().getFullYear()} Santime. Интернет-магазин.</p>
+          <p className="footer__text">2026 Santime. Интернет-магазин.</p>
         </div>
 
         <div className="footer__phones">
