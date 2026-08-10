@@ -7,6 +7,7 @@ import { useCategories } from '@/queries/useCategories';
 import { useCatalogProducts } from '@/queries/useCatalogProducts';
 import { useBestsellers } from '@/queries/useBestsellers';
 import { DISCOUNTS_QUERY } from '@/queries/discountsQuery';
+import { STOREFRONT_BLOCK_SIZE } from '@/hooks/catalogQuery';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ProductCard } from '@/components/product/ProductCard';
 import { CategoryTile, CategoryTileSkeleton } from '@/components/catalog/CategoryTile';
@@ -23,10 +24,22 @@ const TRUST_ITEMS = [
 
 export function HomePage() {
   const { data: categories, isLoading, isError, refetch } = useCategories();
-  const { data: discountsPage, isLoading: discountsLoading } = useCatalogProducts(DISCOUNTS_QUERY);
-  const { data: hits, isLoading: hitsLoading } = useBestsellers();
+  const {
+    data: discountsPage,
+    isLoading: discountsLoading,
+    isError: discountsError,
+    refetch: refetchDiscounts,
+  } = useCatalogProducts(DISCOUNTS_QUERY);
+  const {
+    data: hits,
+    isLoading: hitsLoading,
+    isError: hitsError,
+    refetch: refetchHits,
+  } = useBestsellers();
 
   const discounts = discountsPage?.content ?? [];
+  // На главной плитки — витрина, а не полный список: он живёт в /catalog.
+  const shownCategories = categories?.slice(0, STOREFRONT_BLOCK_SIZE);
 
   return (
     <div>
@@ -75,23 +88,25 @@ export function HomePage() {
         {isError && <ErrorState description="Не удалось загрузить категории." onRetry={refetch} />}
 
         {isLoading && (
-          <div className="home-categories__grid">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="category-grid">
+            {/* Сколько категорий придёт, заранее не знает никто — берём размер
+                витринного блока как правдоподобную заглушку. */}
+            {Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => (
               <CategoryTileSkeleton key={i} />
             ))}
           </div>
         )}
 
-        {categories && (
-          <div className="home-categories__grid">
-            {categories.map((category) => (
+        {shownCategories && (
+          <div className="category-grid">
+            {shownCategories.map((category) => (
               <CategoryTile key={category.id} category={category} />
             ))}
           </div>
         )}
       </section>
 
-      {(discountsLoading || discounts.length > 0) && (
+      {(discountsLoading || discounts.length > 0 || discountsError) && (
         <section className="home-section home-section--tinted">
           <div className="container home-section__inner">
             <div className="home-section-head">
@@ -105,16 +120,20 @@ export function HomePage() {
               </Link>
             </div>
 
-            <div className="home-section__grid">
-              {discountsLoading && discounts.length === 0
-                ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-                : discounts.map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
-            </div>
+            {discountsError ? (
+              <ErrorState description="Не удалось загрузить скидки." onRetry={refetchDiscounts} />
+            ) : (
+              <div className="home-section__grid">
+                {discountsLoading && discounts.length === 0
+                  ? Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => <SkeletonCard key={i} />)
+                  : discounts.map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
+              </div>
+            )}
           </div>
         </section>
       )}
 
-      {(hitsLoading || (hits && hits.length > 0)) && (
+      {(hitsLoading || (hits && hits.length > 0) || hitsError) && (
         <section className="home-section">
           <div className="container home-section__inner">
             <div className="home-section-head">
@@ -128,11 +147,15 @@ export function HomePage() {
               </Link>
             </div>
 
-            <div className="home-section__grid">
-              {hitsLoading && !hits
-                ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-                : (hits ?? []).map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
-            </div>
+            {hitsError ? (
+              <ErrorState description="Не удалось загрузить хиты продаж." onRetry={refetchHits} />
+            ) : (
+              <div className="home-section__grid">
+                {hitsLoading && !hits
+                  ? Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => <SkeletonCard key={i} />)
+                  : (hits ?? []).map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
+              </div>
+            )}
           </div>
         </section>
       )}

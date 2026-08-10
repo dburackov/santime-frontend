@@ -2,6 +2,9 @@ import type { CatalogFilterAttributeResponse, CatalogProductsQuery, CatalogSort 
 
 export const PAGE_SIZE = 20;
 
+/** Размер витринного блока подборки. То же значение, что STOREFRONT_BLOCK_SIZE в CatalogController. */
+export const STOREFRONT_BLOCK_SIZE = 8;
+
 /** Минимум, который нужен для чтения — ReadonlyURLSearchParams из Next сюда тоже подходит. */
 export type ReadableParams = Pick<URLSearchParams, 'get'>;
 

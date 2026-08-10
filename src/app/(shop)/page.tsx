@@ -7,7 +7,7 @@ import { PUBLIC_PROMO_CODES_QUERY_KEY } from '@/queries/promoQueryKeys';
 import { BESTSELLERS_QUERY_KEY } from '@/queries/bestsellersQueryKeys';
 import { KITS_QUERY_KEY } from '@/queries/kitsQueryKeys';
 import { DISCOUNTS_QUERY } from '@/queries/discountsQuery';
-import { buildOrganizationJsonLd } from '@/utils/organizationJsonLd';
+import { buildHomeJsonLd } from '@/utils/websiteJsonLd';
 import { SITE_NAME } from '@/config/siteInfo';
 import { PromoSlider } from '@/components/layout/PromoSlider';
 import { HomePage } from '@/views/HomePage';
@@ -60,7 +60,7 @@ export default async function Page() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildHomeJsonLd()) }}
       />
       <HydrationBoundary state={dehydrate(queryClient)}>
         <PromoSlider />

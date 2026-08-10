@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import './PromoSlider.css';
 import { usePublicPromoCodes } from '@/queries/usePublicPromoCodes';
+import { useCarousel } from '@/hooks/useCarousel';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons';
 
 const AUTOPLAY_MS = 5000;
@@ -20,38 +21,14 @@ interface GestureState {
 
 export function PromoSlider() {
   const { data: promoCodes } = usePublicPromoCodes();
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
   const gesture = useRef<GestureState | null>(null);
 
   const count = promoCodes?.length ?? 0;
-
-  const goTo = useCallback(
-    (next: number) => {
-      if (count === 0) return;
-      setIndex(((next % count) + count) % count);
-    },
-    [count],
-  );
-
-  // Промокод могли снять с витрины, и сохранённый индекс окажется за границей.
-  // Нормализуем при рендере, а не эффектом: лишний каскадный рендер не нужен.
-  const safeIndex = count > 0 ? index % count : 0;
-
-  useEffect(() => {
-    if (count < 2 || paused) return;
-
-    // Правило prefers-reduced-motion в reset.css обнуляет длительности CSS-анимаций,
-    // но таймер оно не остановит — проверяем настройку явно.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const timer = window.setInterval(() => setIndex((prev) => (prev + 1) % count), AUTOPLAY_MS);
-    return () => window.clearInterval(timer);
-  }, [count, paused]);
+  const { index, goTo, next, prev, pause, resume } = useCarousel(count, { autoplayMs: AUTOPLAY_MS });
 
   if (count === 0) return null;
 
-  const current = promoCodes![safeIndex];
+  const current = promoCodes![index];
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     if (count < 2 || event.pointerType === 'mouse') return;
@@ -73,7 +50,7 @@ export function PromoSlider() {
 
     if (Math.abs(dx) > AXIS_LOCK_PX) {
       state.axisLocked = true;
-      goTo(safeIndex + (dx < 0 ? 1 : -1));
+      goTo(index + (dx < 0 ? 1 : -1));
       gesture.current = null;
     }
   }
@@ -86,17 +63,17 @@ export function PromoSlider() {
     <section
       className="promo-slider"
       aria-label="Действующие промокоды"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onFocus={pause}
+      onBlur={resume}
     >
       <div className="container promo-slider__inner">
         {count > 1 && (
           <button
             type="button"
             className="promo-slider__arrow touch-target"
-            onClick={() => goTo(safeIndex - 1)}
+            onClick={prev}
             aria-label="Предыдущий промокод"
           >
             <ChevronLeftIcon width={16} height={16} />
@@ -122,7 +99,7 @@ export function PromoSlider() {
           <button
             type="button"
             className="promo-slider__arrow touch-target"
-            onClick={() => goTo(safeIndex + 1)}
+            onClick={next}
             aria-label="Следующий промокод"
           >
             <ChevronRightIcon width={16} height={16} />

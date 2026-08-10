@@ -62,3 +62,17 @@
   border: none;
   background: var(--color-line);
 }
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  /* auto-fill покрывает все ширины выше мобильной — ступеней на 3 и 4 колонки нет. */
+  .category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+}

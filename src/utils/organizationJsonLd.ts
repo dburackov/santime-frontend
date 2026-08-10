@@ -4,10 +4,12 @@ import { SITE_NAME, SITE_PHONES, SITE_URL } from '@/config/siteInfo';
  * schema.org/Organization для главной. Логотип — favicon.svg: растрового
  * логотипа в проекте нет, а Google для расширенных сниппетов предпочитает
  * растр, так что при появлении PNG сюда стоит подставить его.
+ *
+ * Без @context: сущность отдаётся внутри @graph, где контекст задан на верхнем
+ * уровне (см. homeJsonLd).
  */
 export function buildOrganizationJsonLd(): Record<string, unknown> {
   return {
-    '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
     name: SITE_NAME,

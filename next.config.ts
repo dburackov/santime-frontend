@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   // Яндекс — главная цель переезда, поэтому его нужно гарантированно
   // обслуживать как HTML-ограниченного бота: цельный документ с метаданными
   // в <head>, а не стриминг, независимо от дефолтного списка Next.
-  htmlLimitedBots: /YandexBot|YandexMobileBot|Yandex/,
+  htmlLimitedBots: /Yandex/,
 };
 
 export default nextConfig;

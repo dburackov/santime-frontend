@@ -80,7 +80,6 @@
 .hero__title {
   font-size: clamp(2.125rem, 3.8vw, 3.125rem);
   line-height: 1.06;
-  letter-spacing: -0.025em;
   color: var(--color-on-dark);
   text-wrap: pretty;
 }
@@ -125,7 +124,6 @@
   align-items: center;
   gap: var(--space-3);
   font-size: 1.375rem;
-  letter-spacing: -0.015em;
 }
 
 /* Полоска перед заголовком: золотая по умолчанию, синяя у второй секции —
@@ -162,11 +160,6 @@
   padding-bottom: var(--space-8);
 }
 
-.home-categories__title {
-  margin-bottom: var(--space-6);
-}
-
-.home-categories__grid,
 .home-section__grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -266,11 +259,6 @@
 
   /* auto-fill/auto-fit покрывают все ширины выше мобильной — ступеней на 3 и 4
      колонки больше нет. */
-  .home-categories__grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: var(--space-4);
-  }
-
   .home-section__grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: var(--space-4);

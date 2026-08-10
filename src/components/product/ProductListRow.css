@@ -23,7 +23,7 @@
 /* Элемент — h3 (ради навигации по заголовкам), поэтому на него падает правило
    h1–h3 из global.css: font-family, font-weight, color, letter-spacing и
    font-size. Перекрываем все пять, иначе название товара уезжает в заголовочный
-   Space Grotesk с уплотнённым трекингом. */
+   Onest с уплотнённым трекингом. */
 .product-row__title {
   font-family: var(--font-body);
   font-size: var(--text-base);

@@ -91,7 +91,7 @@
   --border: 1px solid var(--color-line);
 
   /* ---- Типографика ---- */
-  --font-display: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Onest', -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 

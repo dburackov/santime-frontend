@@ -1,0 +1,8 @@
+.catalog-page {
+  padding-top: clamp(32px, 4vw, 56px);
+  padding-bottom: var(--space-8);
+}
+
+.catalog-page__title {
+  margin-bottom: var(--space-6);
+}

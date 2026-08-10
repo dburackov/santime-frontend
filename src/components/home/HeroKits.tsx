@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import './HeroKits.css';
 import '@/components/ui/Skeleton.css';
 import { useKits } from '@/queries/useKits';
+import { useCarousel } from '@/hooks/useCarousel';
 import { useCart } from '@/cart/useCart';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
@@ -15,47 +15,26 @@ const AUTOPLAY_MS = 5000;
 const KITS_PATH = '/category/komplekty';
 
 export function HeroKits() {
-  const { data: kits } = useKits();
+  const { data: kits, isPending } = useKits();
   const { addItem } = useCart();
-  const [index, setIndex] = useState(0);
 
   const count = kits?.length ?? 0;
-  // Список мог измениться под сохранённым индексом — нормализуем при рендере,
-  // а не эффектом: лишний каскадный рендер не нужен (тот же приём в PromoSlider).
-  const safeIndex = count > 0 ? index % count : 0;
+  const { index, next, prev, pause, resume } = useCarousel(count, { autoplayMs: AUTOPLAY_MS });
 
-  const goTo = useCallback(
-    (next: number) => {
-      if (count === 0) return;
-      setIndex(((next % count) + count) % count);
-    },
-    [count],
-  );
-
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (count < 2 || paused) return;
-
-    // prefers-reduced-motion в reset.css обнуляет только CSS-анимации, таймер надо гасить самим.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const timer = window.setInterval(() => setIndex((prev) => (prev + 1) % count), AUTOPLAY_MS);
-    return () => window.clearInterval(timer);
-  }, [count, paused]);
-
-  if (!kits) return <HeroKitsSkeleton />;
+  // Скелетон только пока запрос идёт: на ошибке kits так и остаётся undefined,
+  // и по `!kits` он висел бы вечно. Ошибка и пустой ответ — молча без блока.
+  if (isPending) return <HeroKitsSkeleton />;
   if (count === 0) return null;
 
-  const kit = kits[safeIndex];
+  const kit = kits![index];
 
   return (
     <div
       className="hero-kits"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onFocus={pause}
+      onBlur={resume}
     >
       <div className="hero-kits__head">
         <span className="hero-kits__title">Готовые решения</span>
@@ -106,14 +85,14 @@ export function HeroKits() {
 
       <div className="hero-kits__nav">
         <span className="hero-kits__counter">
-          {safeIndex + 1} / {count}
+          {index + 1} / {count}
         </span>
         {count > 1 && (
           <div className="hero-kits__arrows">
             <button
               type="button"
               className="hero-kits__arrow"
-              onClick={() => goTo(safeIndex - 1)}
+              onClick={prev}
               aria-label="Предыдущий комплект"
             >
               <ChevronLeftIcon width={16} height={16} />
@@ -121,7 +100,7 @@ export function HeroKits() {
             <button
               type="button"
               className="hero-kits__arrow"
-              onClick={() => goTo(safeIndex + 1)}
+              onClick={next}
               aria-label="Следующий комплект"
             >
               <ChevronRightIcon width={16} height={16} />
