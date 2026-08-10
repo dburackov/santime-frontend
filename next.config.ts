@@ -5,9 +5,10 @@ import type { NextConfig } from 'next';
 const API_ORIGIN = process.env.API_BASE_URL || 'http://localhost:8080';
 
 const nextConfig: NextConfig = {
-  // output: 'standalone' сознательно НЕ включён: с ним не работает `next start`
-  // ("next start does not work with output: standalone"), а проверять сборку
-  // локально нужно именно им. Включим вместе с Dockerfile перед предпродом.
+  // standalone включается только под флагом, который выставляет Dockerfile: с ним
+  // не работает `next start` ("next start does not work with output: standalone"),
+  // а локально сборка проверяется именно им.
+  output: process.env.BUILD_STANDALONE ? 'standalone' : undefined,
 
   // Замена vite-прокси: браузер продолжает ходить на /api того же origin.
   async rewrites() {
