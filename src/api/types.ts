@@ -80,6 +80,7 @@ export interface VariantCardResponse {
   categoryId: number;
   brandId: number | null;
   price: number;
+  oldPrice: number | null;
   inStock: boolean;
   attributes: Record<string, AttributeValue>;
   images?: ProductImageResponse[];
@@ -95,7 +96,7 @@ export interface SitemapResponse {
   products: SitemapEntryResponse[];
 }
 
-export type CatalogSort = 'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC';
+export type CatalogSort = 'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC' | 'DISCOUNT_DESC';
 
 export interface CatalogProductsQuery {
   categoryId?: number;
@@ -104,6 +105,7 @@ export interface CatalogProductsQuery {
   priceMax?: number;
   inStock?: boolean;
   name?: string;
+  discounted?: boolean;
   sort?: CatalogSort;
   page?: number;
   size?: number;
@@ -140,6 +142,7 @@ export interface VariantDetailResponse {
   variantSlug: string;
   sku: string;
   price: number;
+  oldPrice: number | null;
   stockQuantity: number;
   weightKg: number | null;
   attributes: Record<string, AttributeValue>;
@@ -259,6 +262,7 @@ export interface ProductVariantResponse {
   slug: string;
   sku: string;
   price: number;
+  oldPrice: number | null;
   stockQuantity: number;
   weightKg: number | null;
   attributes: Record<string, AttributeValue>;
@@ -270,6 +274,7 @@ export interface ProductVariantRequest {
   slug: string;
   sku: string;
   price: number;
+  oldPrice?: number | null;
   stockQuantity: number;
   weightKg?: number | null;
   attributes: Record<string, AttributeValue>;
@@ -429,4 +434,19 @@ export interface PromoCodeValidateResponse {
 export interface PromoCodeBannerResponse {
   code: string;
   description: string | null;
+}
+
+export interface BestsellerResponse {
+  id: number;
+  productVariantId: number;
+  sortOrder: number;
+  productName: string;
+  variantSku: string;
+  variantSlug: string;
+  price: number;
+}
+
+export interface BestsellerRequest {
+  productVariantId: number;
+  sortOrder: number;
 }

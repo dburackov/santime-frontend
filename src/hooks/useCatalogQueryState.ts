@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { buildCatalogQuery, parseCatalogParams } from './catalogQuery';
+import { buildCatalogQuery, parseCatalogParams, type CatalogQueryOptions } from './catalogQuery';
 import type { CatalogFilterAttributeResponse } from '@/api/types';
 
 /**
@@ -12,7 +12,11 @@ import type { CatalogFilterAttributeResponse } from '@/api/types';
  * (CatalogProductService.RESERVED_PARAMS плюс произвольные слаги атрибутов),
  * и на них же завязаны уже разосланные ссылки.
  */
-export function useCatalogQueryState(categoryId: number, filters: CatalogFilterAttributeResponse[] | undefined) {
+export function useCatalogQueryState(
+  categoryId: number | undefined,
+  filters: CatalogFilterAttributeResponse[] | undefined,
+  options: CatalogQueryOptions = {},
+) {
   const router = useRouter();
   const pathname = usePathname() ?? '';
   const searchParams = useSearchParams() ?? new URLSearchParams();
@@ -28,9 +32,9 @@ export function useCatalogQueryState(categoryId: number, filters: CatalogFilterA
   }
 
   const { sort, page, priceMin, priceMax, inStock, inStockRaw, brandIds, attributeFilters, attributeRangeFilters } =
-    parseCatalogParams(searchParams, filters);
+    parseCatalogParams(searchParams, filters, options.defaultSort);
 
-  const query = buildCatalogQuery(categoryId, searchParams, filters);
+  const query = buildCatalogQuery(categoryId, searchParams, filters, options);
 
   function updateParams(patch: Record<string, string | undefined>, options: { resetPage?: boolean } = {}) {
     const next = new URLSearchParams(searchParams.toString());

@@ -1,3 +1,18 @@
+.price-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* column-reverse, а не перестановка в разметке: озвучивать порядок «цена,
+   старая цена» правильнее, чем наоборот. */
+.price-group--stacked {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
 .price {
   font-family: var(--font-body);
   font-variant-numeric: tabular-nums;
@@ -7,21 +22,28 @@
   white-space: nowrap;
 }
 
-/* Знак валюты — приглушённый спутник числа, а не его часть. Размер в em, чтобы
-   пропорция держалась во всех модификаторах (--sm/--md/--lg). */
 .price .currency-symbol {
-  font-size: 0.7em;
   color: var(--color-slate);
 }
 
-.price--sm {
+.price--sm { font-size: var(--text-sm); }
+.price--md { font-size: var(--text-lg); }
+.price--lg { font-size: var(--text-2xl); }
+
+.price--discounted {
+  color: var(--color-danger);
+}
+
+.price__old {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
   font-size: var(--text-sm);
+  color: var(--color-slate);
+  white-space: nowrap;
 }
 
-.price--md {
-  font-size: var(--text-lg);
+/* Линия только на сумме: глиф валюты из шрифта nbrb перечёркнутым читается грязно. */
+.price__old-value {
+  text-decoration: line-through;
 }
 
-.price--lg {
-  font-size: var(--text-2xl);
-}

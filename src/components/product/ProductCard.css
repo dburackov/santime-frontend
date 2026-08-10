@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   /* Холодная линия, а не --color-line: карточки стоят на тонированной полосе
-     «Хитов продаж», где тёплая граница читается грязной. */
+     «Скидок», где тёплая граница читается грязной. */
   border: 1px solid var(--color-line-2);
   border-radius: var(--radius);
   overflow: hidden;
@@ -20,6 +20,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
 }
 
 .product-card__title {
@@ -48,7 +49,10 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-2);
-  margin-top: var(--space-2);
+  /* auto, а не фиксированный отступ: заголовок занимает одну или две строки, и без
+     этого цена вставала бы на разной высоте у соседних карточек. */
+  margin-top: auto;
+  padding-top: var(--space-2);
 }
 
 .product-card__oos {

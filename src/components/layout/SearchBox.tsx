@@ -112,7 +112,7 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
                       <span className="search-box__item-title">{variant.productName}</span>
                       {!variant.inStock && <span className="search-box__item-oos">Нет в наличии</span>}
                     </div>
-                    <Price value={variant.price} size="sm" />
+                    <Price value={variant.price} oldValue={variant.oldPrice} size="sm" stacked />
                   </button>
                 </li>
               ))}

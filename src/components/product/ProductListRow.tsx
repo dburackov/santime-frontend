@@ -43,7 +43,7 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
       </Link>
 
       <div className="product-row__end">
-        <Price value={variant.price} size="md" />
+        <Price value={variant.price} oldValue={variant.oldPrice} size="md" stacked />
         <Button
           size="sm"
           disabled={!variant.inStock}

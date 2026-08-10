@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getCategories, getProducts } from '@/api/catalog';
+import { getBestsellers, getCategories, getKits, getProducts } from '@/api/catalog';
 import { getPublicPromoCodes } from '@/api/promo';
 import { createServerQueryClient } from '@/app/query-client';
 import { PUBLIC_PROMO_CODES_QUERY_KEY } from '@/queries/promoQueryKeys';
+import { BESTSELLERS_QUERY_KEY } from '@/queries/bestsellersQueryKeys';
+import { KITS_QUERY_KEY } from '@/queries/kitsQueryKeys';
+import { DISCOUNTS_QUERY } from '@/queries/discountsQuery';
 import { buildOrganizationJsonLd } from '@/utils/organizationJsonLd';
 import { SITE_NAME } from '@/config/siteInfo';
 import { PromoSlider } from '@/components/layout/PromoSlider';
@@ -27,10 +30,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Должно совпадать с аргументом useCatalogProducts в HomePage — из него
-// собирается ключ react-query, по которому клиент подхватывает префетч.
-const HITS_QUERY = { sort: 'NAME_ASC', size: 8 } as const;
-
 export default async function Page() {
   const queryClient = createServerQueryClient();
 
@@ -40,8 +39,16 @@ export default async function Page() {
       queryFn: () => getCategories({ revalidate }),
     }),
     queryClient.prefetchQuery({
-      queryKey: ['catalog-products', HITS_QUERY],
-      queryFn: () => getProducts(HITS_QUERY, { revalidate }),
+      queryKey: ['catalog-products', DISCOUNTS_QUERY],
+      queryFn: () => getProducts(DISCOUNTS_QUERY, { revalidate }),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: BESTSELLERS_QUERY_KEY,
+      queryFn: () => getBestsellers({ revalidate }),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: KITS_QUERY_KEY,
+      queryFn: () => getKits({ revalidate }),
     }),
     queryClient.prefetchQuery({
       queryKey: PUBLIC_PROMO_CODES_QUERY_KEY,

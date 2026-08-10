@@ -164,7 +164,7 @@ export function ProductPage() {
           <VariantOptions groups={variant.variantOptions} />
 
           <div className="product-page__purchase">
-            <Price value={variant.price} size="lg" />
+            <Price value={variant.price} oldValue={variant.oldPrice} size="lg" />
 
             {variant.stockQuantity > 0 ? (
               <span className="product-page__stock product-page__stock--in">

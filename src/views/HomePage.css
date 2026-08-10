@@ -30,8 +30,10 @@
   grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
   gap: clamp(28px, 3.5vw, 48px);
   align-items: center;
-  padding-top: clamp(28px, 3.6vw, 52px);
-  padding-bottom: clamp(32px, 3.6vw, 56px);
+  /* Раньше высоту hero распирал фото-коллаж на 378px. Блок комплектов сделан по
+     макету и ниже — воздух добираем паддингами, чтобы секция осталась прежней. */
+  padding-top: clamp(28px, 7.8vw, 105px);
+  padding-bottom: clamp(32px, 7.8vw, 109px);
   animation: hero-in 500ms ease-out;
 }
 
@@ -100,96 +102,12 @@
   font-size: 0.9375rem;
 }
 
-/* ---------- Hero: коллаж ---------- */
+/* ---------- Hero: правая колонка ---------- */
 
 .hero__media {
   position: relative;
   display: flex;
   justify-content: center;
-}
-
-.hero__panel {
-  width: 100%;
-  max-width: 470px;
-  padding: 14px;
-  border: 1px solid var(--color-on-dark-line);
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
-  display: grid;
-  grid-template-columns: 1.55fr 1fr;
-  gap: var(--space-3);
-}
-
-.hero__photo-slot {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  border-radius: var(--radius);
-  overflow: hidden;
-  /* Следует теме, в отличие от --color-photo-surface: тот тон закреплён за
-     предметной съёмкой на светлом фоне, а здесь интерьерные кадры, и светлая
-     плашка на тёмной странице читалась бы вспышкой. */
-  background: var(--color-tint);
-}
-
-/* Крупный кадр занимает обе строки — пропорция 1.55fr/1fr задаёт ширину. */
-.hero__photo-slot--main {
-  grid-row: span 2;
-}
-
-.hero__photo-slot--detail {
-  aspect-ratio: 1;
-}
-
-.hero__photo-placeholder {
-  width: 28px;
-  height: 28px;
-  color: var(--color-slate);
-}
-
-.hero__badge {
-  position: absolute;
-  left: -8px;
-  bottom: -14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: var(--space-3) var(--space-4);
-  border-radius: 12px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-lg);
-}
-
-.hero__badge-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-  border-radius: 999px;
-  background: var(--color-tint-gold);
-  color: var(--color-gold);
-}
-
-.hero__badge-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.hero__badge-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-sm);
-  color: var(--color-ink);
-}
-
-.hero__badge-note {
-  font-size: var(--text-xs);
-  color: var(--color-slate);
 }
 
 /* ---------- Шапка секции (общая для «Категорий» и «Хитов продаж») ---------- */
@@ -224,6 +142,10 @@
   background: var(--color-accent);
 }
 
+.home-section-head__bar--danger {
+  background: var(--color-danger);
+}
+
 .home-section-head__link {
   display: inline-flex;
   align-items: center;
@@ -251,11 +173,11 @@
   gap: var(--space-3);
 }
 
-/* ---------- Хиты продаж ---------- */
+/* ---------- Секции подборок ---------- */
 
 /* Тонированная полоса во всю ширину — она и отделяет товары от блока категорий,
    поэтому фон живёт на секции, а горизонтальные отступы даёт .container внутри. */
-.home-section {
+.home-section--tinted {
   background: linear-gradient(180deg, var(--color-tint-3) 0%, var(--color-tint) 100%);
   border-top: 1px solid var(--color-line-2);
   border-bottom: 1px solid var(--color-line-2);

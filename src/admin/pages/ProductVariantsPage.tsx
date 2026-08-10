@@ -39,6 +39,7 @@ interface FormState {
   slug: string;
   sku: string;
   price: string;
+  oldPrice: string;
   stockQuantity: string;
   weightKg: string;
   attributes: Record<string, string>;
@@ -49,7 +50,7 @@ function buildEmptyForm(bindings: CategoryAttributeResponse[] | undefined): Form
   for (const binding of bindings ?? []) {
     attributes[binding.attributeSlug] = binding.attributeType === 'BOOLEAN' ? 'false' : '';
   }
-  return { slug: '', sku: '', price: '', stockQuantity: '0', weightKg: '', attributes };
+  return { slug: '', sku: '', price: '', oldPrice: '', stockQuantity: '0', weightKg: '', attributes };
 }
 
 export function ProductVariantsPage() {
@@ -128,6 +129,7 @@ export function ProductVariantsPage() {
       slug: variant.slug,
       sku: variant.sku,
       price: variant.price.toString(),
+      oldPrice: variant.oldPrice?.toString() ?? '',
       stockQuantity: variant.stockQuantity.toString(),
       weightKg: variant.weightKg?.toString() ?? '',
       attributes,
@@ -151,6 +153,7 @@ export function ProductVariantsPage() {
       slug: form.slug,
       sku: form.sku,
       price: Number(form.price),
+      oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       stockQuantity: Number(form.stockQuantity) || 0,
       weightKg: form.weightKg ? Number(form.weightKg) : null,
       attributes,
@@ -187,6 +190,7 @@ export function ProductVariantsPage() {
                 <th>Slug</th>
                 <th>SKU</th>
                 <th>Цена</th>
+                <th>Была</th>
                 <th>Остаток</th>
                 <th>Атрибуты</th>
                 <th />
@@ -199,6 +203,7 @@ export function ProductVariantsPage() {
                   <td className="mono-num">{variant.slug}</td>
                   <td className="mono-num">{variant.sku}</td>
                   <td className="mono-num">{formatPrice(variant.price)}</td>
+                  <td className="mono-num">{variant.oldPrice ? formatPrice(variant.oldPrice) : "—"}</td>
                   <td className="mono-num">{variant.stockQuantity}</td>
                   <td>
                     {(bindings ?? [])
@@ -305,6 +310,23 @@ export function ProductVariantsPage() {
               />
               {fieldError(activeMutation.error, 'price') && (
                 <span className="admin-form-error">{fieldError(activeMutation.error, 'price')}</span>
+              )}
+            </div>
+            <div className="admin-form-field">
+              <label htmlFor="variant-old-price">
+                Была, <CurrencySymbol />
+              </label>
+              <input
+                id="variant-old-price"
+                type="number"
+                step="0.01"
+                className="filter-text-input mono-num"
+                value={form.oldPrice}
+                onChange={(e) => setForm((f) => ({ ...f, oldPrice: e.target.value }))}
+                placeholder="без скидки"
+              />
+              {fieldError(activeMutation.error, 'oldPrice') && (
+                <span className="admin-form-error">{fieldError(activeMutation.error, 'oldPrice')}</span>
               )}
             </div>
             <div className="admin-form-field">

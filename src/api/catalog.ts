@@ -41,6 +41,7 @@ export function getProducts(
     priceMax: query.priceMax,
     inStock: query.inStock,
     name: query.name,
+    discounted: query.discounted,
     sort: query.sort,
     page: query.page,
     size: query.size,
@@ -67,4 +68,16 @@ export function getProductBySlug(
 
 export function getSitemap(opts: CatalogFetchOptions = {}): Promise<SitemapResponse> {
   return apiRequest('/api/catalog/sitemap', opts);
+}
+
+export function getBestsellers(opts: CatalogFetchOptions = {}): Promise<VariantCardResponse[]> {
+  return apiRequest('/api/catalog/bestsellers', opts);
+}
+
+export function getKits(opts: CatalogFetchOptions = {}): Promise<VariantCardResponse[]> {
+  return apiRequest('/api/catalog/kits', opts);
+}
+
+export function getDiscountedBrands(opts: CatalogFetchOptions = {}): Promise<BrandResponse[]> {
+  return apiRequest('/api/catalog/discounts/brands', opts);
 }

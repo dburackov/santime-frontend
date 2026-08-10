@@ -4,6 +4,8 @@ import type {
   AttributeOptionResponse,
   AttributeRequest,
   AttributeResponse,
+  BestsellerRequest,
+  BestsellerResponse,
   BrandRequest,
   BrandResponse,
   CategoryAttributeRequest,
@@ -293,4 +295,20 @@ export function updatePromoCode(id: number, body: PromoCodeRequest): Promise<Pro
 
 export function deletePromoCode(id: number): Promise<void> {
   return apiRequest(`/api/admin/promo-codes/${id}`, { method: 'DELETE' });
+}
+
+export function listBestsellers(): Promise<BestsellerResponse[]> {
+  return apiRequest('/api/admin/bestsellers');
+}
+
+export function createBestseller(body: BestsellerRequest): Promise<BestsellerResponse> {
+  return apiRequest('/api/admin/bestsellers', { method: 'POST', body });
+}
+
+export function deleteBestseller(id: number): Promise<void> {
+  return apiRequest(`/api/admin/bestsellers/${id}`, { method: 'DELETE' });
+}
+
+export function reorderBestsellers(ids: number[]): Promise<void> {
+  return apiRequest('/api/admin/bestsellers/order', { method: 'PUT', body: { ids } });
 }

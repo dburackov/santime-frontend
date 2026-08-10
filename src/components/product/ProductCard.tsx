@@ -24,7 +24,7 @@ export function ProductCard({ variant, displayAttributes = [] }: ProductCardProp
         <h3 className="product-card__title">{variant.productName}</h3>
         {attrLine && <p className="product-card__attrs">{attrLine}</p>}
         <div className="product-card__footer">
-          <Price value={variant.price} size="md" />
+          <Price value={variant.price} oldValue={variant.oldPrice} size="md" />
           {!variant.inStock && <span className="product-card__oos">Нет в наличии</span>}
         </div>
       </div>

@@ -5,18 +5,14 @@ import './HomePage.css';
 import '@/components/ui/Skeleton.css';
 import { useCategories } from '@/queries/useCategories';
 import { useCatalogProducts } from '@/queries/useCatalogProducts';
+import { useBestsellers } from '@/queries/useBestsellers';
+import { DISCOUNTS_QUERY } from '@/queries/discountsQuery';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ProductCard } from '@/components/product/ProductCard';
 import { CategoryTile, CategoryTileSkeleton } from '@/components/catalog/CategoryTile';
+import { HeroKits } from '@/components/home/HeroKits';
 import { SkeletonCard } from '@/components/ui/Skeleton';
-import {
-  ArrowRightIcon,
-  BoxIcon,
-  CardIcon,
-  HeadsetIcon,
-  ShieldIcon,
-  TruckIcon,
-} from '@/components/ui/icons';
+import { ArrowRightIcon, CardIcon, HeadsetIcon, ShieldIcon, TruckIcon } from '@/components/ui/icons';
 
 const TRUST_ITEMS = [
   { icon: TruckIcon, title: 'Быстрая доставка', description: 'По Минску и всей Беларуси', to: '/dostavka' },
@@ -25,20 +21,12 @@ const TRUST_ITEMS = [
   { icon: HeadsetIcon, title: 'Поддержка', description: 'Проконсультируем перед покупкой' },
 ];
 
-/** Слоты коллажа в hero. Пока фотографий нет — рисуется тот же плейсхолдер, что и в ProductPhoto. */
-const HERO_SLOTS = [
-  { modifier: 'main', label: 'Интерьерная сцена: современная ванная' },
-  { modifier: 'detail', label: 'Макро-деталь: фактура металла' },
-  { modifier: 'detail', label: 'Раковина крупным планом' },
-];
-
 export function HomePage() {
   const { data: categories, isLoading, isError, refetch } = useCategories();
-  const {
-    data: hitsPage,
-    isLoading: hitsLoading,
-    isError: hitsError,
-  } = useCatalogProducts({ sort: 'NAME_ASC', size: 8 });
+  const { data: discountsPage, isLoading: discountsLoading } = useCatalogProducts(DISCOUNTS_QUERY);
+  const { data: hits, isLoading: hitsLoading } = useBestsellers();
+
+  const discounts = discountsPage?.content ?? [];
 
   return (
     <div>
@@ -67,23 +55,7 @@ export function HomePage() {
           </div>
 
           <div className="hero__media">
-            <div className="hero__panel">
-              {HERO_SLOTS.map((slot, i) => (
-                <div key={i} className={`hero__photo-slot hero__photo-slot--${slot.modifier}`}>
-                  <BoxIcon className="hero__photo-placeholder" aria-label={slot.label} />
-                </div>
-              ))}
-            </div>
-
-            <div className="hero__badge">
-              <span className="hero__badge-icon">
-                <ShieldIcon width={18} height={18} />
-              </span>
-              <span className="hero__badge-text">
-                <span className="hero__badge-title">Гарантия на каждый товар</span>
-                <span className="hero__badge-note">из каталога</span>
-              </span>
-            </div>
+            <HeroKits />
           </div>
         </div>
       </section>
@@ -119,38 +91,51 @@ export function HomePage() {
         )}
       </section>
 
-      <section className="home-section">
-        <div className="container home-section__inner">
-          <div className="home-section-head">
-            <h2 className="home-section-head__title">
-              <span className="home-section-head__bar home-section-head__bar--accent" aria-hidden="true" />
-              Хиты продаж
-            </h2>
-            <Link href="/catalog" className="home-section-head__link">
-              Все товары
-              <ArrowRightIcon width={14} height={14} />
-            </Link>
+      {(discountsLoading || discounts.length > 0) && (
+        <section className="home-section home-section--tinted">
+          <div className="container home-section__inner">
+            <div className="home-section-head">
+              <h2 className="home-section-head__title">
+                <span className="home-section-head__bar home-section-head__bar--danger" aria-hidden="true" />
+                Скидки
+              </h2>
+              <Link href="/discounts" className="home-section-head__link">
+                Все скидки
+                <ArrowRightIcon width={14} height={14} />
+              </Link>
+            </div>
+
+            <div className="home-section__grid">
+              {discountsLoading && discounts.length === 0
+                ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+                : discounts.map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
+            </div>
           </div>
+        </section>
+      )}
 
-          {hitsError && <ErrorState description="Не удалось загрузить товары." />}
-
-          {hitsLoading && !hitsPage && (
-            <div className="home-section__grid">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))}
+      {(hitsLoading || (hits && hits.length > 0)) && (
+        <section className="home-section">
+          <div className="container home-section__inner">
+            <div className="home-section-head">
+              <h2 className="home-section-head__title">
+                <span className="home-section-head__bar home-section-head__bar--accent" aria-hidden="true" />
+                Хиты продаж
+              </h2>
+              <Link href="/catalog" className="home-section-head__link">
+                Все товары
+                <ArrowRightIcon width={14} height={14} />
+              </Link>
             </div>
-          )}
 
-          {hitsPage && hitsPage.content.length > 0 && (
             <div className="home-section__grid">
-              {hitsPage.content.map((variant) => (
-                <ProductCard key={variant.variantId} variant={variant} />
-              ))}
+              {hitsLoading && !hits
+                ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+                : (hits ?? []).map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       <section className="home-trust">
         <div className="container home-trust__grid">
