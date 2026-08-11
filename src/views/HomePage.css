@@ -26,8 +26,9 @@
 .hero__content {
   position: relative;
   display: grid;
-  /* auto-fit сам схлопывает hero в одну колонку — отдельный медиазапрос не нужен. */
-  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  /* auto-fit сам схлопывает hero в одну колонку — отдельный медиазапрос не нужен.
+     min() обязателен: без него трек не сжимается ниже 330px и уезжает за экран. */
+  grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
   gap: clamp(28px, 3.5vw, 48px);
   align-items: center;
   /* Раньше высоту hero распирал фото-коллаж на 378px. Блок комплектов сделан по

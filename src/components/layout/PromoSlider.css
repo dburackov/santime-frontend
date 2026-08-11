@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  height: 56px;
+  min-height: 56px;
 }
 
 .promo-slider__viewport {
@@ -26,6 +26,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding-block: var(--space-2);
   /* Горизонтальный свайп обрабатываем сами, вертикальную прокрутку отдаём странице. */
   touch-action: pan-y;
 }
@@ -34,10 +35,11 @@
   font-size: var(--text-sm);
   color: var(--color-ink);
   text-align: center;
-  /* Длинное описание не должно ломать высоту полосы. */
-  white-space: nowrap;
+  /* Клэмп вместо nowrap + ellipsis: на телефоне многоточие съедало сам код. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 100%;
   animation: promo-slide-in var(--motion-base);
 }
@@ -87,9 +89,16 @@
   outline-offset: -2px;
 }
 
+/* Стрелки съедали треть ширины полосы; на телефоне навигация — свайп и автопрокрутка. */
+@media (max-width: 639px) {
+  .promo-slider__arrow {
+    display: none;
+  }
+}
+
 @media (min-width: 1024px) {
   .promo-slider__inner {
-    height: 64px;
+    min-height: 64px;
     gap: var(--space-4);
   }
 

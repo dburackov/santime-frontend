@@ -46,12 +46,11 @@ export function HeroKits() {
 
       <article className="hero-kits__card">
         <Link href={`/product/${kit.variantSlug}`} className="hero-kits__photo">
-          {/* size="card" — он тянется по контейнеру, а не фиксирован в 170px, как "row". */}
           <ProductPhoto
             image={kit.images?.[0]}
             alt={kit.productName}
             size="card"
-            sizes="150px"
+            sizes="(max-width: 639px) 110px, 150px"
             priority
           />
         </Link>
