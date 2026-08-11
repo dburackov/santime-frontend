@@ -17,6 +17,12 @@ COPY . .
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 
+# Адрес Spring для серверных вызовов на пререндере. Без него client.ts берёт фолбэк
+# localhost:8080, куда в билд-контейнере никто не отвечает, и главная с каталогом и
+# картой сайта уезжают в образ пустыми — до первой ревалидации их и видят поисковики.
+ARG API_BASE_URL
+ENV API_BASE_URL=$API_BASE_URL
+
 # Флаг читает next.config.ts: включает output: 'standalone'.
 ENV BUILD_STANDALONE=1
 RUN npm run build
