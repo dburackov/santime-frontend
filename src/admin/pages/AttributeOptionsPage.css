@@ -1,0 +1,11 @@
+.attribute-options-page__col--id {
+  width: 10%;
+}
+
+.attribute-options-page__col--value {
+  width: 60%;
+}
+
+.attribute-options-page__col--actions {
+  width: 30%;
+}

@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import Link from 'next/link';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
+import './AttributesPage.css';
 import { listAttributes, createAttribute, updateAttribute, deleteAttribute } from '@/api/admin';
 import type { AttributeRequest, AttributeResponse, AttributeType } from '@/api/types';
 import { useAdminResource } from '@/admin/useAdminResource';
@@ -93,6 +94,14 @@ export function AttributesPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="attributes-page__col--id" />
+              <col className="attributes-page__col--name" />
+              <col className="attributes-page__col--slug" />
+              <col className="attributes-page__col--type" />
+              <col className="attributes-page__col--unit" />
+              <col className="attributes-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
@@ -120,7 +129,7 @@ export function AttributesPage() {
                       )}
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(attribute)}
                         aria-label="Редактировать"
                       >
@@ -128,7 +137,7 @@ export function AttributesPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(attribute)}
                         aria-label="Удалить"
                       >

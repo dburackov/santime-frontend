@@ -4,6 +4,12 @@
   gap: var(--space-8);
 }
 
+.order-detail__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 .order-detail__section h2 {
   font-size: var(--text-base);
   margin-bottom: var(--space-3);
@@ -29,6 +35,8 @@
 }
 
 .order-detail__fields dd {
+  /* без сброса браузер даёт dd отступ слева в 40px, и значение уезжает от своей подписи */
+  margin: 0;
   font-size: var(--text-sm);
   color: var(--color-ink);
 }
@@ -76,13 +84,22 @@
   font-size: var(--text-base);
 }
 
-@media (min-width: 1024px) {
-  .order-detail__grid {
-    flex-direction: row;
-  }
+.order-detail__col--product {
+  width: 40%;
+}
 
-  .order-detail__section {
-    flex: 1;
-    min-width: 0;
-  }
+.order-detail__col--sku {
+  width: 20%;
+}
+
+.order-detail__col--price {
+  width: 14%;
+}
+
+.order-detail__col--quantity {
+  width: 10%;
+}
+
+.order-detail__col--total {
+  width: 16%;
 }

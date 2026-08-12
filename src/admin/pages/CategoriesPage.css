@@ -1,0 +1,19 @@
+.categories-page__col--id {
+  width: 6%;
+}
+
+.categories-page__col--name {
+  width: 26%;
+}
+
+.categories-page__col--slug {
+  width: 30%;
+}
+
+.categories-page__col--parent {
+  width: 24%;
+}
+
+.categories-page__col--actions {
+  width: 14%;
+}

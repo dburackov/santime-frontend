@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import Link from 'next/link';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
+import './CategoriesPage.css';
 import { listCategories, createCategory, updateCategory, deleteCategory } from '@/api/admin';
 import type { CategoryRequest, CategoryResponse } from '@/api/types';
 import { useAdminResource } from '@/admin/useAdminResource';
@@ -93,6 +94,13 @@ export function CategoriesPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="categories-page__col--id" />
+              <col className="categories-page__col--name" />
+              <col className="categories-page__col--slug" />
+              <col className="categories-page__col--parent" />
+              <col className="categories-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
@@ -116,7 +124,7 @@ export function CategoriesPage() {
                       </Link>
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(category)}
                         aria-label="Редактировать"
                       >
@@ -124,7 +132,7 @@ export function CategoriesPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(category)}
                         aria-label="Удалить"
                       >

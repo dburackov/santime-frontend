@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/admin/dragOrder.css';
 import '@/components/filters/Filters.css';
+import './BestsellersPage.css';
 import {
   createBestseller,
   deleteBestseller,
@@ -76,9 +77,18 @@ export function BestsellersPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="bestsellers-page__col--grip" />
+              <col className="bestsellers-page__col--position" />
+              <col className="bestsellers-page__col--product" />
+              <col className="bestsellers-page__col--sku" />
+              <col className="bestsellers-page__col--price" />
+              <col className="bestsellers-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
-                <th>#</th>
+                <th />
+                <th>№</th>
                 <th>Товар</th>
                 <th>SKU</th>
                 <th>Цена</th>
@@ -88,12 +98,10 @@ export function BestsellersPage() {
             <tbody>
               {list.map((item, index) => (
                 <tr key={item.id} {...itemProps(item.id)}>
-                  <td className="mono-num drag-handle" {...handleProps(item.id)}>
-                    <span className="drag-handle__inner">
-                      <DragHandleIcon width={16} height={16} />
-                      {index + 1}
-                    </span>
+                  <td className="drag-handle" {...handleProps(item.id)}>
+                    <DragHandleIcon width={16} height={16} />
                   </td>
+                  <td className="mono-num">{index + 1}</td>
                   <td>{item.productName}</td>
                   <td className="mono-num">{item.variantSku}</td>
                   <td className="mono-num">{formatPrice(item.price)}</td>
@@ -101,7 +109,7 @@ export function BestsellersPage() {
                     <div className="admin-table__actions">
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(item)}
                         aria-label="Убрать из подборки"
                       >
@@ -151,6 +159,11 @@ export function BestsellersPage() {
           {results.length > 0 && (
             <div className="admin-table-wrap">
               <table className="admin-table">
+                <colgroup>
+                  <col className="bestsellers-page__col--found-product" />
+                  <col className="bestsellers-page__col--found-price" />
+                  <col className="bestsellers-page__col--found-action" />
+                </colgroup>
                 <tbody>
                   {results.map((variant) => (
                     <tr key={variant.variantId}>

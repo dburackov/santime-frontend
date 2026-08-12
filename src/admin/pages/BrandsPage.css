@@ -1,0 +1,15 @@
+.brands-page__col--id {
+  width: 6%;
+}
+
+.brands-page__col--name {
+  width: 36%;
+}
+
+.brands-page__col--slug {
+  width: 34%;
+}
+
+.brands-page__col--actions {
+  width: 24%;
+}

@@ -13,7 +13,9 @@ import type {
   CategoryAttributeUpdateRequest,
   CategoryRequest,
   CategoryResponse,
+  AdminOrderUpdateRequest,
   OrderResponse,
+  OrderStatus,
   PageResponse,
   ProductImageAdminResponse,
   ProductImageFocalPointRequest,
@@ -283,9 +285,10 @@ export function reorderVariantImages(productId: number, variantId: number, ids: 
   });
 }
 
-// ---- Заказы (только просмотр — смены статуса пока нет) ----
+// ---- Заказы (состав после оформления не меняется, правятся только контакты и статус) ----
 
 export interface ListOrdersParams {
+  status?: OrderStatus;
   page?: number;
   size?: number;
   sort?: string;
@@ -293,12 +296,16 @@ export interface ListOrdersParams {
 
 export function listOrders(params: ListOrdersParams): Promise<PageResponse<OrderResponse>> {
   return apiRequest('/api/admin/orders', {
-    searchParams: { page: params.page, size: params.size, sort: params.sort },
+    searchParams: { status: params.status, page: params.page, size: params.size, sort: params.sort },
   });
 }
 
 export function getOrder(id: number): Promise<OrderResponse> {
   return apiRequest(`/api/admin/orders/${id}`);
+}
+
+export function updateOrder(id: number, body: AdminOrderUpdateRequest): Promise<OrderResponse> {
+  return apiRequest(`/api/admin/orders/${id}`, { method: 'PUT', body });
 }
 
 // ---- Промокоды ----

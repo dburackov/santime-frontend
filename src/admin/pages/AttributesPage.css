@@ -1,0 +1,23 @@
+.attributes-page__col--id {
+  width: 6%;
+}
+
+.attributes-page__col--name {
+  width: 24%;
+}
+
+.attributes-page__col--slug {
+  width: 24%;
+}
+
+.attributes-page__col--type {
+  width: 20%;
+}
+
+.attributes-page__col--unit {
+  width: 10%;
+}
+
+.attributes-page__col--actions {
+  width: 16%;
+}

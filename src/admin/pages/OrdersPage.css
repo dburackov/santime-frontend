@@ -1,0 +1,58 @@
+.orders-page__statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.orders-page__status {
+  padding: var(--space-2) var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-slate);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* :not нужен из-за специфичности: без него hover перебивал бы --current и текст
+   выбранной вкладки становился тёмным на тёмном. */
+.orders-page__status:not(.orders-page__status--current):hover {
+  color: var(--color-ink);
+}
+
+.orders-page__status--current {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-surface);
+}
+
+.orders-page__col--id {
+  width: 6%;
+}
+
+.orders-page__col--client {
+  width: 22%;
+}
+
+.orders-page__col--payment {
+  width: 17%;
+}
+
+.orders-page__col--delivery {
+  width: 14%;
+}
+
+.orders-page__col--total {
+  width: 13%;
+}
+
+.orders-page__col--date {
+  width: 18%;
+}
+
+.orders-page__col--actions {
+  width: 10%;
+}

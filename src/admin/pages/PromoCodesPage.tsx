@@ -219,6 +219,17 @@ export function PromoCodesPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="promo-codes__col--code" />
+              <col className="promo-codes__col--description" />
+              <col className="promo-codes__col--discount" />
+              <col className="promo-codes__col--min-amount" />
+              <col className="promo-codes__col--period" />
+              <col className="promo-codes__col--scope" />
+              <col className="promo-codes__col--status" />
+              <col className="promo-codes__col--public" />
+              <col className="promo-codes__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>Код</th>
@@ -267,7 +278,7 @@ export function PromoCodesPage() {
                     <div className="admin-table__actions">
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(promo)}
                         aria-label="Редактировать"
                       >
@@ -275,7 +286,7 @@ export function PromoCodesPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(promo)}
                         aria-label="Удалить"
                       >

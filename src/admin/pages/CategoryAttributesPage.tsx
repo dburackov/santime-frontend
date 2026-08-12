@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/admin/dragOrder.css';
 import '@/components/filters/Filters.css';
+import './CategoryAttributesPage.css';
 import {
   listCategories,
   listAttributes,
@@ -154,6 +155,16 @@ export function CategoryAttributesPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="category-attributes-page__col--grip" />
+              <col className="category-attributes-page__col--name" />
+              <col className="category-attributes-page__col--slug" />
+              <col className="category-attributes-page__col--type" />
+              <col className="category-attributes-page__col--required" />
+              <col className="category-attributes-page__col--filter" />
+              <col className="category-attributes-page__col--variant" />
+              <col className="category-attributes-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th />
@@ -182,7 +193,7 @@ export function CategoryAttributesPage() {
                     <div className="admin-table__actions">
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(binding)}
                         aria-label="Редактировать"
                       >
@@ -190,7 +201,7 @@ export function CategoryAttributesPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(binding)}
                         aria-label="Удалить"
                       >

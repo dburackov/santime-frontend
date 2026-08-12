@@ -6,6 +6,7 @@ import { useRouteParams } from '@/hooks/useRouteParams';
 import { useQuery } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
+import './AttributeOptionsPage.css';
 import {
   listAttributeOptions,
   createAttributeOption,
@@ -88,6 +89,11 @@ export function AttributeOptionsPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="attribute-options-page__col--id" />
+              <col className="attribute-options-page__col--value" />
+              <col className="attribute-options-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
@@ -104,7 +110,7 @@ export function AttributeOptionsPage() {
                     <div className="admin-table__actions">
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(option)}
                         aria-label="Редактировать"
                       >
@@ -112,7 +118,7 @@ export function AttributeOptionsPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(option)}
                         aria-label="Удалить"
                       >

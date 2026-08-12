@@ -1,0 +1,36 @@
+.bestsellers-page__col--grip {
+  width: 4%;
+}
+
+.bestsellers-page__col--position {
+  width: 5%;
+}
+
+.bestsellers-page__col--product {
+  width: 51%;
+}
+
+.bestsellers-page__col--sku {
+  width: 16%;
+}
+
+.bestsellers-page__col--price {
+  width: 12%;
+}
+
+.bestsellers-page__col--actions {
+  width: 12%;
+}
+
+/* Таблица результатов поиска в модалке — своя разметка, без заголовков. */
+.bestsellers-page__col--found-product {
+  width: 55%;
+}
+
+.bestsellers-page__col--found-price {
+  width: 15%;
+}
+
+.bestsellers-page__col--found-action {
+  width: 30%;
+}

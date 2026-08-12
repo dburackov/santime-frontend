@@ -1,0 +1,31 @@
+.category-attributes-page__col--grip {
+  width: 4%;
+}
+
+.category-attributes-page__col--name {
+  width: 20%;
+}
+
+.category-attributes-page__col--slug {
+  width: 20%;
+}
+
+.category-attributes-page__col--type {
+  width: 12%;
+}
+
+.category-attributes-page__col--required {
+  width: 11%;
+}
+
+.category-attributes-page__col--filter {
+  width: 9%;
+}
+
+.category-attributes-page__col--variant {
+  width: 10%;
+}
+
+.category-attributes-page__col--actions {
+  width: 14%;
+}

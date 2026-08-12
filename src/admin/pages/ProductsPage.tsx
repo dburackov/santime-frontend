@@ -239,7 +239,7 @@ export function ProductsPage() {
                       </Link>
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(product)}
                         aria-label="Редактировать"
                       >
@@ -247,7 +247,7 @@ export function ProductsPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(product)}
                         aria-label="Удалить"
                       >

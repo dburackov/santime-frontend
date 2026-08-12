@@ -246,7 +246,7 @@ export function ProductVariantsPage() {
                       </Link>
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(variant)}
                         aria-label="Редактировать"
                       >
@@ -254,7 +254,7 @@ export function ProductVariantsPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(variant)}
                         aria-label="Удалить"
                       >

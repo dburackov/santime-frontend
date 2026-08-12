@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
+import './BrandsPage.css';
 import { listBrands, createBrand, updateBrand, deleteBrand } from '@/api/admin';
 import type { BrandRequest, BrandResponse } from '@/api/types';
 import { useAdminResource } from '@/admin/useAdminResource';
@@ -78,6 +79,12 @@ export function BrandsPage() {
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
+            <colgroup>
+              <col className="brands-page__col--id" />
+              <col className="brands-page__col--name" />
+              <col className="brands-page__col--slug" />
+              <col className="brands-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
@@ -96,7 +103,7 @@ export function BrandsPage() {
                     <div className="admin-table__actions">
                       <button
                         type="button"
-                        className="admin-table__icon-btn touch-target"
+                        className="admin-table__icon-btn"
                         onClick={() => openEdit(brand)}
                         aria-label="Редактировать"
                       >
@@ -104,7 +111,7 @@ export function BrandsPage() {
                       </button>
                       <button
                         type="button"
-                        className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
+                        className="admin-table__icon-btn admin-table__icon-btn--danger"
                         onClick={() => setDeleteTarget(brand)}
                         aria-label="Удалить"
                       >

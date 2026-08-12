@@ -10,14 +10,6 @@
   cursor: grabbing;
 }
 
-/* Иконка захвата плюс содержимое колонки в одну строку. Флекс живёт на span, а не
-   на самой ячейке: display:flex на td ломает табличное выравнивание строки. */
-.drag-handle__inner {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
 [data-dragging] {
   opacity: 0.45;
 }

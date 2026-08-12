@@ -306,6 +306,8 @@ export interface ProductImageFocalPointRequest {
 
 // ---- Заказы ----
 
+export type OrderStatus = 'NEW' | 'CONFIRMED' | 'DELIVERED' | 'CANCELLED';
+
 export interface OrderItemRequest {
   productVariantId: number;
   quantity: number;
@@ -336,9 +338,24 @@ export interface OrderItemResponse {
   quantity: number;
 }
 
+/** Правка заказа оператором: контакты, доставка и статус. Состав и суммы не меняются. */
+export interface AdminOrderUpdateRequest {
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  postalCode?: string | null;
+  city?: string | null;
+  paymentMethod: string;
+  deliveryMethod: string;
+  comment?: string | null;
+  status: OrderStatus;
+}
+
 export interface OrderResponse {
   id: number;
-  status: string;
+  status: OrderStatus;
   firstName: string;
   lastName: string;
   email: string | null;

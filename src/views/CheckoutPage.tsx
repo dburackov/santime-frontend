@@ -16,16 +16,7 @@ import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
-
-const PAYMENT_METHODS = [
-  { value: 'CARD', label: 'Картой онлайн' },
-  { value: 'CASH', label: 'Наличными при получении' },
-];
-
-const DELIVERY_METHODS = [
-  { value: 'COURIER', label: 'Курьером' },
-  { value: 'PICKUP', label: 'Самовывоз' },
-];
+import { DELIVERY_METHODS, PAYMENT_METHODS } from '@/utils/orderLabels';
 
 interface FormState {
   firstName: string;

@@ -11,23 +11,6 @@
   max-width: 360px;
 }
 
-/* .admin-table запрещает переносы и раскладывает колонки по контенту — длинное
-   название товара из-за этого уводило таблицу в горизонтальный скролл. Здесь
-   ширины заданы жёстко в процентах, а содержимое переносится. */
-.products-page__table {
-  table-layout: fixed;
-  white-space: normal;
-}
-
-.products-page__table td {
-  vertical-align: top;
-  overflow-wrap: anywhere;
-}
-
-.products-page__table .admin-table__actions {
-  flex-wrap: wrap;
-}
-
 .products-page__col--id {
   width: 5%;
 }

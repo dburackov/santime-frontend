@@ -1,9 +1,12 @@
-/* .admin-table запрещает переносы, но описание промокода — это фраза, а не
-   идентификатор: даём ей переноситься и ограничиваем ширину колонки. */
-.admin-table td.promo-codes__description {
-  white-space: normal;
-  max-width: 280px;
-}
+.promo-codes__col--code { width: 12%; }
+.promo-codes__col--description { width: 18%; }
+.promo-codes__col--discount { width: 9%; }
+.promo-codes__col--min-amount { width: 10%; }
+.promo-codes__col--period { width: 15%; }
+.promo-codes__col--scope { width: 12%; }
+.promo-codes__col--status { width: 8%; }
+.promo-codes__col--public { width: 8%; }
+.promo-codes__col--actions { width: 8%; }
 
 .promo-codes__hint {
   font-size: var(--text-xs);
