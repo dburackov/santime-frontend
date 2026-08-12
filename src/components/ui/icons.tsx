@@ -241,6 +241,15 @@ export function EditIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function DragHandleIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <line x1="4" y1="9" x2="20" y2="9" />
+      <line x1="4" y1="15" x2="20" y2="15" />
+    </Icon>
+  );
+}
+
 export function TrashIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Icon {...props}>

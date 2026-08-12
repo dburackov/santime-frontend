@@ -7,6 +7,7 @@ import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
+import './ProductVariantsPage.css';
 import {
   listProductVariants,
   createProductVariant,
@@ -25,6 +26,7 @@ import type {
 } from '@/api/types';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
+import { RequiredMark } from '@/admin/components/RequiredMark';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -32,7 +34,7 @@ import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
-import { formatAttributeValue } from '@/utils/attributes';
+import { formatAttributeLine } from '@/utils/attributes';
 import { formatPrice } from '@/utils/price';
 
 interface FormState {
@@ -42,6 +44,7 @@ interface FormState {
   oldPrice: string;
   stockQuantity: string;
   weightKg: string;
+  active: boolean;
   attributes: Record<string, string>;
 }
 
@@ -50,7 +53,7 @@ function buildEmptyForm(bindings: CategoryAttributeResponse[] | undefined): Form
   for (const binding of bindings ?? []) {
     attributes[binding.attributeSlug] = binding.attributeType === 'BOOLEAN' ? 'false' : '';
   }
-  return { slug: '', sku: '', price: '', oldPrice: '', stockQuantity: '0', weightKg: '', attributes };
+  return { slug: '', sku: '', price: '', oldPrice: '', stockQuantity: '0', weightKg: '', active: true, attributes };
 }
 
 export function ProductVariantsPage() {
@@ -132,6 +135,7 @@ export function ProductVariantsPage() {
       oldPrice: variant.oldPrice?.toString() ?? '',
       stockQuantity: variant.stockQuantity.toString(),
       weightKg: variant.weightKg?.toString() ?? '',
+      active: variant.active,
       attributes,
     });
     setModalOpen(true);
@@ -156,6 +160,7 @@ export function ProductVariantsPage() {
       oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       stockQuantity: Number(form.stockQuantity) || 0,
       weightKg: form.weightKg ? Number(form.weightKg) : null,
+      active: form.active,
       attributes,
     };
 
@@ -168,7 +173,7 @@ export function ProductVariantsPage() {
   const activeMutation = editing ? updateMutation : createMutation;
 
   return (
-    <div className="admin-page">
+    <div className="admin-page admin-page--wide">
       <Breadcrumbs items={[{ label: 'Товары', to: '/admin/products' }, { label: product?.name ?? '…' }]} />
 
       <div className="admin-page__header">
@@ -183,7 +188,18 @@ export function ProductVariantsPage() {
 
       {!isError && (
         <div className="admin-table-wrap">
-          <table className="admin-table">
+          <table className="admin-table variants-page__table">
+            <colgroup>
+              <col className="variants-page__col--id" />
+              <col className="variants-page__col--slug" />
+              <col className="variants-page__col--sku" />
+              <col className="variants-page__col--price" />
+              <col className="variants-page__col--old-price" />
+              <col className="variants-page__col--stock" />
+              <col className="variants-page__col--status" />
+              <col className="variants-page__col--attributes" />
+              <col className="variants-page__col--actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
@@ -192,6 +208,7 @@ export function ProductVariantsPage() {
                 <th>Цена</th>
                 <th>Была</th>
                 <th>Остаток</th>
+                <th>Статус</th>
                 <th>Атрибуты</th>
                 <th />
               </tr>
@@ -206,8 +223,16 @@ export function ProductVariantsPage() {
                   <td className="mono-num">{variant.oldPrice ? formatPrice(variant.oldPrice) : "—"}</td>
                   <td className="mono-num">{variant.stockQuantity}</td>
                   <td>
+                    <span className={`admin-status-dot ${variant.active ? 'admin-status-dot--active' : 'admin-status-dot--inactive'}`}>
+                      {variant.active ? 'Активен' : 'Скрыт'}
+                    </span>
+                  </td>
+                  <td>
                     {(bindings ?? [])
-                      .map((b) => formatAttributeValue(b.attributeType, variant.attributes[b.attributeSlug], null))
+                      .map((b) => formatAttributeLine(
+                        { name: b.attributeName, type: b.attributeType, unit: b.attributeUnit },
+                        variant.attributes[b.attributeSlug],
+                      ))
                       .filter(Boolean)
                       .join(' · ')}
                   </td>
@@ -267,7 +292,7 @@ export function ProductVariantsPage() {
 
           <div className="admin-form-row">
             <div className="admin-form-field">
-              <label htmlFor="variant-slug">Slug</label>
+              <label htmlFor="variant-slug">Slug<RequiredMark /></label>
               <input
                 id="variant-slug"
                 className="filter-text-input mono-num"
@@ -280,7 +305,7 @@ export function ProductVariantsPage() {
               )}
             </div>
             <div className="admin-form-field">
-              <label htmlFor="variant-sku">SKU</label>
+              <label htmlFor="variant-sku">SKU<RequiredMark /></label>
               <input
                 id="variant-sku"
                 className="filter-text-input mono-num"
@@ -298,6 +323,7 @@ export function ProductVariantsPage() {
             <div className="admin-form-field">
               <label htmlFor="variant-price">
                 Цена, <CurrencySymbol />
+                <RequiredMark />
               </label>
               <input
                 id="variant-price"
@@ -352,6 +378,15 @@ export function ProductVariantsPage() {
             </div>
           </div>
 
+          <label className="admin-form-checkbox">
+            <input
+              type="checkbox"
+              checked={form.active}
+              onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
+            />
+            Активен (виден в каталоге)
+          </label>
+
           {bindings && bindings.length > 0 && (
             <>
               <div className="admin-form-field">
@@ -398,7 +433,12 @@ interface AttributeFieldProps {
 }
 
 function AttributeField({ binding, value, options, onChange, error }: AttributeFieldProps) {
-  const label = `${binding.attributeName}${binding.required ? ' *' : ''}`;
+  const label = (
+    <>
+      {binding.attributeName}
+      {binding.required && <RequiredMark />}
+    </>
+  );
 
   if (binding.attributeType === 'BOOLEAN') {
     return (

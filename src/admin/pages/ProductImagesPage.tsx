@@ -5,12 +5,14 @@ import type { ChangeEvent } from 'react';
 import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
+import '@/admin/dragOrder.css';
 import './ProductImagesPage.css';
 import {
   listProductImages,
   uploadProductImage,
   updateProductImageFocalPoint,
   deleteProductImage,
+  reorderProductImages,
   getProduct,
 } from '@/api/admin';
 import type { ProductImageAdminResponse } from '@/api/types';
@@ -20,6 +22,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { PlusIcon, TrashIcon } from '@/components/ui/icons';
+import { useDragOrder } from '@/admin/useDragOrder';
 import { formError } from '@/admin/formErrors';
 
 export function ProductImagesPage() {
@@ -55,6 +58,16 @@ export function ProductImagesPage() {
     mutationFn: (imageId: number) => deleteProductImage(productId, imageId),
     onSuccess: invalidate,
   });
+  const reorderMutation = useMutation({
+    mutationFn: (ids: number[]) => reorderProductImages(productId, ids),
+    onSuccess: invalidate,
+  });
+
+  const { items: orderedImages, itemProps, handleProps } = useDragOrder(
+    images,
+    (image) => image.id,
+    (ids) => reorderMutation.mutate(ids),
+  );
 
   const [editingImage, setEditingImage] = useState<ProductImageAdminResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ProductImageAdminResponse | null>(null);
@@ -93,10 +106,10 @@ export function ProductImagesPage() {
 
       {!isError && (
         <div className="product-images-grid">
-          {images?.map((image) => (
-            <div className="product-image-card" key={image.id}>
-              <div className="product-image-card__thumb">
-                <img src={image.originalUrl} alt={image.altText ?? ''} />
+          {orderedImages.map((image) => (
+            <div className="product-image-card" key={image.id} {...itemProps(image.id)}>
+              <div className="product-image-card__thumb drag-handle" {...handleProps(image.id)}>
+                <img src={image.originalUrl} alt={image.altText ?? ''} draggable={false} />
               </div>
               <div className="product-image-card__actions">
                 <button type="button" className="admin-table__link-btn" onClick={() => setEditingImage(image)}>

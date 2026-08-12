@@ -1,0 +1,49 @@
+.products-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.products-page__filters .admin-form-field {
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+/* .admin-table запрещает переносы и раскладывает колонки по контенту — длинное
+   название товара из-за этого уводило таблицу в горизонтальный скролл. Здесь
+   ширины заданы жёстко в процентах, а содержимое переносится. */
+.products-page__table {
+  table-layout: fixed;
+  white-space: normal;
+}
+
+.products-page__table td {
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.products-page__table .admin-table__actions {
+  flex-wrap: wrap;
+}
+
+.products-page__col--id {
+  width: 5%;
+}
+
+.products-page__col--name {
+  width: 30%;
+}
+
+.products-page__col--skus {
+  width: 25%;
+}
+
+.products-page__col--brand {
+  width: 15%;
+}
+
+.products-page__col--actions {
+  width: 25%;
+}

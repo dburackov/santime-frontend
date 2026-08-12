@@ -219,6 +219,7 @@ export interface CategoryAttributeResponse {
   attributeName: string;
   attributeSlug: string;
   attributeType: AttributeType;
+  attributeUnit: string | null;
   required: boolean;
   isFilter: boolean;
   isVariant: boolean;
@@ -230,7 +231,6 @@ export interface CategoryAttributeRequest {
   required: boolean;
   isFilter: boolean;
   isVariant: boolean;
-  sortOrder: number;
 }
 
 export type CategoryAttributeUpdateRequest = Omit<CategoryAttributeRequest, 'attributeId'>;
@@ -242,7 +242,7 @@ export interface ProductResponse {
   description: string | null;
   categoryId: number;
   brandId: number | null;
-  active: boolean;
+  skus: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -253,7 +253,6 @@ export interface ProductRequest {
   description?: string | null;
   categoryId: number;
   brandId?: number | null;
-  active: boolean;
 }
 
 export interface ProductVariantResponse {
@@ -265,6 +264,7 @@ export interface ProductVariantResponse {
   oldPrice: number | null;
   stockQuantity: number;
   weightKg: number | null;
+  active: boolean;
   attributes: Record<string, AttributeValue>;
   createdAt: string;
   updatedAt: string;
@@ -277,6 +277,7 @@ export interface ProductVariantRequest {
   oldPrice?: number | null;
   stockQuantity: number;
   weightKg?: number | null;
+  active: boolean;
   attributes: Record<string, AttributeValue>;
 }
 

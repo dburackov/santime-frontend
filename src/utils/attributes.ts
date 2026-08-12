@@ -1,4 +1,4 @@
-import type { AttributeType, AttributeValue, CatalogFilterAttributeResponse } from '@/api/types';
+import type { AttributeType, AttributeValue } from '@/api/types';
 
 export function formatAttributeValue(
   type: AttributeType,
@@ -29,7 +29,7 @@ export function formatAttributeValue(
  * - NUMBER: голое число неинформативно без подписи — "Высота излива: 10 см".
  */
 export function formatAttributeLine(
-  attr: CatalogFilterAttributeResponse,
+  attr: { name: string; type: AttributeType; unit: string | null },
   value: AttributeValue | undefined,
 ): string | null {
   if (value === undefined || value === null || value === '') return null;

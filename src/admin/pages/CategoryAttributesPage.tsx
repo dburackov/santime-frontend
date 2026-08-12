@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
+import '@/admin/dragOrder.css';
 import '@/components/filters/Filters.css';
 import {
   listCategories,
@@ -13,6 +14,7 @@ import {
   createCategoryAttribute,
   updateCategoryAttribute,
   deleteCategoryAttribute,
+  reorderCategoryAttributes,
 } from '@/api/admin';
 import type { CategoryAttributeResponse, CategoryAttributeUpdateRequest } from '@/api/types';
 import { Modal } from '@/admin/components/Modal';
@@ -22,16 +24,16 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Select } from '@/components/ui/Select';
 import { formError } from '@/admin/formErrors';
-import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
+import { useDragOrder } from '@/admin/useDragOrder';
+import { DragHandleIcon, PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
 interface FlagsFormState {
   required: boolean;
   isFilter: boolean;
   isVariant: boolean;
-  sortOrder: string;
 }
 
-const EMPTY_FLAGS: FlagsFormState = { required: false, isFilter: false, isVariant: false, sortOrder: '0' };
+const EMPTY_FLAGS: FlagsFormState = { required: false, isFilter: false, isVariant: false };
 
 export function CategoryAttributesPage() {
   const { categoryId: categoryIdParam } = useRouteParams<{ categoryId: string }>();
@@ -64,7 +66,6 @@ export function CategoryAttributesPage() {
         required: vars.flags.required,
         isFilter: vars.flags.isFilter,
         isVariant: vars.flags.isVariant,
-        sortOrder: Number(vars.flags.sortOrder) || 0,
       }),
     onSuccess: invalidate,
   });
@@ -79,6 +80,17 @@ export function CategoryAttributesPage() {
     mutationFn: (attributeId: number) => deleteCategoryAttribute(categoryId, attributeId),
     onSuccess: invalidate,
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: (ids: number[]) => reorderCategoryAttributes(categoryId, ids),
+    onSuccess: invalidate,
+  });
+
+  const { items: orderedBindings, itemProps, handleProps } = useDragOrder(
+    bindings,
+    (binding) => binding.attributeId,
+    (ids) => reorderMutation.mutate(ids),
+  );
 
   const [editing, setEditing] = useState<CategoryAttributeResponse | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -104,7 +116,6 @@ export function CategoryAttributesPage() {
       required: binding.required,
       isFilter: binding.isFilter,
       isVariant: binding.isVariant,
-      sortOrder: binding.sortOrder.toString(),
     });
     setModalOpen(true);
   }
@@ -118,7 +129,6 @@ export function CategoryAttributesPage() {
             required: flags.required,
             isFilter: flags.isFilter,
             isVariant: flags.isVariant,
-            sortOrder: Number(flags.sortOrder) || 0,
           },
         })
       : createMutation.mutateAsync({ attributeId: Number(selectedAttributeId), flags });
@@ -146,26 +156,28 @@ export function CategoryAttributesPage() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th />
                 <th>Название</th>
                 <th>Slug</th>
                 <th>Тип</th>
                 <th>Обязателен</th>
                 <th>Фильтр</th>
                 <th>Вариант</th>
-                <th>Порядок</th>
                 <th />
               </tr>
             </thead>
             <tbody>
-              {bindings?.map((binding) => (
-                <tr key={binding.attributeId}>
+              {orderedBindings.map((binding) => (
+                <tr key={binding.attributeId} {...itemProps(binding.attributeId)}>
+                  <td className="drag-handle" {...handleProps(binding.attributeId)}>
+                    <DragHandleIcon width={16} height={16} />
+                  </td>
                   <td>{binding.attributeName}</td>
                   <td className="mono-num">{binding.attributeSlug}</td>
                   <td>{binding.attributeType}</td>
                   <td>{binding.required ? 'Да' : 'Нет'}</td>
                   <td>{binding.isFilter ? 'Да' : 'Нет'}</td>
                   <td>{binding.isVariant ? 'Да' : 'Нет'}</td>
-                  <td className="mono-num">{binding.sortOrder}</td>
                   <td>
                     <div className="admin-table__actions">
                       <button
@@ -253,17 +265,6 @@ export function CategoryAttributesPage() {
             />
             Различает варианты товара
           </label>
-
-          <div className="admin-form-field">
-            <label htmlFor="ca-sort">Порядок отображения</label>
-            <input
-              id="ca-sort"
-              type="number"
-              className="filter-text-input mono-num"
-              value={flags.sortOrder}
-              onChange={(e) => setFlags((f) => ({ ...f, sortOrder: e.target.value }))}
-            />
-          </div>
         </form>
       </Modal>
 

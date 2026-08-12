@@ -3,6 +3,12 @@
   background: var(--color-bg);
 }
 
+/* Опт-ин на всю ширину экрана: страницам с широкими таблицами max-width
+   контейнера мешает, а 100vw ломается о вертикальный скроллбар. */
+.admin-shell__main:has(.admin-page--wide) {
+  max-width: none;
+}
+
 .admin-shell--loading {
   display: flex;
   align-items: center;

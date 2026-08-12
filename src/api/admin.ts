@@ -138,10 +138,16 @@ export function deleteCategoryAttribute(categoryId: number, attributeId: number)
   });
 }
 
+/** ids — attributeId в нужном порядке: у связки категория-атрибут своего id наружу нет. */
+export function reorderCategoryAttributes(categoryId: number, ids: number[]): Promise<void> {
+  return apiRequest(`/api/admin/categories/${categoryId}/attributes/order`, { method: 'PUT', body: { ids } });
+}
+
 // ---- Товары ----
 
 export interface ListProductsParams {
   categoryId?: number;
+  search?: string;
   page?: number;
   size?: number;
   sort?: string;
@@ -149,7 +155,13 @@ export interface ListProductsParams {
 
 export function listProducts(params: ListProductsParams): Promise<PageResponse<ProductResponse>> {
   return apiRequest('/api/admin/products', {
-    searchParams: { categoryId: params.categoryId, page: params.page, size: params.size, sort: params.sort },
+    searchParams: {
+      categoryId: params.categoryId,
+      search: params.search,
+      page: params.page,
+      size: params.size,
+      sort: params.sort,
+    },
   });
 }
 
@@ -222,6 +234,10 @@ export function deleteProductImage(productId: number, imageId: number): Promise<
   return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'DELETE' });
 }
 
+export function reorderProductImages(productId: number, ids: number[]): Promise<void> {
+  return apiRequest(`/api/admin/products/${productId}/images/order`, { method: 'PUT', body: { ids } });
+}
+
 // ---- Фото варианта товара (api.md, раздел 2.9) — идентично фото товара (2.8),
 // но привязано к конкретному варианту (напр. другой цвет), путь с /variants/{variantId} ----
 
@@ -257,6 +273,13 @@ export function updateVariantImageFocalPoint(
 export function deleteVariantImage(productId: number, variantId: number, imageId: number): Promise<void> {
   return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/${imageId}`, {
     method: 'DELETE',
+  });
+}
+
+export function reorderVariantImages(productId: number, variantId: number, ids: number[]): Promise<void> {
+  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/order`, {
+    method: 'PUT',
+    body: { ids },
   });
 }
 

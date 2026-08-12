@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
+import '@/admin/dragOrder.css';
 import '@/components/filters/Filters.css';
 import {
   createBestseller,
@@ -18,7 +19,8 @@ import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { formError } from '@/admin/formErrors';
 import { formatPrice } from '@/utils/price';
-import { PlusIcon, TrashIcon } from '@/components/ui/icons';
+import { useDragOrder } from '@/admin/useDragOrder';
+import { DragHandleIcon, PlusIcon, TrashIcon } from '@/components/ui/icons';
 
 const QUERY_KEY = ['admin-bestsellers'];
 
@@ -40,16 +42,12 @@ export function BestsellersPage() {
   const deleteMutation = useMutation({ mutationFn: deleteBestseller, onSuccess: invalidate });
   const reorderMutation = useMutation({ mutationFn: reorderBestsellers, onSuccess: invalidate });
 
-  const list = items ?? [];
+  const { items: list, itemProps, handleProps } = useDragOrder(
+    items,
+    (item) => item.id,
+    (ids) => reorderMutation.mutate(ids),
+  );
   const alreadyAdded = new Set(list.map((item) => item.productVariantId));
-
-  function move(index: number, direction: -1 | 1) {
-    const target = index + direction;
-    if (target < 0 || target >= list.length) return;
-    const ids = list.map((item) => item.id);
-    [ids[index], ids[target]] = [ids[target], ids[index]];
-    reorderMutation.mutate(ids);
-  }
 
   function add(variantId: number) {
     addMutation.mutate(
@@ -89,31 +87,18 @@ export function BestsellersPage() {
             </thead>
             <tbody>
               {list.map((item, index) => (
-                <tr key={item.id}>
-                  <td className="mono-num">{index + 1}</td>
+                <tr key={item.id} {...itemProps(item.id)}>
+                  <td className="mono-num drag-handle" {...handleProps(item.id)}>
+                    <span className="drag-handle__inner">
+                      <DragHandleIcon width={16} height={16} />
+                      {index + 1}
+                    </span>
+                  </td>
                   <td>{item.productName}</td>
                   <td className="mono-num">{item.variantSku}</td>
                   <td className="mono-num">{formatPrice(item.price)}</td>
                   <td>
                     <div className="admin-table__actions">
-                      <button
-                        type="button"
-                        className="admin-table__icon-btn touch-target"
-                        onClick={() => move(index, -1)}
-                        disabled={index === 0 || reorderMutation.isPending}
-                        aria-label="Выше"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-table__icon-btn touch-target"
-                        onClick={() => move(index, 1)}
-                        disabled={index === list.length - 1 || reorderMutation.isPending}
-                        aria-label="Ниже"
-                      >
-                        ↓
-                      </button>
                       <button
                         type="button"
                         className="admin-table__icon-btn admin-table__icon-btn--danger touch-target"
