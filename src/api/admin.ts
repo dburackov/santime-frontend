@@ -17,6 +17,7 @@ import type {
   OrderResponse,
   OrderStatus,
   PageResponse,
+  PriceImportResponse,
   ProductImageAdminResponse,
   ProductImageFocalPointRequest,
   ProductRequest,
@@ -341,4 +342,12 @@ export function deleteBestseller(id: number): Promise<void> {
 
 export function reorderBestsellers(ids: number[]): Promise<void> {
   return apiRequest('/api/admin/bestsellers/order', { method: 'PUT', body: { ids } });
+}
+
+// ---- Прайс-лист ----
+
+export function importPrices(file: File): Promise<PriceImportResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest('/api/admin/price-import', { method: 'POST', body: formData });
 }

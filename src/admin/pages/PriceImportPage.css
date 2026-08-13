@@ -1,0 +1,25 @@
+.price-import__intro {
+  max-width: 60ch;
+  margin-bottom: var(--space-4);
+  color: var(--color-slate);
+}
+
+.price-import__summary {
+  max-width: 60ch;
+  margin-top: var(--space-4);
+}
+
+.price-import__summary dl {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.price-import__summary dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.price-import__summary dd {
+  font-weight: 600;
+}

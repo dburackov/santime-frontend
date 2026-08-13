@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: '/admin/brands', label: 'Бренды' },
   { to: '/admin/attributes', label: 'Атрибуты' },
   { to: '/admin/products', label: 'Товары' },
+  { to: '/admin/price-import', label: 'Прайс-лист' },
   { to: '/admin/bestsellers', label: 'Хиты продаж' },
   { to: '/admin/orders', label: 'Заказы' },
   { to: '/admin/promo-codes', label: 'Промокоды' },

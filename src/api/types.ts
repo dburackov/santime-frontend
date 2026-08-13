@@ -468,3 +468,10 @@ export interface BestsellerRequest {
   productVariantId: number;
   sortOrder: number;
 }
+
+export interface PriceImportResponse {
+  updated: number;
+  unchanged: number;
+  activated: number;
+  deactivated: number;
+}
