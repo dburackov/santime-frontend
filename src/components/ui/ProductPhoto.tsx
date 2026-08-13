@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import './ProductPhoto.css';
 import { BoxIcon } from './icons';
 import type { ProductImageResponse } from '@/api/types';
@@ -33,11 +36,19 @@ interface ProductPhotoProps {
 
 export function ProductPhoto({ image, alt, size = 'card', sizes, priority = false }: ProductPhotoProps) {
   const { width, height } = DIMENSIONS[size];
+  const [failed, setFailed] = useState(false);
+
+  const showPlaceholder = !image || failed;
 
   return (
-    <div className={`product-photo product-photo--${size}`}>
-      {image ? (
+    <div className={`product-photo product-photo--${size}${showPlaceholder ? ' product-photo--empty' : ''}`}>
+      {image && !failed ? (
         <img
+          // Битая картинка из кеша к моменту гидратации уже complete, и onError по ней
+          // не выстрелит — распознаём её по нулевой natural-ширине.
+          ref={(node) => {
+            if (node?.complete && node.naturalWidth === 0) setFailed(true);
+          }}
           srcSet={image.srcset}
           sizes={sizes ?? DEFAULT_SIZES[size]}
           src={image.fallback}
@@ -46,6 +57,7 @@ export function ProductPhoto({ image, alt, size = 'card', sizes, priority = fals
           height={height}
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : undefined}
+          onError={() => setFailed(true)}
         />
       ) : (
         <BoxIcon className="product-photo__placeholder" aria-label={alt} />

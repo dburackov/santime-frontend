@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import './Filters.css';
 
@@ -19,7 +19,6 @@ export function PriceRangeFilter({ priceMin, priceMax, onChange }: PriceRangeFil
   // литерал пересоздавался бы на каждый рендер (в т.ч. посторонний) и постоянно сбрасывал debounce.
   const localValue = useMemo(() => ({ localMin, localMax }), [localMin, localMax]);
   const debounced = useDebouncedValue(localValue, 400);
-  const isFirstRun = useRef(true);
 
   // Синхронизация с внешним значением (напр. при сбросе фильтров) без useEffect —
   // корректировка состояния во время рендера, рекомендованная React вместо sync-эффекта.
@@ -30,13 +29,16 @@ export function PriceRangeFilter({ priceMin, priceMax, onChange }: PriceRangeFil
     setLocalMax(priceMax?.toString() ?? '');
   }
 
+  // Гард по значению, а не по «первому запуску»: ref-флаг не переживал StrictMode, где
+  // эффект монтирования выполняется дважды на одном инстансе — второй прогон проходил
+  // мимо флага и дёргал onChange(undefined, undefined) при каждом заходе в категорию.
+  // Это давало лишний router.replace, приглушение списка на его время и сброс ?page.
+  // Зависимости намеренно только [debounced]: с priceMin/priceMax эффект срабатывал бы в
+  // момент смены URL, когда локальное состояние ещё не догнало проп синхронизацией выше.
   useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      return;
-    }
     const parsedMin = debounced.localMin ? Number(debounced.localMin) : undefined;
     const parsedMax = debounced.localMax ? Number(debounced.localMax) : undefined;
+    if (parsedMin === priceMin && parsedMax === priceMax) return;
     onChange(parsedMin, parsedMax);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounced]);

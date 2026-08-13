@@ -52,6 +52,16 @@
   flex-direction: column;
 }
 
+/* Список устарел: сменились фильтры/сортировка/страница, но keepPreviousData держит
+   прежние карточки до прихода новых. Приглушаем и запрещаем клики, иначе на медленной
+   сети страница выглядит зависшей и можно уйти в товар, которого в новой выдаче нет.
+   Длительность перехода обнуляется под prefers-reduced-motion (tokens.css). */
+.catalog-list--busy {
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity var(--motion-fast);
+}
+
 @media (min-width: 640px) {
   .category-page__grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

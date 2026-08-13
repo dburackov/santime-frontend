@@ -14,8 +14,15 @@
   object-fit: contain;
 }
 
+/* Фото нет — полей вокруг снимка тоже нет, значит и белая подложка под них не нужна:
+   --color-photo-surface белый в обеих темах ради полей, а здесь фон обязан следовать
+   теме (DESIGN.md, 1.1). */
+.product-photo--empty {
+  background: var(--color-photo-bg);
+}
+
 .product-photo__placeholder {
-  color: var(--color-photo-ink);
+  color: var(--color-slate);
   opacity: 0.6;
 }
 

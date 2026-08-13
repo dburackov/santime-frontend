@@ -1,5 +1,6 @@
 'use client';
 
+import { useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { buildCatalogQuery, parseCatalogParams, type CatalogQueryOptions } from './catalogQuery';
 import type { CatalogFilterAttributeResponse } from '@/api/types';
@@ -20,15 +21,22 @@ export function useCatalogQueryState(
   const router = useRouter();
   const pathname = usePathname() ?? '';
   const searchParams = useSearchParams() ?? new URLSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   /**
    * В Next useSearchParams только на чтение, поэтому запись идёт через роутер.
    * scroll: false сохраняет позицию списка при смене фильтра — раньше это
    * обеспечивал setSearchParams(..., { replace: true }) в react-router.
+   *
+   * startTransition даёт isPending на время RSC-навигации. Без него смена фильтра
+   * никак не видна: keepPreviousData в useCatalogProducts держит прежний список,
+   * и на медленной сети страница выглядит зависшей.
    */
   function commit(next: URLSearchParams) {
     const qs = next.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    startTransition(() => {
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    });
   }
 
   const { sort, page, priceMin, priceMax, inStock, inStockRaw, brandIds, attributeFilters, attributeRangeFilters } =
@@ -80,6 +88,7 @@ export function useCatalogQueryState(
     resetAllFilters,
     setPage,
     hasActiveFilters,
+    isPending,
   };
 }
 

@@ -33,7 +33,11 @@ export function DiscountsPage({ initialViewMode }: { initialViewMode: ViewMode }
   const { viewMode, setViewMode } = useViewMode(initialViewMode);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const { data: page, isLoading, isError, refetch } = useCatalogProducts(state.query);
+  const { data: page, isLoading, isFetching, isError, refetch } = useCatalogProducts(state.query);
+
+  // Два независимых источника ожидания: RSC-навигация после смены URL и дозагрузка
+  // списка react-query. Показанный список устарел, пока идёт любое из них.
+  const isUpdating = state.isPending || (isFetching && !isLoading);
 
   return (
     <div className="container category-page">
@@ -90,13 +94,13 @@ export function DiscountsPage({ initialViewMode }: { initialViewMode: ViewMode }
           {!isError && page && page.content.length > 0 && (
             <>
               {viewMode === 'grid' ? (
-                <div className="category-page__grid">
+                <div className={`category-page__grid${isUpdating ? ' catalog-list--busy' : ''}`} aria-busy={isUpdating}>
                   {page.content.map((variant) => (
                     <ProductCard key={variant.variantId} variant={variant} />
                   ))}
                 </div>
               ) : (
-                <div className="category-page__list">
+                <div className={`category-page__list${isUpdating ? ' catalog-list--busy' : ''}`} aria-busy={isUpdating}>
                   {page.content.map((variant) => (
                     <ProductListRow key={variant.variantId} variant={variant} />
                   ))}

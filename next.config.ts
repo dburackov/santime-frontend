@@ -14,11 +14,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [{ source: '/api/:path*', destination: `${API_ORIGIN}/api/:path*` }];
   },
-
-  // Яндекс — главная цель переезда, поэтому его нужно гарантированно
-  // обслуживать как HTML-ограниченного бота: цельный документ с метаданными
-  // в <head>, а не стриминг, независимо от дефолтного списка Next.
-  htmlLimitedBots: /Yandex/,
 };
 
 export default nextConfig;
