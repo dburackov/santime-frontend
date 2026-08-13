@@ -204,7 +204,7 @@ export function ProductVariantsPage() {
               <tr>
                 <th>ID</th>
                 <th>Slug</th>
-                <th>SKU</th>
+                <th>Артикул</th>
                 <th>Цена</th>
                 <th>Была</th>
                 <th>Остаток</th>
@@ -305,7 +305,7 @@ export function ProductVariantsPage() {
               )}
             </div>
             <div className="admin-form-field">
-              <label htmlFor="variant-sku">SKU<RequiredMark /></label>
+              <label htmlFor="variant-sku">Артикул<RequiredMark /></label>
               <input
                 id="variant-sku"
                 className="filter-text-input mono-num"

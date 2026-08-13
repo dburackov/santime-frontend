@@ -23,8 +23,8 @@ export function Footer() {
         </div>
 
         <nav className="footer__links" aria-label="Информация">
-          <Link href="/dostavka">Доставка</Link>
-          <Link href="/oplata">Оплата</Link>
+          <Link href="/delivery">Доставка</Link>
+          <Link href="/payment">Оплата</Link>
         </nav>
       </div>
     </footer>

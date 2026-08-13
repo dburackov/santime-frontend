@@ -157,7 +157,7 @@ export function ProductPage() {
 
         <div className="product-page__info">
           <h1 className="product-page__title">{variant.productName}</h1>
-          <div className="product-page__sku mono-num">SKU: {variant.sku}</div>
+          <div className="product-page__sku mono-num">Артикул: {variant.sku}</div>
 
           {variant.description && <p className="product-page__description">{variant.description}</p>}
 

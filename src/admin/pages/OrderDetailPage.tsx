@@ -195,7 +195,7 @@ export function OrderDetailPage() {
                 <thead>
                   <tr>
                     <th>Товар</th>
-                    <th>SKU</th>
+                    <th>Артикул</th>
                     <th>Цена</th>
                     <th>Кол-во</th>
                     <th>Сумма</th>

@@ -90,7 +90,7 @@ export function BestsellersPage() {
                 <th />
                 <th>№</th>
                 <th>Товар</th>
-                <th>SKU</th>
+                <th>Артикул</th>
                 <th>Цена</th>
                 <th />
               </tr>

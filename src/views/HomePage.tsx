@@ -16,9 +16,9 @@ import { SkeletonCard } from '@/components/ui/Skeleton';
 import { ArrowRightIcon, CardIcon, HeadsetIcon, ShieldIcon, TruckIcon } from '@/components/ui/icons';
 
 const TRUST_ITEMS = [
-  { icon: TruckIcon, title: 'Быстрая доставка', description: 'По Минску и всей Беларуси', to: '/dostavka' },
+  { icon: TruckIcon, title: 'Быстрая доставка', description: 'По Минску и всей Беларуси', to: '/delivery' },
   { icon: ShieldIcon, title: 'Гарантия', description: 'На все товары каталога' },
-  { icon: CardIcon, title: 'Удобная оплата', description: 'Наличными, картой или на р/с', to: '/oplata' },
+  { icon: CardIcon, title: 'Удобная оплата', description: 'Наличными, картой или на р/с', to: '/payment' },
   { icon: HeadsetIcon, title: 'Поддержка', description: 'Проконсультируем перед покупкой' },
 ];
 
