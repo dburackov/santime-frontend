@@ -1,3 +1,10 @@
+/* Через :has, а не классом .no-scroll в эффекте: на странице живут два независимых
+   Modal (форма и ConfirmDialog), и classList.remove у закрывшегося снял бы
+   блокировку, пока второй ещё открыт. */
+:root:has(.admin-modal) {
+  overflow: hidden;
+}
+
 .admin-modal {
   position: fixed;
   inset: 0;
@@ -58,6 +65,7 @@
 .admin-modal__body {
   padding: var(--space-4);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .admin-modal__footer {

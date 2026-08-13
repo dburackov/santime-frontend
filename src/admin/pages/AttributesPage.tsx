@@ -11,6 +11,7 @@ import type { AttributeRequest, AttributeResponse, AttributeType } from '@/api/t
 import { useAdminResource } from '@/admin/useAdminResource';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
+import { SlugField } from '@/admin/components/SlugField';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
@@ -185,19 +186,13 @@ export function AttributesPage() {
               <span className="admin-form-error">{fieldError(activeMutation.error, 'name')}</span>
             )}
           </div>
-          <div className="admin-form-field">
-            <label htmlFor="attr-slug">Slug</label>
-            <input
-              id="attr-slug"
-              className="filter-text-input mono-num"
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              required
-            />
-            {fieldError(activeMutation.error, 'slug') && (
-              <span className="admin-form-error">{fieldError(activeMutation.error, 'slug')}</span>
-            )}
-          </div>
+          <SlugField
+            id="attr-slug"
+            value={form.slug}
+            source={form.name}
+            onChange={(slug) => setForm((f) => ({ ...f, slug }))}
+            error={fieldError(activeMutation.error, 'slug')}
+          />
           <div className="admin-form-row">
             <div className="admin-form-field">
               <label htmlFor="attr-type">Тип</label>

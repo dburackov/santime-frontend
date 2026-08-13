@@ -19,6 +19,7 @@ import {
 import type { ProductRequest, ProductResponse } from '@/api/types';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
+import { SlugField } from '@/admin/components/SlugField';
 import { RequiredMark } from '@/admin/components/RequiredMark';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -299,19 +300,14 @@ export function ProductsPage() {
               <span className="admin-form-error">{fieldError(activeMutation.error, 'name')}</span>
             )}
           </div>
-          <div className="admin-form-field">
-            <label htmlFor="product-slug">Slug<RequiredMark /></label>
-            <input
-              id="product-slug"
-              className="filter-text-input mono-num"
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              required
-            />
-            {fieldError(activeMutation.error, 'slug') && (
-              <span className="admin-form-error">{fieldError(activeMutation.error, 'slug')}</span>
-            )}
-          </div>
+          <SlugField
+            id="product-slug"
+            value={form.slug}
+            source={form.name}
+            onChange={(slug) => setForm((f) => ({ ...f, slug }))}
+            required
+            error={fieldError(activeMutation.error, 'slug')}
+          />
           <div className="admin-form-field">
             <label htmlFor="product-description">Описание</label>
             <textarea

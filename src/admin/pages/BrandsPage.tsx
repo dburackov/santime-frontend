@@ -10,6 +10,7 @@ import type { BrandRequest, BrandResponse } from '@/api/types';
 import { useAdminResource } from '@/admin/useAdminResource';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
+import { SlugField } from '@/admin/components/SlugField';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { fieldError, formError } from '@/admin/formErrors';
@@ -159,19 +160,13 @@ export function BrandsPage() {
               <span className="admin-form-error">{fieldError(activeMutation.error, 'name')}</span>
             )}
           </div>
-          <div className="admin-form-field">
-            <label htmlFor="brand-slug">Slug</label>
-            <input
-              id="brand-slug"
-              className="filter-text-input mono-num"
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              required
-            />
-            {fieldError(activeMutation.error, 'slug') && (
-              <span className="admin-form-error">{fieldError(activeMutation.error, 'slug')}</span>
-            )}
-          </div>
+          <SlugField
+            id="brand-slug"
+            value={form.slug}
+            source={form.name}
+            onChange={(slug) => setForm((f) => ({ ...f, slug }))}
+            error={fieldError(activeMutation.error, 'slug')}
+          />
         </form>
       </Modal>
 

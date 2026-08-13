@@ -140,6 +140,10 @@
 
 /* ---- Мобильное меню (drawer) ---- */
 
+:root:has(.header__drawer) {
+  overflow: hidden;
+}
+
 .header__drawer {
   position: fixed;
   inset: 0;
