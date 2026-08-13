@@ -284,23 +284,19 @@ export interface ProductVariantRequest {
 // ---- Фото товара (админка) ----
 
 /**
- * Ответ на загрузку/список фото в админке (IMAGE-PIPELINE-SPEC.md, 5.4/5.5/9.2).
+ * Ответ на загрузку/список фото в админке (IMAGE-PIPELINE-SPEC.md, 5.4/5.5).
  * originalUrl — прямая ссылка на оригинал в MinIO (бакет публичный на чтение,
- * см. раздел 2 спеки) — нужна только для превью в виджете точки фокуса,
+ * см. раздел 2 спеки) — нужна только для превью в гриде админки,
  * реальные srcset для витрины строит бэкенд отдельно (ProductImageResponse).
  */
 export interface ProductImageAdminResponse {
   id: number;
   sortOrder: number;
-  focalX: number;
-  focalY: number;
   altText: string | null;
   originalUrl: string;
 }
 
-export interface ProductImageFocalPointRequest {
-  focalX: number;
-  focalY: number;
+export interface ProductImageAltRequest {
   altText?: string | null;
 }
 

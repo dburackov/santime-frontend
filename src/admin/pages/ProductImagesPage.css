@@ -19,10 +19,12 @@
   background: var(--color-photo-bg);
 }
 
+/* contain, а не cover: витрина фото не обрезает (imgproxy rs:fit), и cover показывал бы
+   админу кадрирование, которого на сайте нет. */
 .product-image-card__thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 

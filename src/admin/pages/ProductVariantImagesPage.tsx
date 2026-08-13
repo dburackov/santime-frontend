@@ -10,7 +10,7 @@ import '@/admin/pages/ProductImagesPage.css';
 import {
   listVariantImages,
   uploadVariantImage,
-  updateVariantImageFocalPoint,
+  updateVariantImageAlt,
   deleteVariantImage,
   reorderVariantImages,
   getProduct,
@@ -18,7 +18,7 @@ import {
 } from '@/api/admin';
 import type { ProductImageAdminResponse } from '@/api/types';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
-import { FocalPointEditor } from '@/admin/components/FocalPointEditor';
+import { ImageAltEditor } from '@/admin/components/ImageAltEditor';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -149,9 +149,9 @@ export function ProductVariantImagesPage() {
       )}
 
       {editingImage && (
-        <FocalPointEditor
+        <ImageAltEditor
           image={editingImage}
-          onSave={(body) => updateVariantImageFocalPoint(productId, variantId, editingImage.id, body)}
+          onSave={(body) => updateVariantImageAlt(productId, variantId, editingImage.id, body)}
           onClose={() => setEditingImage(null)}
           onSaved={() => {
             invalidate();

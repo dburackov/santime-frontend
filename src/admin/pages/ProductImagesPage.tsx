@@ -10,14 +10,14 @@ import './ProductImagesPage.css';
 import {
   listProductImages,
   uploadProductImage,
-  updateProductImageFocalPoint,
+  updateProductImageAlt,
   deleteProductImage,
   reorderProductImages,
   getProduct,
 } from '@/api/admin';
 import type { ProductImageAdminResponse } from '@/api/types';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
-import { FocalPointEditor } from '@/admin/components/FocalPointEditor';
+import { ImageAltEditor } from '@/admin/components/ImageAltEditor';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -131,9 +131,9 @@ export function ProductImagesPage() {
       )}
 
       {editingImage && (
-        <FocalPointEditor
+        <ImageAltEditor
           image={editingImage}
-          onSave={(body) => updateProductImageFocalPoint(productId, editingImage.id, body)}
+          onSave={(body) => updateProductImageAlt(productId, editingImage.id, body)}
           onClose={() => setEditingImage(null)}
           onSaved={() => {
             invalidate();

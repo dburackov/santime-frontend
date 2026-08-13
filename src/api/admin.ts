@@ -19,7 +19,7 @@ import type {
   PageResponse,
   PriceImportResponse,
   ProductImageAdminResponse,
-  ProductImageFocalPointRequest,
+  ProductImageAltRequest,
   ProductRequest,
   ProductResponse,
   ProductVariantRequest,
@@ -225,10 +225,10 @@ export function uploadProductImage(productId: number, file: File): Promise<Produ
   return apiRequest(`/api/admin/products/${productId}/images`, { method: 'POST', body: formData });
 }
 
-export function updateProductImageFocalPoint(
+export function updateProductImageAlt(
   productId: number,
   imageId: number,
-  body: ProductImageFocalPointRequest,
+  body: ProductImageAltRequest,
 ): Promise<ProductImageAdminResponse> {
   return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'PATCH', body });
 }
@@ -261,11 +261,11 @@ export function uploadVariantImage(
   });
 }
 
-export function updateVariantImageFocalPoint(
+export function updateVariantImageAlt(
   productId: number,
   variantId: number,
   imageId: number,
-  body: ProductImageFocalPointRequest,
+  body: ProductImageAltRequest,
 ): Promise<ProductImageAdminResponse> {
   return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/${imageId}`, {
     method: 'PATCH',
