@@ -17,6 +17,6 @@ export const SITE_HOURS = { label: 'Работаем ежедневно', value:
 export const NAV_LINKS = [
   { to: '/', label: 'Главная' },
   { to: '/catalog', label: 'Каталог' },
-  { to: '/dostavka', label: 'Доставка' },
-  { to: '/oplata', label: 'Оплата' },
+  { to: '/delivery', label: 'Доставка' },
+  { to: '/payment', label: 'Оплата' },
 ];

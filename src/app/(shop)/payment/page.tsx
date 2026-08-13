@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
 import { SITE_NAME } from '@/config/siteInfo';
-export { DeliveryPage as default } from '@/views/DeliveryPage';
+export { PaymentPage as default } from '@/views/PaymentPage';
 
-const TITLE = 'Доставка';
+const TITLE = 'Оплата';
 const DESCRIPTION =
-  'Условия и сроки доставки сантехники по Минску и Беларуси: зоны, стоимость, самовывоз.';
+  'Способы оплаты в интернет-магазине Santime: наличными, картой и на расчётный счёт для юрлиц.';
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: '/dostavka' },
+  alternates: { canonical: '/payment' },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
-    url: '/dostavka',
+    url: '/payment',
     siteName: SITE_NAME,
     locale: 'ru_BY',
     type: 'website',
