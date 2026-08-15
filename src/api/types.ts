@@ -74,9 +74,8 @@ export interface ProductImageResponse {
 export interface VariantCardResponse {
   variantId: number;
   variantSlug: string;
-  productId: number;
-  productName: string;
-  productSlug: string;
+  groupId: number;
+  name: string;
   categoryId: number;
   brandId: number | null;
   price: number;
@@ -128,6 +127,11 @@ export interface VariantOptionItem {
   variantSlug: string;
   value: string;
   current: boolean;
+  /**
+   * Есть ли исполнение, отличающееся от текущего только по этой оси.
+   * false — такого сочетания в продаже нет, ссылка ведёт к ближайшему подходящему.
+   */
+  available: boolean;
   inStock: boolean;
 }
 
@@ -140,15 +144,14 @@ export interface VariantOptionGroup {
 export interface VariantDetailResponse {
   variantId: number;
   variantSlug: string;
+  name: string;
   sku: string;
   price: number;
   oldPrice: number | null;
   stockQuantity: number;
   weightKg: number | null;
   attributes: Record<string, AttributeValue>;
-  productId: number;
-  productName: string;
-  productSlug: string;
+  groupId: number;
   description: string | null;
   categoryId: number;
   brandId: number | null;
@@ -222,7 +225,6 @@ export interface CategoryAttributeResponse {
   attributeUnit: string | null;
   required: boolean;
   isFilter: boolean;
-  isVariant: boolean;
   sortOrder: number;
 }
 
@@ -230,34 +232,70 @@ export interface CategoryAttributeRequest {
   attributeId: number;
   required: boolean;
   isFilter: boolean;
-  isVariant: boolean;
 }
 
 export type CategoryAttributeUpdateRequest = Omit<CategoryAttributeRequest, 'attributeId'>;
 
-export interface ProductResponse {
+/** Группа исполнений: сама по себе не заводится, живёт вместе с позициями. */
+export interface ProductGroupResponse {
   id: number;
-  name: string;
-  slug: string;
-  description: string | null;
   categoryId: number;
   brandId: number | null;
-  skus: string[];
+  description: string | null;
+  axes: ProductGroupAxisResponse[];
+  variants: ProductGroupVariantResponse[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ProductRequest {
+/** Ось вариативности — атрибут, по которому различаются исполнения этой группы. */
+export interface ProductGroupAxisResponse {
+  attributeId: number;
+  attributeName: string;
+  attributeSlug: string;
+  attributeType: AttributeType;
+  attributeUnit: string | null;
+  sortOrder: number;
+}
+
+export interface ProductGroupAxisRequest {
+  attributeId: number;
+  sortOrder: number;
+}
+
+export interface ProductGroupVariantResponse {
+  id: number;
   name: string;
-  slug: string;
-  description?: string | null;
+  sku: string;
+  active: boolean;
+  axisValues: Record<string, AttributeValue>;
+}
+
+/**
+ * Строка списка товаров админки: модель со всеми исполнениями. Страница считает модели,
+ * поэтому исполнения одной модели никогда не разрываются пагинацией.
+ */
+export interface ProductGroupRowResponse {
+  id: number;
   categoryId: number;
-  brandId?: number | null;
+  brandId: number | null;
+  description: string | null;
+  /** Полное число исполнений модели: при поиске в variants приходят только совпавшие. */
+  variantTotal: number;
+  axes: ProductGroupAxisResponse[];
+  variants: ProductVariantResponse[];
+}
+
+/** Поля модели: общие для всех её исполнений. Категории нет — она неизменяема. */
+export interface ProductGroupRequest {
+  brandId: number | null;
+  description: string | null;
 }
 
 export interface ProductVariantResponse {
   id: number;
-  productId: number;
+  groupId: number;
+  name: string;
   slug: string;
   sku: string;
   price: number;
@@ -266,11 +304,17 @@ export interface ProductVariantResponse {
   weightKg: number | null;
   active: boolean;
   attributes: Record<string, AttributeValue>;
+  categoryId: number;
+  brandId: number | null;
+  description: string | null;
+  images?: ProductImageResponse[];
   createdAt: string;
   updatedAt: string;
 }
 
+/** Заведение новой позиции — вместе с ней создаётся её группа. */
 export interface ProductVariantRequest {
+  name: string;
   slug: string;
   sku: string;
   price: number;
@@ -279,7 +323,23 @@ export interface ProductVariantRequest {
   weightKg?: number | null;
   active: boolean;
   attributes: Record<string, AttributeValue>;
+  categoryId: number;
+  brandId?: number | null;
+  description?: string | null;
 }
+
+/** Правка позиции. Категории нет: она задаётся при создании и не меняется. */
+/** Правка позиции: полей модели здесь нет, они правятся у группы. */
+export type ProductVariantUpdateRequest = Omit<
+  ProductVariantRequest,
+  'categoryId' | 'brandId' | 'description'
+>;
+
+/** Новое исполнение: непереданное копируется с исходной позиции. */
+export type ProductVariantSiblingRequest = Omit<
+  ProductVariantRequest,
+  'categoryId' | 'brandId' | 'description'
+>;
 
 // ---- Фото товара (админка) ----
 

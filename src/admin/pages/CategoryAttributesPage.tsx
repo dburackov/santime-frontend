@@ -31,10 +31,9 @@ import { DragHandleIcon, PlusIcon, EditIcon, TrashIcon } from '@/components/ui/i
 interface FlagsFormState {
   required: boolean;
   isFilter: boolean;
-  isVariant: boolean;
 }
 
-const EMPTY_FLAGS: FlagsFormState = { required: false, isFilter: false, isVariant: false };
+const EMPTY_FLAGS: FlagsFormState = { required: false, isFilter: false };
 
 export function CategoryAttributesPage() {
   const { categoryId: categoryIdParam } = useRouteParams<{ categoryId: string }>();
@@ -66,7 +65,6 @@ export function CategoryAttributesPage() {
         attributeId: vars.attributeId,
         required: vars.flags.required,
         isFilter: vars.flags.isFilter,
-        isVariant: vars.flags.isVariant,
       }),
     onSuccess: invalidate,
   });
@@ -116,7 +114,6 @@ export function CategoryAttributesPage() {
     setFlags({
       required: binding.required,
       isFilter: binding.isFilter,
-      isVariant: binding.isVariant,
     });
     setModalOpen(true);
   }
@@ -129,7 +126,6 @@ export function CategoryAttributesPage() {
           body: {
             required: flags.required,
             isFilter: flags.isFilter,
-            isVariant: flags.isVariant,
           },
         })
       : createMutation.mutateAsync({ attributeId: Number(selectedAttributeId), flags });
@@ -162,7 +158,6 @@ export function CategoryAttributesPage() {
               <col className="category-attributes-page__col--type" />
               <col className="category-attributes-page__col--required" />
               <col className="category-attributes-page__col--filter" />
-              <col className="category-attributes-page__col--variant" />
               <col className="category-attributes-page__col--actions" />
             </colgroup>
             <thead>
@@ -173,7 +168,6 @@ export function CategoryAttributesPage() {
                 <th>Тип</th>
                 <th>Обязателен</th>
                 <th>Фильтр</th>
-                <th>Вариант</th>
                 <th />
               </tr>
             </thead>
@@ -188,7 +182,6 @@ export function CategoryAttributesPage() {
                   <td>{binding.attributeType}</td>
                   <td>{binding.required ? 'Да' : 'Нет'}</td>
                   <td>{binding.isFilter ? 'Да' : 'Нет'}</td>
-                  <td>{binding.isVariant ? 'Да' : 'Нет'}</td>
                   <td>
                     <div className="admin-table__actions">
                       <button
@@ -267,14 +260,6 @@ export function CategoryAttributesPage() {
               onChange={(e) => setFlags((f) => ({ ...f, isFilter: e.target.checked }))}
             />
             Участвует в фильтрах
-          </label>
-          <label className="admin-form-checkbox">
-            <input
-              type="checkbox"
-              checked={flags.isVariant}
-              onChange={(e) => setFlags((f) => ({ ...f, isVariant: e.target.checked }))}
-            />
-            Различает варианты товара
           </label>
         </form>
       </Modal>

@@ -45,3 +45,9 @@
   color: var(--color-slate);
   text-decoration: line-through;
 }
+
+/* Такого сочетания осей нет в продаже — ссылка ведёт к ближайшему исполнению. */
+.variant-options__pill--unavailable {
+  color: var(--color-slate);
+  border-style: dashed;
+}

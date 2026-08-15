@@ -6,14 +6,14 @@ import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/admin/dragOrder.css';
-import './ProductImagesPage.css';
+import '@/admin/imagesGrid.css';
 import {
-  listProductImages,
-  uploadProductImage,
-  updateProductImageAlt,
-  deleteProductImage,
-  reorderProductImages,
-  getProduct,
+  listGroupImages,
+  uploadGroupImage,
+  updateGroupImageAlt,
+  deleteGroupImage,
+  reorderGroupImages,
+  getProductGroup,
 } from '@/api/admin';
 import type { ProductImageAdminResponse } from '@/api/types';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
@@ -25,16 +25,19 @@ import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { useDragOrder } from '@/admin/useDragOrder';
 import { formError } from '@/admin/formErrors';
 
-export function ProductImagesPage() {
-  const { productId: productIdParam } = useRouteParams<{ productId: string }>();
-  const productId = Number(productIdParam);
+/** Общие фото модели: на витрине идут в галерее каждого исполнения после его собственных. */
+export function ProductGroupImagesPage() {
+  const groupId = Number(useRouteParams<{ groupId: string }>().groupId);
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: product } = useQuery({
-    queryKey: ['admin-product', productId],
-    queryFn: () => getProduct(productId),
+  const { data: group } = useQuery({
+    queryKey: ['admin-product-group', groupId],
+    queryFn: () => getProductGroup(groupId),
   });
+
+  // Своего имени у модели нет — берём имя базового исполнения, как и alt по умолчанию на бэке.
+  const title = group?.variants[0]?.name;
 
   const {
     data: images,
@@ -42,24 +45,24 @@ export function ProductImagesPage() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['admin-product-images', productId],
-    queryFn: () => listProductImages(productId),
+    queryKey: ['admin-group-images', groupId],
+    queryFn: () => listGroupImages(groupId),
   });
 
   function invalidate() {
-    return queryClient.invalidateQueries({ queryKey: ['admin-product-images', productId] });
+    return queryClient.invalidateQueries({ queryKey: ['admin-group-images', groupId] });
   }
 
   const uploadMutation = useMutation({
-    mutationFn: (file: File) => uploadProductImage(productId, file),
+    mutationFn: (file: File) => uploadGroupImage(groupId, file),
     onSuccess: invalidate,
   });
   const deleteMutation = useMutation({
-    mutationFn: (imageId: number) => deleteProductImage(productId, imageId),
+    mutationFn: (imageId: number) => deleteGroupImage(groupId, imageId),
     onSuccess: invalidate,
   });
   const reorderMutation = useMutation({
-    mutationFn: (ids: number[]) => reorderProductImages(productId, ids),
+    mutationFn: (ids: number[]) => reorderGroupImages(groupId, ids),
     onSuccess: invalidate,
   });
 
@@ -81,10 +84,10 @@ export function ProductImagesPage() {
 
   return (
     <div className="admin-page">
-      <Breadcrumbs items={[{ label: 'Товары', to: '/admin/products' }, { label: product?.name ?? '…' }]} />
+      <Breadcrumbs items={[{ label: 'Товары', to: '/admin/products' }, { label: title ?? '…' }]} />
 
       <div className="admin-page__header">
-        <h1>Фото: {product?.name}</h1>
+        <h1>Общие фото: {title}</h1>
         <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending}>
           <PlusIcon width={16} height={16} />
           Загрузить фото
@@ -97,6 +100,10 @@ export function ProductImagesPage() {
           onChange={handleFileChange}
         />
       </div>
+
+      <p className="admin-form-hint">
+        Эти фото видны у всех исполнений модели — после собственных фото исполнения.
+      </p>
 
       {formError(uploadMutation.error) && (
         <div className="admin-banner-error">{formError(uploadMutation.error)}</div>
@@ -133,7 +140,7 @@ export function ProductImagesPage() {
       {editingImage && (
         <ImageAltEditor
           image={editingImage}
-          onSave={(body) => updateProductImageAlt(productId, editingImage.id, body)}
+          onSave={(body) => updateGroupImageAlt(groupId, editingImage.id, body)}
           onClose={() => setEditingImage(null)}
           onSaved={() => {
             invalidate();

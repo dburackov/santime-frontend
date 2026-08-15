@@ -19,9 +19,9 @@ export function ProductCard({ variant, displayAttributes = [] }: ProductCardProp
 
   return (
     <Link href={`/product/${variant.variantSlug}`} className="product-card">
-      <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="card" />
+      <ProductPhoto image={variant.images?.[0]} alt={variant.name} size="card" />
       <div className="product-card__body">
-        <h3 className="product-card__title">{variant.productName}</h3>
+        <h3 className="product-card__title">{variant.name}</h3>
         {attrLine && <p className="product-card__attrs">{attrLine}</p>}
         <div className="product-card__footer">
           <Price value={variant.price} oldValue={variant.oldPrice} size="md" />

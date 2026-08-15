@@ -152,6 +152,22 @@
   font-size: var(--text-xs);
 }
 
+/* Подпись под полем: что поле общее для всех исполнений или, наоборот, различает их. */
+.admin-form-hint {
+  color: var(--color-slate);
+  font-size: var(--text-xs);
+}
+
+/* Пояснение над формой нового исполнения. */
+.admin-form-note {
+  padding: var(--space-3);
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-tint-2);
+  color: var(--color-slate);
+  font-size: var(--text-sm);
+}
+
 .admin-form-checkbox {
   display: flex;
   align-items: center;

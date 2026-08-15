@@ -15,7 +15,7 @@ export function buildProductJsonLd(variant: VariantDetailResponse, description: 
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': url,
-    name: variant.productName,
+    name: variant.name,
     description,
     sku: variant.sku,
     url,
@@ -61,6 +61,6 @@ export function buildProductCrumbs(
     { name: 'Главная', path: '/' },
     { name: 'Каталог', path: '/catalog' },
     ...(category ? [{ name: category.name, path: `/category/${category.slug}` }] : []),
-    { name: variant.productName, path: `/product/${variant.variantSlug}` },
+    { name: variant.name, path: `/product/${variant.variantSlug}` },
   ];
 }

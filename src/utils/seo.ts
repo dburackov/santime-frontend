@@ -10,17 +10,6 @@ export interface ResolvedMeta {
 /** Рекомендуемая длина description в выдаче. Мягкая: длиннее обрезается по границе слова. */
 export const META_DESCRIPTION_LIMIT = 160;
 
-/**
- * Значения атрибутов, которыми текущий вариант отличается от соседних —
- * например «чёрный» для одного из цветов смесителя. Берутся из variantOptions,
- * где бэкенд уже пометил текущий вариант флагом current.
- */
-function distinguishingValues(variant: VariantDetailResponse): string[] {
-  return variant.variantOptions
-    .map((group) => group.options.find((option) => option.current)?.value)
-    .filter((value): value is string => Boolean(value));
-}
-
 function truncate(text: string, limit: number): string {
   const normalized = text.replace(/\s+/g, ' ').trim();
   if (normalized.length <= limit) return normalized;
@@ -32,12 +21,10 @@ function truncate(text: string, limit: number): string {
 /**
  * Метаданные страницы товара — всегда генерируются, хранимых переопределений нет.
  *
- * Причина в том, что URL повариантные, а редактировать meta удобно на товаре —
- * и тогда одно значение растиражировалось бы на все его варианты, то есть создало
- * бы ровно те дубли, которых мы избегаем. Генерация же различает варианты:
- * заголовок несёт различающий атрибут, описание — ещё и цену.
+ * Заголовок — имя самой позиции: оно уже содержит различающее значение
+ * («Смеситель Grohe Essence, хром»), поэтому склеивать его с осями не нужно.
  *
- * Описание товара в сниппет намеренно не попадает: оно общее для вариантов.
+ * Описание группы в сниппет намеренно не попадает: оно общее для всех исполнений.
  * На самой странице и в JSON-LD оно, разумеется, остаётся.
  *
  * Название магазина дописывает шаблон из app/layout.tsx. Порядок частей важен:
@@ -45,9 +32,7 @@ function truncate(text: string, limit: number): string {
  * с доставкой, а не идентичность товара.
  */
 export function resolveProductMeta(variant: VariantDetailResponse): ResolvedMeta {
-  const values = distinguishingValues(variant);
-  const title =
-    values.length > 0 ? `${variant.productName}, ${values.join(', ')}` : variant.productName;
+  const title = variant.name;
 
   // Формат тот же, что показывает компонент Price, чтобы цена в сниппете
   // совпадала с ценой на странице.

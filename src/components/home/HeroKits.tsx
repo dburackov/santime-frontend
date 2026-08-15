@@ -48,7 +48,7 @@ export function HeroKits() {
         <Link href={`/product/${kit.variantSlug}`} className="hero-kits__photo">
           <ProductPhoto
             image={kit.images?.[0]}
-            alt={kit.productName}
+            alt={kit.name}
             size="card"
             sizes="(max-width: 639px) 110px, 150px"
             priority
@@ -57,7 +57,7 @@ export function HeroKits() {
 
         <div className="hero-kits__body">
           <Link href={`/product/${kit.variantSlug}`} className="hero-kits__name">
-            {kit.productName}
+            {kit.name}
           </Link>
 
           <div className="hero-kits__buy">
@@ -69,7 +69,7 @@ export function HeroKits() {
                 addItem({
                   variantId: kit.variantId,
                   variantSlug: kit.variantSlug,
-                  productName: kit.productName,
+                  productName: kit.name,
                   price: kit.price,
                   attributes: kit.attributes,
                   image: kit.images?.[0] ?? null,

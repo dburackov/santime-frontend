@@ -6,15 +6,14 @@ import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/admin/dragOrder.css';
-import '@/admin/pages/ProductImagesPage.css';
+import '@/admin/imagesGrid.css';
 import {
   listVariantImages,
   uploadVariantImage,
   updateVariantImageAlt,
   deleteVariantImage,
   reorderVariantImages,
-  getProduct,
-  getProductVariant,
+  getVariant,
 } from '@/api/admin';
 import type { ProductImageAdminResponse } from '@/api/types';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
@@ -26,26 +25,15 @@ import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { useDragOrder } from '@/admin/useDragOrder';
 import { formError } from '@/admin/formErrors';
 
-/** Фото, специфичные для конкретного варианта товара (напр. другой цвет) — api.md, 2.9.
- * На витрине показываются перед общими фото товара (см. ProductImagesPage). */
+/** Фото позиции. Общих фото группы сейчас нет — вернутся отдельной фичей. */
 export function ProductVariantImagesPage() {
-  const { productId: productIdParam, variantId: variantIdParam } = useRouteParams<{
-    productId: string;
-    variantId: string;
-  }>();
-  const productId = Number(productIdParam);
-  const variantId = Number(variantIdParam);
+  const variantId = Number(useRouteParams<{ variantId: string }>().variantId);
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: product } = useQuery({
-    queryKey: ['admin-product', productId],
-    queryFn: () => getProduct(productId),
-  });
-
   const { data: variant } = useQuery({
-    queryKey: ['admin-product-variant', productId, variantId],
-    queryFn: () => getProductVariant(productId, variantId),
+    queryKey: ['admin-variant', variantId],
+    queryFn: () => getVariant(variantId),
   });
 
   const {
@@ -54,24 +42,24 @@ export function ProductVariantImagesPage() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['admin-variant-images', productId, variantId],
-    queryFn: () => listVariantImages(productId, variantId),
+    queryKey: ['admin-variant-images', variantId],
+    queryFn: () => listVariantImages(variantId),
   });
 
   function invalidate() {
-    return queryClient.invalidateQueries({ queryKey: ['admin-variant-images', productId, variantId] });
+    return queryClient.invalidateQueries({ queryKey: ['admin-variant-images', variantId] });
   }
 
   const uploadMutation = useMutation({
-    mutationFn: (file: File) => uploadVariantImage(productId, variantId, file),
+    mutationFn: (file: File) => uploadVariantImage(variantId, file),
     onSuccess: invalidate,
   });
   const deleteMutation = useMutation({
-    mutationFn: (imageId: number) => deleteVariantImage(productId, variantId, imageId),
+    mutationFn: (imageId: number) => deleteVariantImage(variantId, imageId),
     onSuccess: invalidate,
   });
   const reorderMutation = useMutation({
-    mutationFn: (ids: number[]) => reorderVariantImages(productId, variantId, ids),
+    mutationFn: (ids: number[]) => reorderVariantImages(variantId, ids),
     onSuccess: invalidate,
   });
 
@@ -96,13 +84,12 @@ export function ProductVariantImagesPage() {
       <Breadcrumbs
         items={[
           { label: 'Товары', to: '/admin/products' },
-          { label: product?.name ?? '…', to: `/admin/products/${productId}/variants` },
-          { label: variant?.sku ?? '…' },
+          { label: variant?.name ?? '…' },
         ]}
       />
 
       <div className="admin-page__header">
-        <h1>Фото варианта: {variant?.sku}</h1>
+        <h1>Фото: {variant?.name}</h1>
         <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending}>
           <PlusIcon width={16} height={16} />
           Загрузить фото
@@ -151,7 +138,7 @@ export function ProductVariantImagesPage() {
       {editingImage && (
         <ImageAltEditor
           image={editingImage}
-          onSave={(body) => updateVariantImageAlt(productId, variantId, editingImage.id, body)}
+          onSave={(body) => updateVariantImageAlt(variantId, editingImage.id, body)}
           onClose={() => setEditingImage(null)}
           onSaved={() => {
             invalidate();

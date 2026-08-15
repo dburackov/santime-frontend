@@ -56,8 +56,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   function navLinkClass(to: string) {
-    // NavLink в react-router подсвечивался и на вложенных путях (без пропа end),
-    // поэтому /admin/products/5/variants продолжает подсвечивать «Товары».
+    // Вложенные пути подсвечивают свой раздел: на /admin/products/5/images
+    // в меню остаётся активным пункт «Товары».
     const isActive = pathname === to || pathname.startsWith(`${to}/`);
     return `admin-header__nav-link ${isActive ? 'admin-header__nav-link--active' : ''}`;
   }

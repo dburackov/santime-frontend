@@ -131,7 +131,7 @@ export function ProductPage() {
       {
         variantId: variant.variantId,
         variantSlug: variant.variantSlug,
-        productName: variant.productName,
+        productName: variant.name,
         price: variant.price,
         attributes: variant.attributes,
         image: variant.images?.[0] ?? null,
@@ -148,15 +148,15 @@ export function ProductPage() {
         items={[
           { label: 'Каталог', to: '/catalog' },
           ...(category ? [{ label: category.name, to: `/category/${category.slug}` }] : []),
-          { label: variant.productName },
+          { label: variant.name },
         ]}
       />
 
       <div className="product-page__layout">
-        <ProductGallery key={variant.variantId} images={images} productName={variant.productName} />
+        <ProductGallery key={variant.variantId} images={images} productName={variant.name} />
 
         <div className="product-page__info">
-          <h1 className="product-page__title">{variant.productName}</h1>
+          <h1 className="product-page__title">{variant.name}</h1>
           <div className="product-page__sku mono-num">Артикул: {variant.sku}</div>
 
           {variant.description && <p className="product-page__description">{variant.description}</p>}

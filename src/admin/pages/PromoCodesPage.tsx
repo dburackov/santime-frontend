@@ -13,7 +13,7 @@ import {
   deletePromoCode,
   listCategories,
   listBrands,
-  listProducts,
+  listProductGroups,
 } from '@/api/admin';
 import type { DiscountType, PromoCodeRequest, PromoCodeResponse } from '@/api/types';
 import { PUBLIC_PROMO_CODES_QUERY_KEY } from '@/queries/promoQueryKeys';
@@ -27,6 +27,7 @@ import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
 import { Select } from '@/components/ui/Select';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { fieldError, formError } from '@/admin/formErrors';
+import { groupTitle } from '@/admin/productGroupTitle';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
 const QUERY_KEY = ['admin-promo-codes'];
@@ -124,10 +125,16 @@ export function PromoCodesPage() {
   const { data: brands } = useQuery({ queryKey: ['admin-brands'], queryFn: listBrands });
   const { data: productsPage } = useQuery({
     queryKey: ['admin-products-all'],
-    queryFn: () => listProducts({ size: PRODUCTS_PAGE_SIZE, sort: 'name,asc' }),
+    queryFn: () => listProductGroups({ size: PRODUCTS_PAGE_SIZE }),
   });
 
-  const products = productsPage?.content;
+  // Скоуп промокода — на группу («эта модель во всех исполнениях»), и эндпоинт уже отдаёт
+  // модели. Сортировка по имени только на клиенте: у группы своего имени в базе нет.
+  const products = productsPage
+    ? productsPage.content
+        .map((group) => ({ groupId: group.id, name: groupTitle(group.variants) }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+    : undefined;
   const productsTruncated = productsPage ? productsPage.totalElements > productsPage.content.length : false;
 
   const [editing, setEditing] = useState<PromoCodeResponse | null>(null);
@@ -462,7 +469,7 @@ export function PromoCodesPage() {
               <label htmlFor="promo-products">Товары</label>
               <SearchableSelect
                 id="promo-products"
-                options={products?.map((p) => ({ value: String(p.id), label: p.name })) ?? []}
+                options={products?.map((p) => ({ value: String(p.groupId), label: p.name })) ?? []}
                 selected={form.productIds}
                 onChange={(values) => setForm((f) => ({ ...f, productIds: values }))}
                 multiple

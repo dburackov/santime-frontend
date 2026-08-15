@@ -167,7 +167,7 @@ export function BestsellersPage() {
                 <tbody>
                   {results.map((variant) => (
                     <tr key={variant.variantId}>
-                      <td>{variant.productName}</td>
+                      <td>{variant.name}</td>
                       <td className="mono-num">{formatPrice(variant.price)}</td>
                       <td>
                         <Button

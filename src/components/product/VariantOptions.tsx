@@ -18,12 +18,18 @@ export function VariantOptions({ groups }: { groups: VariantOptionGroup[] }) {
                 className={[
                   'variant-options__pill',
                   option.current ? 'variant-options__pill--active' : '',
+                  !option.available ? 'variant-options__pill--unavailable' : '',
                   !option.inStock ? 'variant-options__pill--oos' : '',
                 ].join(' ')}
                 aria-current={option.current ? 'true' : undefined}
               >
                 {option.value}
-                {!option.inStock && <span className="visually-hidden"> (нет в наличии)</span>}
+                {!option.available && (
+                  <span className="visually-hidden"> (в этом сочетании нет, откроется ближайшее)</span>
+                )}
+                {option.available && !option.inStock && (
+                  <span className="visually-hidden"> (нет в наличии)</span>
+                )}
               </Link>
             ))}
           </div>

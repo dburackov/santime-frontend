@@ -20,10 +20,14 @@ import type {
   PriceImportResponse,
   ProductImageAdminResponse,
   ProductImageAltRequest,
-  ProductRequest,
-  ProductResponse,
+  ProductGroupAxisRequest,
+  ProductGroupRequest,
+  ProductGroupResponse,
+  ProductGroupRowResponse,
   ProductVariantRequest,
   ProductVariantResponse,
+  ProductVariantSiblingRequest,
+  ProductVariantUpdateRequest,
   PromoCodeRequest,
   PromoCodeResponse,
 } from './types';
@@ -146,9 +150,38 @@ export function reorderCategoryAttributes(categoryId: number, ids: number[]): Pr
   return apiRequest(`/api/admin/categories/${categoryId}/attributes/order`, { method: 'PUT', body: { ids } });
 }
 
-// ---- Товары ----
+// ---- Позиции (продаваемые единицы) ----
 
-export interface ListProductsParams {
+export function getVariant(id: number): Promise<ProductVariantResponse> {
+  return apiRequest(`/api/admin/variants/${id}`);
+}
+
+export function createVariant(body: ProductVariantRequest): Promise<ProductVariantResponse> {
+  return apiRequest('/api/admin/variants', { method: 'POST', body });
+}
+
+/** Новое исполнение существующей позиции: непереданное копируется с исходной. */
+export function createVariantSibling(
+  sourceId: number,
+  body: ProductVariantSiblingRequest,
+): Promise<ProductVariantResponse> {
+  return apiRequest(`/api/admin/variants/${sourceId}/sibling`, { method: 'POST', body });
+}
+
+export function updateVariant(
+  id: number,
+  body: ProductVariantUpdateRequest,
+): Promise<ProductVariantResponse> {
+  return apiRequest(`/api/admin/variants/${id}`, { method: 'PUT', body });
+}
+
+export function deleteVariant(id: number): Promise<void> {
+  return apiRequest(`/api/admin/variants/${id}`, { method: 'DELETE' });
+}
+
+// ---- Группа исполнений: только чтение и оси вариативности ----
+
+export interface ListProductGroupsParams {
   categoryId?: number;
   search?: string;
   page?: number;
@@ -156,8 +189,11 @@ export interface ListProductsParams {
   sort?: string;
 }
 
-export function listProducts(params: ListProductsParams): Promise<PageResponse<ProductResponse>> {
-  return apiRequest('/api/admin/products', {
+/** Список товаров админки: страница считает модели, каждая приходит со всеми исполнениями. */
+export function listProductGroups(
+  params: ListProductGroupsParams,
+): Promise<PageResponse<ProductGroupRowResponse>> {
+  return apiRequest('/api/admin/product-groups', {
     searchParams: {
       categoryId: params.categoryId,
       search: params.search,
@@ -168,122 +204,76 @@ export function listProducts(params: ListProductsParams): Promise<PageResponse<P
   });
 }
 
-export function getProduct(id: number): Promise<ProductResponse> {
-  return apiRequest(`/api/admin/products/${id}`);
+export function getProductGroup(id: number): Promise<ProductGroupResponse> {
+  return apiRequest(`/api/admin/product-groups/${id}`);
 }
 
-export function createProduct(body: ProductRequest): Promise<ProductResponse> {
-  return apiRequest('/api/admin/products', { method: 'POST', body });
+/** Бренд и описание модели: применяются ко всем её исполнениям. */
+export function updateProductGroup(id: number, body: ProductGroupRequest): Promise<ProductGroupResponse> {
+  return apiRequest(`/api/admin/product-groups/${id}`, { method: 'PUT', body });
 }
 
-export function updateProduct(id: number, body: ProductRequest): Promise<ProductResponse> {
-  return apiRequest(`/api/admin/products/${id}`, { method: 'PUT', body });
-}
-
-export function deleteProduct(id: number): Promise<void> {
-  return apiRequest(`/api/admin/products/${id}`, { method: 'DELETE' });
-}
-
-// ---- Варианты товара ----
-
-export function listProductVariants(productId: number): Promise<ProductVariantResponse[]> {
-  return apiRequest(`/api/admin/products/${productId}/variants`);
-}
-
-export function getProductVariant(productId: number, id: number): Promise<ProductVariantResponse> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${id}`);
-}
-
-export function createProductVariant(
-  productId: number,
-  body: ProductVariantRequest,
-): Promise<ProductVariantResponse> {
-  return apiRequest(`/api/admin/products/${productId}/variants`, { method: 'POST', body });
-}
-
-export function updateProductVariant(
-  productId: number,
+export function replaceProductGroupAxes(
   id: number,
-  body: ProductVariantRequest,
-): Promise<ProductVariantResponse> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${id}`, { method: 'PUT', body });
+  body: ProductGroupAxisRequest[],
+): Promise<ProductGroupResponse> {
+  return apiRequest(`/api/admin/product-groups/${id}/axes`, { method: 'PUT', body });
 }
 
-export function deleteProductVariant(productId: number, id: number): Promise<void> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${id}`, { method: 'DELETE' });
+// ---- Фото позиции (IMAGE-PIPELINE-SPEC.md, раздел 5.4/5.5) ----
+
+export function listVariantImages(variantId: number): Promise<ProductImageAdminResponse[]> {
+  return apiRequest(`/api/admin/variants/${variantId}/images`);
 }
 
-// ---- Фото товара (IMAGE-PIPELINE-SPEC.md, раздел 5.4/5.5) ----
-
-export function listProductImages(productId: number): Promise<ProductImageAdminResponse[]> {
-  return apiRequest(`/api/admin/products/${productId}/images`);
-}
-
-export function uploadProductImage(productId: number, file: File): Promise<ProductImageAdminResponse> {
+export function uploadVariantImage(variantId: number, file: File): Promise<ProductImageAdminResponse> {
   const formData = new FormData();
   formData.append('file', file);
-  return apiRequest(`/api/admin/products/${productId}/images`, { method: 'POST', body: formData });
-}
-
-export function updateProductImageAlt(
-  productId: number,
-  imageId: number,
-  body: ProductImageAltRequest,
-): Promise<ProductImageAdminResponse> {
-  return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'PATCH', body });
-}
-
-export function deleteProductImage(productId: number, imageId: number): Promise<void> {
-  return apiRequest(`/api/admin/products/${productId}/images/${imageId}`, { method: 'DELETE' });
-}
-
-export function reorderProductImages(productId: number, ids: number[]): Promise<void> {
-  return apiRequest(`/api/admin/products/${productId}/images/order`, { method: 'PUT', body: { ids } });
-}
-
-// ---- Фото варианта товара (api.md, раздел 2.9) — идентично фото товара (2.8),
-// но привязано к конкретному варианту (напр. другой цвет), путь с /variants/{variantId} ----
-
-export function listVariantImages(productId: number, variantId: number): Promise<ProductImageAdminResponse[]> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images`);
-}
-
-export function uploadVariantImage(
-  productId: number,
-  variantId: number,
-  file: File,
-): Promise<ProductImageAdminResponse> {
-  const formData = new FormData();
-  formData.append('file', file);
-  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images`, {
-    method: 'POST',
-    body: formData,
-  });
+  return apiRequest(`/api/admin/variants/${variantId}/images`, { method: 'POST', body: formData });
 }
 
 export function updateVariantImageAlt(
-  productId: number,
   variantId: number,
   imageId: number,
   body: ProductImageAltRequest,
 ): Promise<ProductImageAdminResponse> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/${imageId}`, {
-    method: 'PATCH',
-    body,
-  });
+  return apiRequest(`/api/admin/variants/${variantId}/images/${imageId}`, { method: 'PATCH', body });
 }
 
-export function deleteVariantImage(productId: number, variantId: number, imageId: number): Promise<void> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/${imageId}`, {
-    method: 'DELETE',
-  });
+export function deleteVariantImage(variantId: number, imageId: number): Promise<void> {
+  return apiRequest(`/api/admin/variants/${variantId}/images/${imageId}`, { method: 'DELETE' });
 }
 
-export function reorderVariantImages(productId: number, variantId: number, ids: number[]): Promise<void> {
-  return apiRequest(`/api/admin/products/${productId}/variants/${variantId}/images/order`, {
-    method: 'PUT',
-    body: { ids },
-  });
+export function reorderVariantImages(variantId: number, ids: number[]): Promise<void> {
+  return apiRequest(`/api/admin/variants/${variantId}/images/order`, { method: 'PUT', body: { ids } });
+}
+
+// ---- Общие фото модели: на витрине приклеиваются к галерее каждого её исполнения ----
+
+export function listGroupImages(groupId: number): Promise<ProductImageAdminResponse[]> {
+  return apiRequest(`/api/admin/product-groups/${groupId}/images`);
+}
+
+export function uploadGroupImage(groupId: number, file: File): Promise<ProductImageAdminResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest(`/api/admin/product-groups/${groupId}/images`, { method: 'POST', body: formData });
+}
+
+export function updateGroupImageAlt(
+  groupId: number,
+  imageId: number,
+  body: ProductImageAltRequest,
+): Promise<ProductImageAdminResponse> {
+  return apiRequest(`/api/admin/product-groups/${groupId}/images/${imageId}`, { method: 'PATCH', body });
+}
+
+export function deleteGroupImage(groupId: number, imageId: number): Promise<void> {
+  return apiRequest(`/api/admin/product-groups/${groupId}/images/${imageId}`, { method: 'DELETE' });
+}
+
+export function reorderGroupImages(groupId: number, ids: number[]): Promise<void> {
+  return apiRequest(`/api/admin/product-groups/${groupId}/images/order`, { method: 'PUT', body: { ids } });
 }
 
 // ---- Заказы (состав после оформления не меняется, правятся только контакты и статус) ----

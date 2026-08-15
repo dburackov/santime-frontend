@@ -107,9 +107,9 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
                     className="search-box__item"
                     onClick={() => goToProduct(variant.variantSlug)}
                   >
-                    <ProductPhoto image={variant.images?.[0]} alt={variant.productName} size="thumb" />
+                    <ProductPhoto image={variant.images?.[0]} alt={variant.name} size="thumb" />
                     <div className="search-box__item-main">
-                      <span className="search-box__item-title">{variant.productName}</span>
+                      <span className="search-box__item-title">{variant.name}</span>
                       {!variant.inStock && <span className="search-box__item-oos">Нет в наличии</span>}
                     </div>
                     <Price value={variant.price} oldValue={variant.oldPrice} size="sm" stacked />
