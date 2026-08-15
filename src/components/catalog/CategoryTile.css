@@ -23,6 +23,13 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Плитка родителя в вертикальном списке каталога: та же поверхность, но ниже —
+   она стоит в колонке, а не в сетке. */
+.home-category-tile--compact {
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+}
+
 .home-category-tile__text {
   display: flex;
   flex-direction: column;

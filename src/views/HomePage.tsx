@@ -39,7 +39,10 @@ export function HomePage() {
 
   const discounts = discountsPage?.content ?? [];
   // На главной плитки — витрина, а не полный список: он живёт в /catalog.
-  const shownCategories = categories?.slice(0, STOREFRONT_BLOCK_SIZE);
+  // Только родительские: вложенность раскрывается там же, в каталоге.
+  const shownCategories = categories
+    ?.filter((c) => c.parentCategoryId == null)
+    .slice(0, STOREFRONT_BLOCK_SIZE);
 
   return (
     <div>

@@ -3,9 +3,8 @@
 import './CatalogPage.css';
 import '@/components/ui/Skeleton.css';
 import { useCategories } from '@/queries/useCategories';
-import { STOREFRONT_BLOCK_SIZE } from '@/hooks/catalogQuery';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { CategoryTile, CategoryTileSkeleton } from '@/components/catalog/CategoryTile';
+import { CategoryBrowser, CategoryBrowserSkeleton } from '@/components/catalog/CategoryBrowser';
 
 export function CatalogPage() {
   const { data: categories, isLoading, isError, refetch } = useCategories();
@@ -16,21 +15,9 @@ export function CatalogPage() {
 
       {isError && <ErrorState description="Не удалось загрузить категории." onRetry={refetch} />}
 
-      {isLoading && (
-        <div className="category-grid">
-          {Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => (
-            <CategoryTileSkeleton key={i} />
-          ))}
-        </div>
-      )}
+      {isLoading && <CategoryBrowserSkeleton />}
 
-      {categories && (
-        <div className="category-grid">
-          {categories.map((category) => (
-            <CategoryTile key={category.id} category={category} />
-          ))}
-        </div>
-      )}
+      {categories && <CategoryBrowser categories={categories} />}
     </div>
   );
 }
