@@ -31,17 +31,62 @@
   touch-action: pan-y;
 }
 
+/* Строго одна строка: две растягивали полосу, и высота шапки прыгала от промокода
+   к промокоду и от ширины экрана. Непоместившееся показывает бегущая строка ниже. */
 .promo-slider__text {
   font-size: var(--text-sm);
   color: var(--color-ink);
   text-align: center;
-  /* Клэмп вместо nowrap + ellipsis: на телефоне многоточие съедало сам код. */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  white-space: nowrap;
+  width: 100%;
   overflow: hidden;
-  max-width: 100%;
   animation: promo-slide-in var(--motion-base);
+}
+
+/* Пока текст едет, центрирование обрезало бы фразу с обеих сторон и начало
+   «По промокоду…» не читалось бы. */
+.promo-slider__text--marquee {
+  text-align: left;
+}
+
+.promo-slider__marquee {
+  display: inline-block;
+}
+
+/* Задержка добирает время слайда до таймера автопрокрутки: короткий текст успевают
+   прочитать неподвижным, а сам проезд идёт с нормальной скоростью. */
+.promo-slider__text--marquee .promo-slider__marquee {
+  animation: promo-marquee var(--promo-duration) ease-in-out var(--promo-delay) 1;
+}
+
+/* Маятник: уезжает ровно на непоместившееся и возвращается, с паузами на краях.
+   Проценты завязаны на MARQUEE_TRAVEL_FRACTION в PromoSlider.tsx. */
+@keyframes promo-marquee {
+  0%,
+  10% {
+    transform: translateX(0);
+  }
+  45%,
+  55% {
+    transform: translateX(var(--promo-shift));
+  }
+  90%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Под курсором карусель уже встаёт на паузу — движение замирает вместе с ней. */
+.promo-slider:hover .promo-slider__marquee {
+  animation-play-state: paused;
+}
+
+/* Анимации отключены — бежать нечему, но высота полосы обязана остаться постоянной,
+   ради чего вся правка и делалась. Многоточие тут запасной вариант, не основной. */
+@media (prefers-reduced-motion: reduce) {
+  .promo-slider__text {
+    text-overflow: ellipsis;
+  }
 }
 
 @keyframes promo-slide-in {
