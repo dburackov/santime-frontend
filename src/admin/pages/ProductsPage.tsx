@@ -620,6 +620,8 @@ export function ProductsPage() {
                     onChange={(value) => setForm((f) => ({ ...f, categoryId: value, attributes: {} }))}
                     placeholder="Выберите категорию"
                     portal
+                    searchable
+                    searchPlaceholder="Поиск категории"
                   />
                 </div>
                 <div className="admin-form-field">
@@ -630,6 +632,8 @@ export function ProductsPage() {
                     value={newGroup.brandId}
                     onChange={(value) => setNewGroup((g) => ({ ...g, brandId: value }))}
                     portal
+                    searchable
+                    searchPlaceholder="Поиск бренда"
                   />
                 </div>
               </div>
@@ -638,6 +642,7 @@ export function ProductsPage() {
                 <label htmlFor="product-description">Описание</label>
                 <textarea
                   id="product-description"
+                  rows={10}
                   value={newGroup.description}
                   onChange={(e) => setNewGroup((g) => ({ ...g, description: e.target.value }))}
                 />
@@ -816,6 +821,8 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
               value={brandId}
               onChange={setBrandId}
               portal
+              searchable
+              searchPlaceholder="Поиск бренда"
             />
           </div>
         </div>
@@ -824,6 +831,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
           <label htmlFor="group-description">Описание</label>
           <textarea
             id="group-description"
+            rows={10}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -895,7 +903,15 @@ function AttributeField({ binding, value, options, onChange, error, isAxis }: At
     return (
       <div className="admin-form-field">
         <label>{label}</label>
-        <Select options={selectOptions} value={value} onChange={onChange} portal />
+        {/* Поиск только у OPTION: у BOOLEAN в списке три пункта, строка ввода там мешает. */}
+        <Select
+          options={selectOptions}
+          value={value}
+          onChange={onChange}
+          portal
+          searchable={binding.attributeType === 'OPTION'}
+          searchPlaceholder="Поиск значения"
+        />
         {axisNote}
         {error && <span className="admin-form-error">{error}</span>}
       </div>

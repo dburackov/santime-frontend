@@ -15,10 +15,23 @@ interface SelectProps {
   id?: string;
   /** Открывать панель в портале — см. SearchableSelect. Используется в модалках админки. */
   portal?: boolean;
+  /** Строка поиска в панели — включать для длинных списков (категории, атрибуты, бренды). */
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }
 
-/** Простой одиночный селект в стиле SearchableSelect — без поиска и без чекбоксов/радио. */
-export function Select({ options, value, onChange, placeholder = '', ariaLabel, id, portal }: SelectProps) {
+/** Простой одиночный селект в стиле SearchableSelect — без чекбоксов/радио. */
+export function Select({
+  options,
+  value,
+  onChange,
+  placeholder = '',
+  ariaLabel,
+  id,
+  portal,
+  searchable = false,
+  searchPlaceholder,
+}: SelectProps) {
   return (
     <SearchableSelect
       id={id}
@@ -28,7 +41,8 @@ export function Select({ options, value, onChange, placeholder = '', ariaLabel, 
         if (values[0] !== undefined) onChange(values[0]);
       }}
       placeholder={options.find((option) => option.value === value)?.label ?? placeholder}
-      searchable={false}
+      searchable={searchable}
+      searchPlaceholder={searchPlaceholder}
       showIndicator={false}
       allowClear={false}
       ariaLabel={ariaLabel}

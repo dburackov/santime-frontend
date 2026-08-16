@@ -241,6 +241,8 @@ export function CategoryAttributesPage() {
                 value={selectedAttributeId}
                 onChange={setSelectedAttributeId}
                 portal
+                searchable
+                searchPlaceholder="Поиск атрибута"
               />
             </div>
           )}

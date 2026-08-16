@@ -199,6 +199,8 @@ export function CategoriesPage() {
               value={form.parentCategoryId}
               onChange={(value) => setForm((f) => ({ ...f, parentCategoryId: value }))}
               portal
+              searchable
+              searchPlaceholder="Поиск категории"
             />
           </div>
         </form>
