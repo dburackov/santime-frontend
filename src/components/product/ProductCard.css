@@ -1,4 +1,5 @@
 .product-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   /* Холодная линия, а не --color-line: карточки стоят на тонированной полосе
@@ -34,19 +35,16 @@
   overflow: hidden;
 }
 
-.product-card__attrs {
-  font-size: var(--text-xs);
-  color: var(--color-slate);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2em;
+/* Ссылка растянута на всю карточку: клик мимо кнопки ведёт в товар. */
+.product-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 .product-card__footer {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-2);
   /* auto, а не фиксированный отступ: заголовок занимает одну или две строки, и без
@@ -59,4 +57,14 @@
   font-size: var(--text-xs);
   color: var(--color-danger);
   font-weight: 500;
+}
+
+/* Квадрат под .btn--sm: у него уже min-height 36px, остаётся убрать текстовые
+   паддинги. z-index — чтобы кнопка осталась над растянутой ссылкой. */
+.product-card__cart {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  padding: 0;
+  flex-shrink: 0;
 }

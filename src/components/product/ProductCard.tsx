@@ -1,33 +1,57 @@
+'use client';
+
 import Link from 'next/link';
 import './ProductCard.css';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
-import type { CatalogFilterAttributeResponse, VariantCardResponse } from '@/api/types';
-import { formatAttributeValue } from '@/utils/attributes';
+import { Button } from '@/components/ui/Button';
+import { CartIcon } from '@/components/ui/icons';
+import type { VariantCardResponse } from '@/api/types';
+import { useCartActions } from '@/cart/useCartActions';
 
 interface ProductCardProps {
   variant: VariantCardResponse;
-  displayAttributes?: CatalogFilterAttributeResponse[];
 }
 
-export function ProductCard({ variant, displayAttributes = [] }: ProductCardProps) {
-  const attrLine = displayAttributes
-    .map((attr) => formatAttributeValue(attr.type, variant.attributes[attr.slug], attr.unit))
-    .filter((v): v is string => Boolean(v))
-    .slice(0, 2)
-    .join(' · ');
+export function ProductCard({ variant }: ProductCardProps) {
+  const { addItem } = useCartActions();
 
   return (
-    <Link href={`/product/${variant.variantSlug}`} className="product-card">
+    <div className="product-card">
       <ProductPhoto image={variant.images?.[0]} alt={variant.name} size="card" />
       <div className="product-card__body">
-        <h3 className="product-card__title">{variant.name}</h3>
-        {attrLine && <p className="product-card__attrs">{attrLine}</p>}
+        {/* Ссылка обёрнута в заголовок, а не в карточку целиком: кнопка корзины
+            не может лежать внутри ссылки. Кликабельность всей карточки даёт
+            растянутый ::after у product-card__link. */}
+        <h3 className="product-card__title">
+          <Link href={`/product/${variant.variantSlug}`} className="product-card__link">
+            {variant.name}
+          </Link>
+        </h3>
+        {!variant.inStock && <span className="product-card__oos">Нет в наличии</span>}
         <div className="product-card__footer">
-          <Price value={variant.price} oldValue={variant.oldPrice} size="md" />
-          {!variant.inStock && <span className="product-card__oos">Нет в наличии</span>}
+          <Price value={variant.price} oldValue={variant.oldPrice} size="md" stacked />
+          <Button
+            size="sm"
+            className="product-card__cart"
+            aria-label="В корзину"
+            title="В корзину"
+            disabled={!variant.inStock}
+            onClick={() =>
+              addItem({
+                variantId: variant.variantId,
+                variantSlug: variant.variantSlug,
+                productName: variant.name,
+                price: variant.price,
+                attributes: variant.attributes,
+                image: variant.images?.[0] ?? null,
+              })
+            }
+          >
+            <CartIcon width={18} height={18} />
+          </Button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

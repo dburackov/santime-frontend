@@ -1,11 +1,30 @@
 .category-page {
   padding-top: var(--space-6);
-  padding-bottom: calc(var(--space-12) + 64px + env(safe-area-inset-bottom));
+  padding-bottom: var(--space-12);
+}
+
+/* align-items не трогаем: в колонке ленте нужен именно stretch. При flex-start её
+   ширина считается по содержимому (внутренний скролл на это не влияет), лента
+   вылезает за контейнер и тянет за собой горизонтальный скролл всей страницы. */
+.category-page__head {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-1);
+}
+
+/* Обычный блок, а не flex-строка: счётчик — продолжение строки заголовка, и при
+   переносе длинного названия он обязан идти следом за последним словом, а не
+   отдельной колонкой справа. Поэтому и заголовок строчный. */
+.category-page__heading {
+  min-width: 0;
 }
 
 .category-page__title {
-  margin-top: var(--space-3);
-  margin-bottom: var(--space-6);
+  display: inline;
+  margin: 0;
+  font-size: var(--text-lg);
 }
 
 .category-page__layout {
@@ -24,21 +43,35 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
+/* Два места под счётчик: на мобильном он стоит строкой с заголовком, на десктопе —
+   в тулбаре. Оба варианта в разметке, видимость решает медиазапрос: ветвить рендер
+   по ширине нельзя, первый клиентский рендер обязан совпасть с серверным. */
 .category-page__count {
+  display: none;
   font-size: var(--text-sm);
   color: var(--color-slate);
-  order: 3;
-  width: 100%;
+  white-space: nowrap;
 }
 
-.category-page__toolbar-right {
+.category-page__count--inline {
+  display: inline;
+  margin-left: var(--space-2);
+}
+
+.category-page__toolbar-left {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-left: auto;
+}
+
+/* Селект в тулбаре ужимаем адресно, а не в самом SearchableSelect: тот же компонент
+   стоит в шторке фильтров и в админке, где 40px по высоте нужны. */
+.category-page__toolbar-left .searchable-select__trigger {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
 }
 
 .category-page__grid {
@@ -63,22 +96,66 @@
 }
 
 @media (min-width: 640px) {
+  /* Нижний отступ на ступень больше верхнего: снизу его оптически съедают
+     выносные элементы букв, и одинаковые отступы читаются как сдвиг блока вверх. */
+  .category-page__head {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .category-page__toolbar {
+    margin-bottom: var(--space-4);
+  }
+
+  /* База 0 при flex-grow: 1 — лента забирает остаток строки после заголовка и
+     отдаёт его первой при нехватке места (внутри у неё скролл). Заголовок
+     переносится, только когда сам не помещается в контейнер. */
+  .category-page__head .subcategory-chips {
+    flex: 1 1 0;
+  }
+
+  .category-page__title {
+    font-size: var(--text-xl);
+  }
+
   .category-page__grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--space-6);
   }
 
   .category-page__count {
-    order: 0;
-    width: auto;
+    display: block;
+  }
+
+  /* К левому краю группа прижата только на мобильном, где счётчик уехал к
+     заголовку. Здесь он снова в тулбаре слева, а контролы — справа. */
+  .category-page__toolbar-left {
+    margin-left: auto;
+  }
+
+  .category-page__count--inline {
+    display: none;
+  }
+
+  /* В разметке порядок мобильный (вид, сортировка, фильтры) — здесь он становится
+     десктопным. Фильтры крайние справа на всех ширинах, где они вообще видны. */
+  .category-page__toolbar-left .searchable-select {
+    order: 1;
+  }
+
+  .category-page__toolbar-left .view-toggle {
+    order: 2;
+  }
+
+  .category-page__toolbar-left .filter-toggle {
+    order: 3;
   }
 }
 
 @media (min-width: 1024px) {
-  .category-page {
-    padding-bottom: var(--space-12);
-  }
-
   .category-page__layout {
     flex-direction: row;
     align-items: flex-start;

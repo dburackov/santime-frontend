@@ -2,8 +2,8 @@ import type { OrderStatus } from '@/api/types';
 
 /** Значения оплаты, доставки и статуса — сырые коды бэкенда; подписи для человека живут здесь. */
 export const PAYMENT_METHODS = [
-  { value: 'CARD', label: 'Картой онлайн' },
-  { value: 'CASH', label: 'Наличными при получении' },
+  { value: 'CASH', label: 'Наличными или картой при получении' },
+  { value: 'CARD', label: 'Онлайн-оплата (E-POS)' },
 ];
 
 export const DELIVERY_METHODS = [

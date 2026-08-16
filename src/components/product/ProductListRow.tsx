@@ -7,7 +7,7 @@ import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
 import type { CatalogFilterAttributeResponse, VariantCardResponse } from '@/api/types';
 import { formatAttributeLine } from '@/utils/attributes';
-import { useCart } from '@/cart/useCart';
+import { useCartActions } from '@/cart/useCartActions';
 
 interface ProductListRowProps {
   variant: VariantCardResponse;
@@ -15,7 +15,7 @@ interface ProductListRowProps {
 }
 
 export function ProductListRow({ variant, displayAttributes = [] }: ProductListRowProps) {
-  const { addItem } = useCart();
+  const { addItem } = useCartActions();
 
   const attrLines = displayAttributes
     .map((attr) => ({ slug: attr.slug, text: formatAttributeLine(attr, variant.attributes[attr.slug]) }))

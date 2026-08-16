@@ -1,5 +1,5 @@
 .catalog-page {
-  padding-top: clamp(32px, 4vw, 56px);
+  padding-top: var(--space-6);
   padding-bottom: var(--space-8);
 }
 

@@ -2,8 +2,9 @@
 
 import { useEffect } from 'react';
 import './FilterPanel.css';
-import { CloseIcon, FilterIcon, RefreshIcon } from '@/components/ui/icons';
+import { CloseIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
+import { formatProductsCount } from '@/utils/plural';
 import { NumberRangeFilter } from './NumberRangeFilter';
 import { BooleanFilter } from './BooleanFilter';
 import { OptionFilter } from './OptionFilter';
@@ -17,12 +18,11 @@ interface FilterPanelProps {
   brands: BrandResponse[];
   state: CatalogQueryState;
   open: boolean;
-  onOpen: () => void;
   onClose: () => void;
   resultCount?: number;
 }
 
-export function FilterPanel({ filters, brands, state, open, onOpen, onClose, resultCount }: FilterPanelProps) {
+export function FilterPanel({ filters, brands, state, open, onClose, resultCount }: FilterPanelProps) {
   useEffect(() => {
     if (!open) return;
     document.body.classList.add('no-scroll');
@@ -36,6 +36,11 @@ export function FilterPanel({ filters, brands, state, open, onOpen, onClose, res
         <div className="filter-drawer__sheet" role="dialog" aria-modal="true" aria-label="Фильтры">
           <div className="filter-drawer__header">
             <h2>Фильтры</h2>
+            {state.hasActiveFilters && (
+              <button type="button" className="filter-drawer__reset" onClick={state.resetAllFilters}>
+                Сбросить
+              </button>
+            )}
             <button type="button" className="touch-target" onClick={onClose} aria-label="Закрыть фильтры">
               <CloseIcon width={18} height={18} />
             </button>
@@ -118,34 +123,15 @@ export function FilterPanel({ filters, brands, state, open, onOpen, onClose, res
         </div>
       </div>
 
-      <div className="filter-mobile-bar">
-        {open ? (
-          <>
-            <Button onClick={onClose} className="filter-mobile-bar__apply">
-              {resultCount !== undefined ? `Показать ${resultCount} товаров` : 'Показать товары'}
-            </Button>
-            {state.hasActiveFilters && (
-              <button
-                type="button"
-                className="filter-mobile-bar__reset"
-                onClick={state.resetAllFilters}
-                aria-label="Сбросить фильтры"
-              >
-                <RefreshIcon width={18} height={18} />
-              </button>
-            )}
-            <button type="button" className="filter-mobile-bar__close" onClick={onClose} aria-label="Закрыть фильтры">
-              <CloseIcon width={18} height={18} />
-            </button>
-          </>
-        ) : (
-          <button type="button" className="filter-mobile-bar__toggle" onClick={onOpen}>
-            <FilterIcon width={16} height={16} />
-            Фильтры
-            {state.hasActiveFilters && <span className="filter-mobile-bar__dot" />}
-          </button>
-        )}
-      </div>
+      {/* Полоса нужна только открытой шторке: кнопка «Фильтры» переехала в тулбар
+          списка (FilterToggle). */}
+      {open && (
+        <div className="filter-mobile-bar">
+          <Button onClick={onClose} className="filter-mobile-bar__apply">
+            {resultCount !== undefined ? `Показать ${formatProductsCount(resultCount)}` : 'Показать товары'}
+          </Button>
+        </div>
+      )}
     </>
   );
 }

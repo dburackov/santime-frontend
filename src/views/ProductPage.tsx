@@ -6,7 +6,7 @@ import './ProductPage.css';
 import '@/components/ui/Skeleton.css';
 import { useProductDetail } from '@/queries/useProductDetail';
 import { useCategories } from '@/queries/useCategories';
-import { useCart } from '@/cart/useCart';
+import { useCartActions } from '@/cart/useCartActions';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
@@ -86,7 +86,7 @@ export function ProductPage() {
   const { variantSlug } = useRouteParams<{ variantSlug: string }>();
   const { data: variant, isLoading, isError, refetch } = useProductDetail(variantSlug);
   const { data: categories } = useCategories();
-  const { addItem } = useCart();
+  const { addItem } = useCartActions();
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
 

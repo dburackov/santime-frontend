@@ -10,7 +10,11 @@ import { useCatalogProducts } from '@/queries/useCatalogProducts';
 import { useCatalogQueryState } from '@/hooks/useCatalogQueryState';
 import { useViewMode } from '@/hooks/useViewMode';
 import type { ViewMode } from '@/hooks/viewMode';
+import { buildCategoryPath, getSubcategories } from '@/utils/categoryTree';
+import { formatFoundProducts, formatProductsCount } from '@/utils/plural';
 import { FilterPanel } from '@/components/filters/FilterPanel';
+import { FilterToggle } from '@/components/filters/FilterToggle';
+import { SubcategoryChips } from '@/components/catalog/SubcategoryChips';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ProductListRow } from '@/components/product/ProductListRow';
 import { ViewToggle } from '@/components/ui/ViewToggle';
@@ -38,6 +42,15 @@ export function CategoryPage({ initialViewMode }: { initialViewMode: ViewMode })
   const { slug } = useRouteParams<{ slug: string }>();
   const { data: categories } = useCategories();
   const category = useMemo(() => categories?.find((c) => c.slug === slug), [categories, slug]);
+
+  const ancestors = useMemo(
+    () => (categories && category ? buildCategoryPath(categories, category.id).slice(0, -1) : []),
+    [categories, category],
+  );
+  const subcategories = useMemo(
+    () => (categories && category ? getSubcategories(categories, category.id) : []),
+    [categories, category],
+  );
 
   const { data: filters } = useCategoryFilters(category?.id);
   const { data: brands } = useBrands(category?.id);
@@ -79,9 +92,27 @@ export function CategoryPage({ initialViewMode }: { initialViewMode: ViewMode })
 
   return (
     <div className="container category-page">
-      <Breadcrumbs items={[{ label: 'Каталог', to: '/catalog' }, { label: category?.name ?? '…' }]} />
+      <Breadcrumbs
+        items={[
+          { label: 'Каталог', to: '/catalog' },
+          ...ancestors.map((ancestor) => ({
+            label: ancestor.name,
+            to: `/category/${ancestor.slug}`,
+          })),
+        ]}
+      />
 
-      <h1 className="category-page__title">{category?.name}</h1>
+      <div className="category-page__head">
+        <div className="category-page__heading">
+          <h1 className="category-page__title">{category.name}</h1>
+          {page && (
+            <span className="category-page__count category-page__count--inline">
+              {formatProductsCount(page.totalElements)}
+            </span>
+          )}
+        </div>
+        {subcategories.length > 0 && <SubcategoryChips categories={subcategories} />}
+      </div>
 
       <div className="category-page__layout">
         {filters && (
@@ -90,7 +121,6 @@ export function CategoryPage({ initialViewMode }: { initialViewMode: ViewMode })
             brands={brands ?? []}
             state={state}
             open={filtersOpen}
-            onOpen={() => setFiltersOpen(true)}
             onClose={() => setFiltersOpen(false)}
             resultCount={page?.totalElements}
           />
@@ -101,17 +131,21 @@ export function CategoryPage({ initialViewMode }: { initialViewMode: ViewMode })
 
           <div className="category-page__toolbar">
             <span className="category-page__count">
-              {page ? `Найдено ${page.totalElements} товаров` : ''}
+              {page ? formatFoundProducts(page.totalElements) : ''}
             </span>
 
-            <div className="category-page__toolbar-right">
+            <div className="category-page__toolbar-left">
+              <ViewToggle value={viewMode} onChange={setViewMode} />
               <Select
                 options={SORT_OPTIONS}
                 value={state.sort}
                 onChange={(value) => state.updateParams({ sort: value })}
                 ariaLabel="Сортировка"
               />
-              <ViewToggle value={viewMode} onChange={setViewMode} />
+              <FilterToggle
+                hasActiveFilters={state.hasActiveFilters}
+                onClick={() => setFiltersOpen(true)}
+              />
             </div>
           </div>
 
@@ -138,7 +172,7 @@ export function CategoryPage({ initialViewMode }: { initialViewMode: ViewMode })
               {viewMode === 'grid' ? (
                 <div className={`category-page__grid${isUpdating ? ' catalog-list--busy' : ''}`} aria-busy={isUpdating}>
                   {page.content.map((variant) => (
-                    <ProductCard key={variant.variantId} variant={variant} displayAttributes={filters} />
+                    <ProductCard key={variant.variantId} variant={variant} />
                   ))}
                 </div>
               ) : (

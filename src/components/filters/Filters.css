@@ -6,6 +6,14 @@
   margin-bottom: 0;
 }
 
+/* Булев фильтр — одна строка без заголовка, и общий ритм в 24px разводит идущие
+   подряд переключатели так, будто между ними пропущен блок. Стягиваем только эту
+   пару: отрицательный margin-top гасит половину чужого margin-bottom, до соседей
+   другого типа расстояние остаётся прежним. */
+.filter-block:has(> .toggle-row) + .filter-block:has(> .toggle-row) {
+  margin-top: calc(var(--space-3) - var(--space-6));
+}
+
 .filter-block__title {
   font-size: var(--text-xs);
   font-weight: 600;
@@ -48,36 +56,6 @@
   color: var(--color-slate);
 }
 
-.check-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-2);
-  min-height: 32px;
-}
-
-.check-row__label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-  color: var(--color-ink);
-}
-
-.check-row input[type='checkbox'] {
-  accent-color: var(--color-accent);
-  width: 16px;
-  height: 16px;
-}
-
-.check-count {
-  color: var(--color-slate);
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-}
-
 .toggle-row {
   display: flex;
   align-items: center;
@@ -86,7 +64,7 @@
   font-size: var(--text-sm);
   color: var(--color-ink);
   cursor: pointer;
-  min-height: 44px;
+  min-height: 32px;
 }
 
 .toggle {

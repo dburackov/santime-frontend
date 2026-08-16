@@ -120,6 +120,14 @@
   flex-shrink: 0;
 }
 
+/* Счётчик товаров у варианта фильтра. Раньше правило лежало в Filters.css —
+   переехало к своему компоненту. */
+.check-count {
+  color: var(--color-slate);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+}
+
 .searchable-select__empty {
   padding: var(--space-3) 12px;
   font-size: var(--text-sm);

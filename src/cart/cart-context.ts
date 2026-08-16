@@ -13,7 +13,22 @@ export interface CartItem {
   image?: ProductImageResponse | null;
 }
 
-export interface CartContextValue {
+/**
+ * Действия отделены от состояния намеренно: объект действий стабилен, и
+ * подписчики вроде карточки товара (их в сетке до 24) не перерисовываются при
+ * каждом изменении корзины. Состояние живёт в CartContext, действия — в
+ * CartActionsContext; CartContextValue объединяет оба для тех, кому нужно всё.
+ */
+export interface CartActions {
+  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
+  removeItem: (variantId: number) => void;
+  setQuantity: (variantId: number, quantity: number) => void;
+  setPromoCode: (code: string) => void;
+  clearPromoCode: () => void;
+  clear: () => void;
+}
+
+export interface CartContextValue extends CartActions {
   items: CartItem[];
   /**
    * Прочитана ли корзина из localStorage. До этого `items` заведомо пуст (на
@@ -29,12 +44,7 @@ export interface CartContextValue {
    * скидка тут же станет враньём. Актуальную считает сервер, см. usePromoDiscount.
    */
   promoCode: string | null;
-  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
-  removeItem: (variantId: number) => void;
-  setQuantity: (variantId: number, quantity: number) => void;
-  setPromoCode: (code: string) => void;
-  clearPromoCode: () => void;
-  clear: () => void;
 }
 
 export const CartContext = createContext<CartContextValue | null>(null);
+export const CartActionsContext = createContext<CartActions | null>(null);

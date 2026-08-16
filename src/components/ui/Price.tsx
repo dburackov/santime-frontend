@@ -22,7 +22,7 @@ export function Price({ value, oldValue, size = 'md', stacked = false, className
   if (!discounted) return priceSpan;
 
   return (
-    <span className={`price-group ${stacked ? 'price-group--stacked' : ''}`}>
+    <span className={`price-group price-group--${size} ${stacked ? 'price-group--stacked' : ''}`}>
       {priceSpan}
       <span className="price__old">
         <span className="price__old-value">{formatPrice(oldValue)}</span> <CurrencySymbol />

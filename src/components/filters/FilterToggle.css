@@ -1,0 +1,34 @@
+/* Кнопка открытия шторки фильтров. Живёт в тулбаре списка, а не в нижней
+   фиксированной полосе: та осталась только за открытым состоянием шторки. */
+.filter-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.filter-toggle__dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+/* С 1024px фильтры стоят колонкой слева — открывать нечего. */
+@media (min-width: 1024px) {
+  .filter-toggle {
+    display: none;
+  }
+}

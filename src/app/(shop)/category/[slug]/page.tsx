@@ -5,6 +5,7 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getCategories, getCategoryBrands, getCategoryFilters, getProducts } from '@/api/catalog';
 import { buildCatalogQuery } from '@/hooks/catalogQuery';
 import { buildBreadcrumbJsonLd } from '@/utils/productJsonLd';
+import { buildCategoryPath } from '@/utils/categoryTree';
 import { resolveCategoryMeta } from '@/utils/seo';
 import { SITE_NAME } from '@/config/siteInfo';
 import { createServerQueryClient } from '@/app/query-client';
@@ -29,11 +30,13 @@ export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-async function findCategory(slug: string): Promise<CategoryResponse | undefined> {
+async function findCategory(
+  slug: string,
+): Promise<{ categories: CategoryResponse[]; category: CategoryResponse | undefined }> {
   // Эндпоинта «категория по слагу» у бэкенда нет, а полный список категорий всё
   // равно нужен для хлебных крошек — так что отдельный запрос ничего не сэкономил бы.
   const categories = await getCategories();
-  return categories.find((c) => c.slug === slug);
+  return { categories, category: categories.find((c) => c.slug === slug) };
 }
 
 /** searchParams приходят как объект, а разбор фильтров работает с URLSearchParams. */
@@ -54,7 +57,7 @@ export async function generateMetadata({
   searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const category = await findCategory(slug);
+  const { category } = await findCategory(slug);
   if (!category) return { title: 'Категория не найдена' };
 
   const { title, description } = resolveCategoryMeta(category);
@@ -83,7 +86,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
-  const category = await findCategory(slug);
+  const { categories, category } = await findCategory(slug);
   if (!category) notFound();
 
   const queryClient = createServerQueryClient();
@@ -123,7 +126,10 @@ export default async function Page({
   const crumbs = buildBreadcrumbJsonLd([
     { name: 'Главная', path: '/' },
     { name: 'Каталог', path: '/catalog' },
-    { name: category.name, path: `/category/${category.slug}` },
+    ...buildCategoryPath(categories, category.id).map((c) => ({
+      name: c.name,
+      path: `/category/${c.slug}`,
+    })),
   ]);
 
   return (

@@ -5,7 +5,7 @@ import './HeroKits.css';
 import '@/components/ui/Skeleton.css';
 import { useKits } from '@/queries/useKits';
 import { useCarousel } from '@/hooks/useCarousel';
-import { useCart } from '@/cart/useCart';
+import { useCartActions } from '@/cart/useCartActions';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
@@ -16,7 +16,7 @@ const KITS_PATH = '/category/komplekty';
 
 export function HeroKits() {
   const { data: kits, isPending } = useKits();
-  const { addItem } = useCart();
+  const { addItem } = useCartActions();
 
   const count = kits?.length ?? 0;
   const { index, next, prev, pause, resume } = useCarousel(count, { autoplayMs: AUTOPLAY_MS });

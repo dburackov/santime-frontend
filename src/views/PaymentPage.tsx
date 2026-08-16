@@ -6,20 +6,15 @@ export function PaymentPage() {
       <h1 className="info-page__title">Оплата</h1>
 
       <section className="info-page__section">
-        <h2>Основные способы оплаты</h2>
-        <ul className="info-page__list">
-          <li>Оплата курьеру (наличными или картой) при получении</li>
-          <li>Перечисление на р/c</li>
-        </ul>
-      </section>
-
-      <section className="info-page__section">
+        <h2>Способы оплаты</h2>
         <ul className="info-page__list">
           <li>
-            <strong>Наличными</strong> — оплата в белорусских рублях (BYN) курьеру при получении заказа
+            <strong>Наличными или картой при получении</strong> — оплата в белорусских рублях (BYN) курьеру, в том
+            числе банковской картой через мобильный терминал, с выдачей кассового чека
           </li>
           <li>
-            <strong>Банковской картой</strong> — через мобильный терминал курьера
+            <strong>Онлайн-оплата (E-POS)</strong> — оплата банковской картой при оформлении заказа через систему
+            E-POS
           </li>
         </ul>
       </section>
@@ -27,7 +22,7 @@ export function PaymentPage() {
       <section className="info-page__section">
         <h2>Преимущества</h2>
         <ul className="info-page__list">
-          <li>Проверка товара перед оплатой</li>
+          <li>Проверка товара перед оплатой при расчёте с курьером</li>
           <li>Мгновенное подтверждение оплаты</li>
           <li>Без комиссии и дополнительных платежей</li>
           <li>Все курьеры оснащены терминалами для бесконтактной оплаты</li>

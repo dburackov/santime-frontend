@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import './Footer.css';
-import { SITE_PHONES } from '@/config/siteInfo';
+import { SITE_LEGAL, SITE_PHONES } from '@/config/siteInfo';
 
 export function Footer() {
   return (
@@ -25,7 +25,12 @@ export function Footer() {
         <nav className="footer__links" aria-label="Информация">
           <Link href="/delivery">Доставка</Link>
           <Link href="/payment">Оплата</Link>
+          <Link href="/terms">Пользовательское соглашение</Link>
         </nav>
+      </div>
+
+      <div className="container">
+        <address className="footer__legal">{SITE_LEGAL.join(' ')}</address>
       </div>
     </footer>
   );

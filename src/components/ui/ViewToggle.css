@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 40px;
+  height: 32px;
   background: var(--color-surface);
   border: var(--border);
   border-radius: var(--radius-sm);
@@ -11,8 +11,8 @@
 }
 
 .view-toggle__btn {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,4 +23,25 @@
 .view-toggle__btn--active {
   background: var(--color-line);
   color: var(--color-ink);
+}
+
+/* На мобильном группа схлопывается в одну кнопку: режим показывает её иконка,
+   нажатие переключает. Заливки у неё нет — она одна внутри рамки контейнера,
+   и закрашенный квадрат читался бы как вторая рамка. */
+.view-toggle__btn--single {
+  color: var(--color-ink);
+}
+
+.view-toggle__btn--pair {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .view-toggle__btn--single {
+    display: none;
+  }
+
+  .view-toggle__btn--pair {
+    display: flex;
+  }
 }

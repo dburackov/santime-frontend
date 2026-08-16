@@ -1,8 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { CartContext, type CartContextValue, type CartItem } from './cart-context';
+import {
+  CartActionsContext,
+  CartContext,
+  type CartActions,
+  type CartContextValue,
+  type CartItem,
+} from './cart-context';
 
 const STORAGE_KEY = 'santime-cart';
 const PROMO_STORAGE_KEY = 'santime-promo';
@@ -25,7 +31,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [promoCode, setPromoCodeState] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
-  const hydrated = useRef(false);
 
   useEffect(() => {
     // Это и есть паттерн гидрации: localStorage существует только в браузере,
@@ -36,25 +41,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(loadCart());
     setPromoCodeState(window.localStorage.getItem(PROMO_STORAGE_KEY));
-    hydrated.current = true;
     setIsHydrated(true);
   }, []);
 
   useEffect(() => {
-    // Без этой проверки первый прогон эффекта затёр бы сохранённую корзину
-    // пустым массивом ещё до того, как её успели прочитать.
-    if (!hydrated.current) return;
+    // Сторожем должно быть состояние, а не ref: ref выставлялся в соседнем
+    // эффекте и к первому прогону этого был уже true, а items в том же коммите
+    // ещё пуст — прочитанная корзина тут же затиралась пустым массивом. В dev
+    // со StrictMode это стоило корзины на каждой перезагрузке: повторный прогон
+    // эффекта гидрации читал уже затёртое хранилище.
+    if (!isHydrated) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+  }, [items, isHydrated]);
 
   useEffect(() => {
-    if (!hydrated.current) return;
+    if (!isHydrated) return;
     if (promoCode) {
       window.localStorage.setItem(PROMO_STORAGE_KEY, promoCode);
     } else {
       window.localStorage.removeItem(PROMO_STORAGE_KEY);
     }
-  }, [promoCode]);
+  }, [promoCode, isHydrated]);
 
   const addItem = useCallback((item: Omit<CartItem, 'quantity'>, quantity = 1) => {
     setItems((prev) => {
@@ -90,23 +97,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setPromoCodeState(null);
   }, []);
 
+  // Все шесть колбэков стабильны, поэтому объект действий создаётся один раз за
+  // жизнь провайдера: подписчики useCartActions переживают изменения корзины без
+  // единого лишнего рендера.
+  const actions = useMemo<CartActions>(
+    () => ({ addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear }),
+    [addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear],
+  );
+
   const value = useMemo<CartContextValue>(() => {
     const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
     const totalPrice = items.reduce((sum, i) => sum + i.quantity * i.price, 0);
-    return {
-      items,
-      isHydrated,
-      totalCount,
-      totalPrice,
-      promoCode,
-      addItem,
-      removeItem,
-      setQuantity,
-      setPromoCode,
-      clearPromoCode,
-      clear,
-    };
-  }, [items, isHydrated, promoCode, addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear]);
+    return { items, isHydrated, totalCount, totalPrice, promoCode, ...actions };
+  }, [items, isHydrated, promoCode, actions]);
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartActionsContext.Provider value={actions}>
+      <CartContext.Provider value={value}>{children}</CartContext.Provider>
+    </CartActionsContext.Provider>
+  );
 }

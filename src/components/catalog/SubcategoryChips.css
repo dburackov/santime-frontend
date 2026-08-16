@@ -1,0 +1,68 @@
+.subcategory-chips {
+  min-width: 0;
+}
+
+/* Скроллбар прячем: лента стоит в одной строке с заголовком, и системная полоса
+   ломала бы вертикальный ритм. Вертикальный padding — под фокус-ринг (2px обводки
+   плюс 2px отступа из global.css), иначе overflow срезал бы его. */
+.subcategory-chips__track {
+  --fade-width: var(--space-12);
+
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-1) 0;
+  scrollbar-width: none;
+}
+
+.subcategory-chips__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Затухание включается только с той стороны, где что-то спрятано: у долистанной
+   до края ленты маска гасится, иначе крайняя плашка выглядела бы обрезанной. */
+.subcategory-chips__track--fade-start {
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade-width));
+}
+
+.subcategory-chips__track--fade-end {
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--fade-width)), transparent);
+}
+
+.subcategory-chips__track--fade-start.subcategory-chips__track--fade-end {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-width),
+    #000 calc(100% - var(--fade-width)),
+    transparent
+  );
+}
+
+/* Подкатегории — вторичная навигация, а не витрина: пилюля на холодном тинте
+   вместо фирменной плитки с градиентом. Рамка есть всегда, чтобы hover менял
+   только её цвет и не двигал соседей на пиксель.
+
+   Высота ленты (21 + 8 + 2 + 8 паддинга трека = 39px) обязана быть меньше строки
+   заголовка (28px × 1.5 = 42px): с 640px они стоят в одной строке, и иначе шапка
+   прыгает между категориями с подкатегориями и без них. */
+.subcategory-chips__link {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  background: var(--color-tint);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  white-space: nowrap;
+  transition: background var(--motion-fast), border-color var(--motion-fast),
+    color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.subcategory-chips__link:hover {
+  border-color: var(--color-line-hover);
+  color: var(--color-accent-2);
+  box-shadow: var(--shadow-sm);
+}

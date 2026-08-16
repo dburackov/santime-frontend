@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import { saveLastOrder } from '@/cart/lastOrder';
 import './CheckoutPage.css';
@@ -49,6 +50,7 @@ export function CheckoutPage() {
   const discount = usePromoDiscount();
   const router = useRouter();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [agreed, setAgreed] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (body: OrderRequest) => createOrder(body),
@@ -223,7 +225,18 @@ export function CheckoutPage() {
             />
           </div>
 
-          <Button type="submit" disabled={mutation.isPending || discount.isRejected}>
+          <label className="admin-form-checkbox checkout-page__terms">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+            <span>
+              Ознакомлен с{' '}
+              <Link href="/terms" target="_blank" rel="noopener noreferrer">
+                пользовательским соглашением
+              </Link>{' '}
+              и согласен с обработкой персональных данных
+            </span>
+          </label>
+
+          <Button type="submit" disabled={mutation.isPending || discount.isRejected || !agreed}>
             {mutation.isPending ? 'Оформляем...' : 'Подтвердить заказ'}
           </Button>
         </form>

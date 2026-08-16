@@ -10,7 +10,7 @@
 .price-group--stacked {
   flex-direction: column-reverse;
   align-items: flex-start;
-  gap: var(--space-1);
+  gap: 0;
 }
 
 .price {
@@ -40,6 +40,12 @@
   font-size: var(--text-sm);
   color: var(--color-slate);
   white-space: nowrap;
+}
+
+/* Старая цена обязана быть мельче текущей, а --text-sm мельче только для md и lg.
+   У sm обе оказывались по 14px, и зачёркнутая читалась не слабее актуальной. */
+.price-group--sm .price__old {
+  font-size: var(--text-xs);
 }
 
 /* Линия только на сумме: глиф валюты из шрифта nbrb перечёркнутым читается грязно. */
