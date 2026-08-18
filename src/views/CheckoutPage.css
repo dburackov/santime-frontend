@@ -126,6 +126,20 @@
   margin-bottom: 0;
 }
 
+/* Пары длинных полей: на узком экране email с телефоном и подписи способов оплаты
+   и доставки в одну строку не читаются, поэтому до 640px они идут столбиком. */
+.checkout-page__row--stacked {
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .checkout-page__row--stacked {
+    flex-direction: row;
+    gap: var(--space-3);
+  }
+}
+
 @media (min-width: 1024px) {
   .checkout-page__layout {
     flex-direction: row;
@@ -135,7 +149,5 @@
   .checkout-page__summary {
     width: 320px;
     flex-shrink: 0;
-    position: sticky;
-    top: calc(56px + var(--space-6));
   }
 }

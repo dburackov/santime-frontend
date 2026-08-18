@@ -62,9 +62,16 @@
 }
 
 .product-page__description {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   font-size: var(--text-sm);
   color: var(--color-ink);
   line-height: 1.6;
+}
+
+.product-page__description p {
+  white-space: pre-line;
 }
 
 .product-page__purchase {

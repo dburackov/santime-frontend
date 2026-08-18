@@ -17,7 +17,24 @@ import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
+import { RequiredMark } from '@/admin/components/RequiredMark';
 import { DELIVERY_METHODS, PAYMENT_METHODS } from '@/utils/orderLabels';
+import { PHONE_PREFIX, formatPhone, isValidPhone, phoneDigits, toPhoneE164 } from '@/utils/phone';
+
+/** Поля, которые проверяем на клиенте: у каждого своя русская ошибка под полем. */
+type RequiredField = 'firstName' | 'lastName' | 'email' | 'phone' | 'address';
+
+type FormErrors = Partial<Record<RequiredField, string>>;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const FIELD_INPUT_ID: Record<RequiredField, string> = {
+  firstName: 'co-first-name',
+  lastName: 'co-last-name',
+  email: 'co-email',
+  phone: 'co-phone',
+  address: 'co-address',
+};
 
 interface FormState {
   firstName: string;
@@ -36,7 +53,7 @@ const EMPTY_FORM: FormState = {
   firstName: '',
   lastName: '',
   email: '',
-  phone: '',
+  phone: PHONE_PREFIX,
   address: '',
   postalCode: '',
   city: '',
@@ -50,6 +67,7 @@ export function CheckoutPage() {
   const discount = usePromoDiscount();
   const router = useRouter();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [agreed, setAgreed] = useState(false);
 
   const mutation = useMutation({
@@ -76,18 +94,61 @@ export function CheckoutPage() {
 
   if (!isHydrated || cartIsEmpty) return null;
 
+  // Самовывозу адрес не нужен — обязателен он только курьерской доставке.
+  const addressRequired = form.deliveryMethod === 'COURIER';
+
+  function handlePhoneChange(raw: string) {
+    clearError('phone');
+    setForm((f) => {
+      const formatted = formatPhone(raw);
+      // Backspace на разделителе маски даёт ту же строку, и поле переставало
+      // стираться — в этом случае убираем ещё и цифру перед разделителем.
+      const isStuck = formatted === f.phone && raw.length < f.phone.length;
+      return { ...f, phone: isStuck ? formatPhone(phoneDigits(raw).slice(0, -1)) : formatted };
+    });
+  }
+
+  function clearError(field: RequiredField) {
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+  }
+
+  function errorFor(field: RequiredField) {
+    return errors[field] ?? fieldError(mutation.error, field);
+  }
+
+  // Свои сообщения вместо нативных подсказок браузера: те приходят на языке браузера,
+  // а сайт русский. Поэтому у формы noValidate, а обязательность полей проверяем здесь.
+  function validate(): FormErrors {
+    const found: FormErrors = {};
+    if (!form.firstName.trim()) found.firstName = 'Укажите имя';
+    if (!form.lastName.trim()) found.lastName = 'Укажите фамилию';
+    if (!form.email.trim()) found.email = 'Укажите email — на него придёт письмо о заказе';
+    else if (!EMAIL_RE.test(form.email.trim())) found.email = 'Похоже, в адресе опечатка';
+    if (!isValidPhone(form.phone)) found.phone = `Введите действительный номер телефона`;
+    if (addressRequired && !form.address.trim()) found.address = 'Укажите адрес доставки';
+    return found;
+  }
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     // Промокод, который сервер уже отклонил, отправлять незачем: заказ вернёт 409.
     // Пусть покупатель сначала уберёт его в корзине.
     if (discount.isRejected) return;
 
+    const found = validate();
+    setErrors(found);
+    const firstInvalid = (Object.keys(found) as RequiredField[])[0];
+    if (firstInvalid) {
+      document.getElementById(FIELD_INPUT_ID[firstInvalid])?.focus();
+      return;
+    }
+
     const body: OrderRequest = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email || null,
-      phone: form.phone || null,
-      address: form.address || null,
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim(),
+      phone: toPhoneE164(form.phone),
+      address: form.address.trim() || null,
       postalCode: form.postalCode || null,
       city: form.city || null,
       paymentMethod: form.paymentMethod,
@@ -104,72 +165,84 @@ export function CheckoutPage() {
       <h1 className="checkout-page__title">Оформление заказа</h1>
 
       <div className="checkout-page__layout">
-        <form className="admin-form checkout-page__form" onSubmit={handleSubmit}>
+        <form className="admin-form checkout-page__form" onSubmit={handleSubmit} noValidate>
           {formError(mutation.error) && <div className="admin-banner-error">{formError(mutation.error)}</div>}
 
           <div className="admin-form-row">
             <div className="admin-form-field">
-              <label htmlFor="co-first-name">Имя</label>
+              <label htmlFor="co-first-name">Имя<RequiredMark /></label>
               <input
                 id="co-first-name"
                 className="filter-text-input"
                 value={form.firstName}
-                onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                onChange={(e) => {
+                  clearError('firstName');
+                  setForm((f) => ({ ...f, firstName: e.target.value }));
+                }}
                 required
               />
-              {fieldError(mutation.error, 'firstName') && (
-                <span className="admin-form-error">{fieldError(mutation.error, 'firstName')}</span>
-              )}
+              {errorFor('firstName') && <span className="admin-form-error">{errorFor('firstName')}</span>}
             </div>
             <div className="admin-form-field">
-              <label htmlFor="co-last-name">Фамилия</label>
+              <label htmlFor="co-last-name">Фамилия<RequiredMark /></label>
               <input
                 id="co-last-name"
                 className="filter-text-input"
                 value={form.lastName}
-                onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                onChange={(e) => {
+                  clearError('lastName');
+                  setForm((f) => ({ ...f, lastName: e.target.value }));
+                }}
                 required
               />
-              {fieldError(mutation.error, 'lastName') && (
-                <span className="admin-form-error">{fieldError(mutation.error, 'lastName')}</span>
-              )}
+              {errorFor('lastName') && <span className="admin-form-error">{errorFor('lastName')}</span>}
             </div>
           </div>
 
-          <div className="admin-form-row">
+          <div className="admin-form-row checkout-page__row--stacked">
             <div className="admin-form-field">
-              <label htmlFor="co-email">Email</label>
+              <label htmlFor="co-email">Email<RequiredMark /></label>
               <input
                 id="co-email"
                 type="email"
                 className="filter-text-input"
                 value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                onChange={(e) => {
+                  clearError('email');
+                  setForm((f) => ({ ...f, email: e.target.value }));
+                }}
+                required
               />
-              {fieldError(mutation.error, 'email') && (
-                <span className="admin-form-error">{fieldError(mutation.error, 'email')}</span>
-              )}
+              {errorFor('email') && <span className="admin-form-error">{errorFor('email')}</span>}
             </div>
             <div className="admin-form-field">
-              <label htmlFor="co-phone">Телефон</label>
+              <label htmlFor="co-phone">Телефон<RequiredMark /></label>
               <input
                 id="co-phone"
                 type="tel"
-                className="filter-text-input"
+                inputMode="tel"
+                className="filter-text-input mono-num"
                 value={form.phone}
-                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                required
               />
+              {errorFor('phone') && <span className="admin-form-error">{errorFor('phone')}</span>}
             </div>
           </div>
 
           <div className="admin-form-field">
-            <label htmlFor="co-address">Адрес</label>
+            <label htmlFor="co-address">Адрес{addressRequired && <RequiredMark />}</label>
             <input
               id="co-address"
               className="filter-text-input"
               value={form.address}
-              onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+              onChange={(e) => {
+                clearError('address');
+                setForm((f) => ({ ...f, address: e.target.value }));
+              }}
+              required={addressRequired}
             />
+            {errorFor('address') && <span className="admin-form-error">{errorFor('address')}</span>}
           </div>
 
           <div className="admin-form-row">
@@ -193,14 +266,17 @@ export function CheckoutPage() {
             </div>
           </div>
 
-          <div className="admin-form-row">
+          <div className="admin-form-row checkout-page__row--stacked">
             <div className="admin-form-field">
               <label htmlFor="co-delivery">Способ доставки</label>
               <Select
                 id="co-delivery"
                 options={DELIVERY_METHODS}
                 value={form.deliveryMethod}
-                onChange={(value) => setForm((f) => ({ ...f, deliveryMethod: value }))}
+                onChange={(value) => {
+                  clearError('address');
+                  setForm((f) => ({ ...f, deliveryMethod: value }));
+                }}
                 ariaLabel="Способ доставки"
               />
             </div>

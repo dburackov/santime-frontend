@@ -95,6 +95,15 @@ export function ProductPage() {
     [categories, variant],
   );
 
+  const descriptionParagraphs = useMemo(
+    () =>
+      (variant?.description ?? '')
+        .split(/\r?\n\s*\r?\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean),
+    [variant],
+  );
+
   const images = variant?.images ?? [];
 
   // JSON-LD раньше собиралась здесь в useEffect и дописывалась в document.head —
@@ -159,7 +168,13 @@ export function ProductPage() {
           <h1 className="product-page__title">{variant.name}</h1>
           <div className="product-page__sku mono-num">Артикул: {variant.sku}</div>
 
-          {variant.description && <p className="product-page__description">{variant.description}</p>}
+          {descriptionParagraphs.length > 0 && (
+            <div className="product-page__description">
+              {descriptionParagraphs.map((paragraph, i) => (
+                <p key={i}>{paragraph}</p>
+              ))}
+            </div>
+          )}
 
           <VariantOptions groups={variant.variantOptions} />
 
