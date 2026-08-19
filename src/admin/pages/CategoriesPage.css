@@ -1,17 +1,21 @@
+.categories-page__col--grip {
+  width: 4%;
+}
+
 .categories-page__col--id {
   width: 6%;
 }
 
 .categories-page__col--name {
-  width: 26%;
+  width: 24%;
 }
 
 .categories-page__col--slug {
-  width: 30%;
+  width: 28%;
 }
 
 .categories-page__col--parent {
-  width: 24%;
+  width: 22%;
 }
 
 .categories-page__col--actions {

@@ -7,12 +7,10 @@ import { useMutation } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
 import { changePassword } from '@/api/auth';
-import { useAuth } from '@/auth/useAuth';
 import { fieldError, formError } from '@/admin/formErrors';
 import { Button } from '@/components/ui/Button';
 
 export function ChangePasswordPage() {
-  const { mustChangePassword, markPasswordChanged } = useAuth();
   const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -21,10 +19,7 @@ export function ChangePasswordPage() {
 
   const mutation = useMutation({
     mutationFn: () => changePassword({ currentPassword, newPassword }),
-    onSuccess: () => {
-      markPasswordChanged();
-      router.replace('/admin');
-    },
+    onSuccess: () => router.replace('/admin'),
   });
 
   function handleSubmit(e: FormEvent) {
@@ -40,10 +35,6 @@ export function ChangePasswordPage() {
   return (
     <div className="admin-page">
       <h1>Смена пароля</h1>
-
-      {mustChangePassword && (
-        <div className="admin-banner-error">Необходимо сменить временный пароль, прежде чем продолжить работу.</div>
-      )}
 
       <form className="admin-form" onSubmit={handleSubmit} style={{ maxWidth: 360 }}>
         {formError(mutation.error) && <div className="admin-banner-error">{formError(mutation.error)}</div>}

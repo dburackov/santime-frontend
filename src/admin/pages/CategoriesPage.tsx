@@ -3,12 +3,21 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import Link from 'next/link';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
+import '@/admin/dragOrder.css';
 import '@/components/filters/Filters.css';
 import './CategoriesPage.css';
-import { listCategories, createCategory, updateCategory, deleteCategory } from '@/api/admin';
+import {
+  listCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  reorderCategories,
+} from '@/api/admin';
 import type { CategoryRequest, CategoryResponse } from '@/api/types';
 import { useAdminResource } from '@/admin/useAdminResource';
+import { useDragOrder } from '@/admin/useDragOrder';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { SlugField } from '@/admin/components/SlugField';
@@ -16,7 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
-import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
+import { DragHandleIcon, PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
 const QUERY_KEY = ['admin-categories'];
 
@@ -37,6 +46,18 @@ export function CategoriesPage() {
       update: updateCategory,
       remove: deleteCategory,
     });
+
+  const queryClient = useQueryClient();
+  const reorderMutation = useMutation({
+    mutationFn: reorderCategories,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
+  const { items: list, itemProps, handleProps } = useDragOrder(
+    items,
+    (category) => category.id,
+    (ids) => reorderMutation.mutate(ids),
+  );
 
   const [editing, setEditing] = useState<CategoryResponse | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,6 +117,7 @@ export function CategoriesPage() {
         <div className="admin-table-wrap">
           <table className="admin-table">
             <colgroup>
+              <col className="categories-page__col--grip" />
               <col className="categories-page__col--id" />
               <col className="categories-page__col--name" />
               <col className="categories-page__col--slug" />
@@ -104,6 +126,7 @@ export function CategoriesPage() {
             </colgroup>
             <thead>
               <tr>
+                <th />
                 <th>ID</th>
                 <th>Название</th>
                 <th>Slug</th>
@@ -112,12 +135,15 @@ export function CategoriesPage() {
               </tr>
             </thead>
             <tbody>
-              {items?.map((category) => (
-                <tr key={category.id}>
+              {list.map((category) => (
+                <tr key={category.id} {...itemProps(category.id)}>
+                  <td className="drag-handle" {...handleProps(category.id)}>
+                    <DragHandleIcon width={16} height={16} />
+                  </td>
                   <td className="mono-num">{category.id}</td>
                   <td>{category.name}</td>
                   <td className="mono-num">{category.slug}</td>
-                  <td>{items.find((c) => c.id === category.parentCategoryId)?.name ?? '—'}</td>
+                  <td>{list.find((c) => c.id === category.parentCategoryId)?.name ?? '—'}</td>
                   <td>
                     <div className="admin-table__actions">
                       <Link href={`/admin/categories/${category.id}/attributes`} className="admin-table__link-btn">

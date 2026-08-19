@@ -16,7 +16,6 @@ export interface LoginRequest {
 
 export interface AuthResponse {
   accessToken: string;
-  mustChangePassword: boolean;
 }
 
 export interface ChangePasswordRequest {
@@ -168,6 +167,7 @@ export interface CategoryResponse {
   name: string;
   slug: string;
   parentCategoryId: number | null;
+  sortOrder: number;
   /** Число товаров в категории. Опционально: /api/catalog/categories пока его не
       отдаёт — плитка категории рисует счётчик только когда поле пришло. */
   productCount?: number;

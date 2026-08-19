@@ -21,13 +21,11 @@ const NAV_ITEMS = [
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isInitializing, mustChangePassword, logout } = useAuth();
+  const { isAuthenticated, isInitializing, logout } = useAuth();
   const pathname = usePathname() ?? '';
   const router = useRouter();
 
   const needsLogin = !isInitializing && !isAuthenticated;
-  const needsPasswordChange =
-    !isInitializing && isAuthenticated && mustChangePassword && pathname !== '/admin/change-password';
 
   // Раньше это были <Navigate>, которые react-router умел рендерить прямо в
   // дереве. В Next перенаправление клиентского компонента — побочный эффект,
@@ -41,12 +39,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       // Куда вернуть после входа — раньше передавалось через state роутера,
       // которого в Next нет; кладём в query-параметр.
       router.replace(`/admin/login?from=${encodeURIComponent(pathname)}`);
-    } else if (needsPasswordChange) {
-      router.replace('/admin/change-password');
     }
-  }, [needsLogin, needsPasswordChange, pathname, router]);
+  }, [needsLogin, pathname, router]);
 
-  if (isInitializing || needsLogin || needsPasswordChange) {
+  if (isInitializing || needsLogin) {
     return <div className="admin-shell admin-shell--loading">Загрузка…</div>;
   }
 

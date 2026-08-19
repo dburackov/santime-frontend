@@ -330,6 +330,10 @@ export function deleteBestseller(id: number): Promise<void> {
   return apiRequest(`/api/admin/bestsellers/${id}`, { method: 'DELETE' });
 }
 
+export function reorderCategories(ids: number[]): Promise<void> {
+  return apiRequest('/api/admin/categories/order', { method: 'PUT', body: { ids } });
+}
+
 export function reorderBestsellers(ids: number[]): Promise<void> {
   return apiRequest('/api/admin/bestsellers/order', { method: 'PUT', body: { ids } });
 }

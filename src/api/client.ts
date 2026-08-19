@@ -95,8 +95,8 @@ let refreshPromise: Promise<AuthResponse | null> | null = null;
  * missingOrReused; ADMIN-AUTH-SPEC.md §5, п.6 — спека прямо называет гонку
  * параллельных /refresh ожидаемым источником такого исхода).
  *
- * Возвращает весь AuthResponse, а не флаг: восстановлению сессии при загрузке
- * страницы нужен ещё и mustChangePassword.
+ * Возвращает AuthResponse или null: null означает, что живой сессии нет и повторять
+ * запрос бессмысленно.
  */
 export function refreshSession(): Promise<AuthResponse | null> {
   if (!refreshPromise) {

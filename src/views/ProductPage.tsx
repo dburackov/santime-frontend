@@ -168,14 +168,6 @@ export function ProductPage() {
           <h1 className="product-page__title">{variant.name}</h1>
           <div className="product-page__sku mono-num">Артикул: {variant.sku}</div>
 
-          {descriptionParagraphs.length > 0 && (
-            <div className="product-page__description">
-              {descriptionParagraphs.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
-              ))}
-            </div>
-          )}
-
           <VariantOptions groups={variant.variantOptions} />
 
           <div className="product-page__purchase">
@@ -221,6 +213,14 @@ export function ProductPage() {
           )}
 
           <AttributesTable metadata={variant.attributeMetadata} attributes={variant.attributes} />
+
+          {descriptionParagraphs.length > 0 && (
+            <div className="product-page__description">
+              {descriptionParagraphs.map((paragraph, i) => (
+                <p key={i}>{paragraph}</p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
