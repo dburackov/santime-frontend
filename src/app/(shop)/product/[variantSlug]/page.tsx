@@ -85,7 +85,7 @@ export default async function Page({ params }: { params: Promise<{ variantSlug: 
 
   const queryClient = createServerQueryClient();
   // Ключ обязан совпадать с useProductDetail, иначе клиент сходит за данными
-  // заново, а в HTML уедет скелетон вместо товара.
+  // заново, а в HTML уедет пустая страница вместо товара.
   queryClient.setQueryData(['product-detail', variantSlug], variant);
   // Категории нужны хлебным крошкам — и разметке, и самой странице.
   const categories = await queryClient.fetchQuery({

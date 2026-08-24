@@ -48,6 +48,7 @@ import { groupTitle } from '@/admin/productGroupTitle';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 import { formatPrice } from '@/utils/price';
+import { blurOnWheel } from '@/utils/numberInput';
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -544,6 +545,7 @@ export function ProductsPage() {
               <input
                 id="product-price"
                 type="number"
+                onWheel={blurOnWheel}
                 step="0.01"
                 className="filter-text-input mono-num"
                 value={form.price}
@@ -561,6 +563,7 @@ export function ProductsPage() {
               <input
                 id="product-old-price"
                 type="number"
+                onWheel={blurOnWheel}
                 step="0.01"
                 className="filter-text-input mono-num"
                 value={form.oldPrice}
@@ -579,6 +582,7 @@ export function ProductsPage() {
               <input
                 id="product-stock"
                 type="number"
+                onWheel={blurOnWheel}
                 className="filter-text-input mono-num"
                 value={form.stockQuantity}
                 onChange={(e) => setForm((f) => ({ ...f, stockQuantity: e.target.value }))}
@@ -589,6 +593,7 @@ export function ProductsPage() {
               <input
                 id="product-weight"
                 type="number"
+                onWheel={blurOnWheel}
                 step="0.001"
                 className="filter-text-input mono-num"
                 value={form.weightKg}
@@ -923,6 +928,7 @@ function AttributeField({ binding, value, options, onChange, error, isAxis }: At
       <label>{label}</label>
       <input
         type={binding.attributeType === 'NUMBER' ? 'number' : 'text'}
+        onWheel={binding.attributeType === 'NUMBER' ? blurOnWheel : undefined}
         className="filter-text-input"
         value={value}
         onChange={(e) => onChange(e.target.value)}

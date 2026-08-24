@@ -88,7 +88,12 @@ export function SearchableSelect({
   useEffect(() => {
     // preventScroll — иначе браузер сам решает прокрутить ближайший скроллящийся
     // предок к полю поиска, конфликтуя с нашим позиционированием панели (см. portal).
-    if (open && searchable) searchInputRef.current?.focus({ preventScroll: true });
+    //
+    // Только для мыши: на тач-экране автофокус поднимает экранную клавиатуру поверх
+    // половины списка, хотя пользователь ещё не собирался ничего искать.
+    if (!open || !searchable) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    searchInputRef.current?.focus({ preventScroll: true });
   }, [open, searchable]);
 
   useLayoutEffect(() => {

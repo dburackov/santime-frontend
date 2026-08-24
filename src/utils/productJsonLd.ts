@@ -1,5 +1,6 @@
 import { SITE_URL } from '@/config/siteInfo';
 import { formatPriceMachine } from '@/utils/price';
+import { buildCategoryPath } from '@/utils/categoryTree';
 import type { CategoryResponse, VariantDetailResponse } from '@/api/types';
 
 type JsonLd = Record<string, unknown>;
@@ -56,11 +57,11 @@ export function buildProductCrumbs(
   variant: VariantDetailResponse,
   categories: CategoryResponse[] | undefined,
 ): Crumb[] {
-  const category = categories?.find((c) => c.id === variant.categoryId);
+  const path = categories ? buildCategoryPath(categories, variant.categoryId) : [];
   return [
     { name: 'Главная', path: '/' },
     { name: 'Каталог', path: '/catalog' },
-    ...(category ? [{ name: category.name, path: `/category/${category.slug}` }] : []),
+    ...path.map((category) => ({ name: category.name, path: `/category/${category.slug}` })),
     { name: variant.name, path: `/product/${variant.variantSlug}` },
   ];
 }

@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { useRouteParams } from '@/hooks/useRouteParams';
 import './ProductPage.css';
-import '@/components/ui/Skeleton.css';
 import { useProductDetail } from '@/queries/useProductDetail';
 import { useCategories } from '@/queries/useCategories';
 import { useCartActions } from '@/cart/useCartActions';
@@ -15,6 +14,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { VariantOptions } from '@/components/product/VariantOptions';
 import { AttributesTable } from '@/components/product/AttributesTable';
 import { ProductLightbox } from '@/components/product/ProductLightbox';
+import { buildCategoryPath } from '@/utils/categoryTree';
 import type { ProductImageResponse } from '@/api/types';
 
 interface ProductGalleryProps {
@@ -90,8 +90,8 @@ export function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
 
-  const category = useMemo(
-    () => categories?.find((c) => c.id === variant?.categoryId),
+  const categoryPath = useMemo(
+    () => (categories && variant ? buildCategoryPath(categories, variant.categoryId) : []),
     [categories, variant],
   );
 
@@ -119,20 +119,7 @@ export function ProductPage() {
     );
   }
 
-  if (isLoading || !variant) {
-    return (
-      <div className="container product-page">
-        <div className="product-page__layout">
-          <div className="skeleton-block" style={{ height: 320, borderRadius: 'var(--radius)' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-            <div className="skeleton-block" style={{ height: 28, width: '70%' }} />
-            <div className="skeleton-block" style={{ height: 20, width: '40%' }} />
-            <div className="skeleton-block" style={{ height: 44, width: '100%' }} />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading || !variant) return null;
 
   function handleAddToCart() {
     if (!variant) return;
@@ -156,7 +143,7 @@ export function ProductPage() {
       <Breadcrumbs
         items={[
           { label: 'Каталог', to: '/catalog' },
-          ...(category ? [{ label: category.name, to: `/category/${category.slug}` }] : []),
+          ...categoryPath.map((item) => ({ label: item.name, to: `/category/${item.slug}` })),
           { label: variant.name },
         ]}
       />
@@ -168,7 +155,7 @@ export function ProductPage() {
           <h1 className="product-page__title">{variant.name}</h1>
           <div className="product-page__sku mono-num">Артикул: {variant.sku}</div>
 
-          <VariantOptions groups={variant.variantOptions} />
+          <VariantOptions groups={variant.variantOptions} metadata={variant.attributeMetadata} />
 
           <div className="product-page__purchase">
             <Price value={variant.price} oldValue={variant.oldPrice} size="lg" />

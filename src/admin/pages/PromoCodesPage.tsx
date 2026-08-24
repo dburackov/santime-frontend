@@ -29,6 +29,7 @@ import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { fieldError, formError } from '@/admin/formErrors';
 import { groupTitle } from '@/admin/productGroupTitle';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
+import { blurOnWheel } from '@/utils/numberInput';
 
 const QUERY_KEY = ['admin-promo-codes'];
 
@@ -381,6 +382,7 @@ export function PromoCodesPage() {
               <input
                 id="promo-value"
                 type="number"
+                onWheel={blurOnWheel}
                 step="0.01"
                 min="0.01"
                 max={form.discountType === 'PERCENT' ? 100 : undefined}
@@ -402,6 +404,7 @@ export function PromoCodesPage() {
             <input
               id="promo-min-order"
               type="number"
+              onWheel={blurOnWheel}
               step="0.01"
               min="0"
               className="filter-text-input mono-num"

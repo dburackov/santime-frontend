@@ -20,7 +20,3 @@ export function CategoryTile({ category }: CategoryTileProps) {
     </Link>
   );
 }
-
-export function CategoryTileSkeleton() {
-  return <div className="skeleton-block home-category-tile home-category-tile--skeleton" />;
-}

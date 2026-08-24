@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import './HomePage.css';
-import '@/components/ui/Skeleton.css';
 import { useCategories } from '@/queries/useCategories';
 import { useCatalogProducts } from '@/queries/useCatalogProducts';
 import { useBestsellers } from '@/queries/useBestsellers';
@@ -10,9 +9,8 @@ import { DISCOUNTS_QUERY } from '@/queries/discountsQuery';
 import { STOREFRONT_BLOCK_SIZE } from '@/hooks/catalogQuery';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ProductCard } from '@/components/product/ProductCard';
-import { CategoryTile, CategoryTileSkeleton } from '@/components/catalog/CategoryTile';
+import { CategoryTile } from '@/components/catalog/CategoryTile';
 import { HeroKits } from '@/components/home/HeroKits';
-import { SkeletonCard } from '@/components/ui/Skeleton';
 import { ArrowRightIcon, CardIcon, HeadsetIcon, ShieldIcon, TruckIcon } from '@/components/ui/icons';
 
 const TRUST_ITEMS = [
@@ -23,19 +21,13 @@ const TRUST_ITEMS = [
 ];
 
 export function HomePage() {
-  const { data: categories, isLoading, isError, refetch } = useCategories();
+  const { data: categories, isError, refetch } = useCategories();
   const {
     data: discountsPage,
-    isLoading: discountsLoading,
     isError: discountsError,
     refetch: refetchDiscounts,
   } = useCatalogProducts(DISCOUNTS_QUERY);
-  const {
-    data: hits,
-    isLoading: hitsLoading,
-    isError: hitsError,
-    refetch: refetchHits,
-  } = useBestsellers();
+  const { data: hits, isError: hitsError, refetch: refetchHits } = useBestsellers();
 
   const discounts = discountsPage?.content ?? [];
   // На главной плитки — витрина, а не полный список: он живёт в /catalog.
@@ -90,16 +82,6 @@ export function HomePage() {
 
         {isError && <ErrorState description="Не удалось загрузить категории." onRetry={refetch} />}
 
-        {isLoading && (
-          <div className="category-grid">
-            {/* Сколько категорий придёт, заранее не знает никто — берём размер
-                витринного блока как правдоподобную заглушку. */}
-            {Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => (
-              <CategoryTileSkeleton key={i} />
-            ))}
-          </div>
-        )}
-
         {shownCategories && (
           <div className="category-grid">
             {shownCategories.map((category) => (
@@ -109,7 +91,7 @@ export function HomePage() {
         )}
       </section>
 
-      {(discountsLoading || discounts.length > 0 || discountsError) && (
+      {(discounts.length > 0 || discountsError) && (
         <section className="home-section home-section--tinted">
           <div className="container home-section__inner">
             <div className="home-section-head">
@@ -127,16 +109,16 @@ export function HomePage() {
               <ErrorState description="Не удалось загрузить скидки." onRetry={refetchDiscounts} />
             ) : (
               <div className="home-section__grid">
-                {discountsLoading && discounts.length === 0
-                  ? Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-                  : discounts.map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
+                {discounts.map((variant) => (
+                  <ProductCard key={variant.variantId} variant={variant} />
+                ))}
               </div>
             )}
           </div>
         </section>
       )}
 
-      {(hitsLoading || (hits && hits.length > 0) || hitsError) && (
+      {((hits && hits.length > 0) || hitsError) && (
         <section className="home-section">
           <div className="container home-section__inner">
             <div className="home-section-head">
@@ -154,9 +136,9 @@ export function HomePage() {
               <ErrorState description="Не удалось загрузить хиты продаж." onRetry={refetchHits} />
             ) : (
               <div className="home-section__grid">
-                {hitsLoading && !hits
-                  ? Array.from({ length: STOREFRONT_BLOCK_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-                  : (hits ?? []).map((variant) => <ProductCard key={variant.variantId} variant={variant} />)}
+                {(hits ?? []).map((variant) => (
+                  <ProductCard key={variant.variantId} variant={variant} />
+                ))}
               </div>
             )}
           </div>

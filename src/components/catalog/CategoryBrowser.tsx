@@ -180,16 +180,3 @@ export function CategoryBrowser({ categories }: CategoryBrowserProps) {
     </div>
   );
 }
-
-export function CategoryBrowserSkeleton() {
-  return (
-    <div className="category-browser category-browser--skeleton">
-      <div className="category-browser__skeleton-list">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="skeleton-block category-browser__skeleton-row" />
-        ))}
-      </div>
-      <div className="skeleton-block category-browser__skeleton-panel" />
-    </div>
-  );
-}

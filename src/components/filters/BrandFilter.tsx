@@ -21,7 +21,6 @@ export function BrandFilter({ brands, brandIds, onChange }: BrandFilterProps) {
         multiple
         placeholder="Все бренды"
         searchPlaceholder="Поиск бренда…"
-        portal
       />
     </div>
   );

@@ -124,7 +124,8 @@ export interface VariantDetailAttributeMeta {
 export interface VariantOptionItem {
   variantId: number;
   variantSlug: string;
-  value: string;
+  /** Сырое значение из JSONB: у BOOLEAN-оси это true/false, у NUMBER — число. */
+  value: AttributeValue;
   current: boolean;
   /**
    * Есть ли исполнение, отличающееся от текущего только по этой оси.

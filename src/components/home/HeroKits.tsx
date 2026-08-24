@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import './HeroKits.css';
-import '@/components/ui/Skeleton.css';
 import { useKits } from '@/queries/useKits';
 import { useCarousel } from '@/hooks/useCarousel';
 import { useCartActions } from '@/cart/useCartActions';
@@ -15,15 +14,12 @@ const AUTOPLAY_MS = 5000;
 const KITS_PATH = '/category/komplekty';
 
 export function HeroKits() {
-  const { data: kits, isPending } = useKits();
+  const { data: kits } = useKits();
   const { addItem } = useCartActions();
 
   const count = kits?.length ?? 0;
   const { index, next, prev, pause, resume } = useCarousel(count, { autoplayMs: AUTOPLAY_MS });
 
-  // Скелетон только пока запрос идёт: на ошибке kits так и остаётся undefined,
-  // и по `!kits` он висел бы вечно. Ошибка и пустой ответ — молча без блока.
-  if (isPending) return <HeroKitsSkeleton />;
   if (count === 0) return null;
 
   const kit = kits![index];
@@ -111,24 +107,3 @@ export function HeroKits() {
   );
 }
 
-function HeroKitsSkeleton() {
-  return (
-    <div className="hero-kits">
-      <div className="hero-kits__head">
-        <span className="hero-kits__title">Готовые решения</span>
-      </div>
-      <div className="hero-kits__card">
-        <div className="skeleton-block hero-kits__photo" />
-        <div className="hero-kits__body">
-          <div className="skeleton-block" style={{ width: '85%', height: 14 }} />
-          <div className="skeleton-block" style={{ width: '60%', height: 14 }} />
-          <div className="hero-kits__buy">
-            <div className="skeleton-block" style={{ width: 110, height: 22 }} />
-            <div className="skeleton-block" style={{ width: 88, height: 36 }} />
-          </div>
-        </div>
-      </div>
-      <div className="hero-kits__nav" />
-    </div>
-  );
-}

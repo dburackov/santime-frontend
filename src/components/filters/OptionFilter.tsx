@@ -23,7 +23,6 @@ export function OptionFilter({ attribute, selectedValues, onChange }: OptionFilt
         onChange={onChange}
         placeholder="Любой"
         searchPlaceholder={`Поиск: ${attribute.name.toLowerCase()}`}
-        portal
       />
     </div>
   );

@@ -63,6 +63,9 @@ export function useCatalogQueryState(
     if (nextPage <= 0) next.delete('page');
     else next.set('page', String(nextPage + 1));
     commit(next);
+    // Смена фильтра позицию сохраняет (scroll: false выше), а смена страницы — нет:
+    // иначе новая страница открывается с середины списка.
+    window.scrollTo({ top: 0 });
   }
 
   const hasActiveFilters =

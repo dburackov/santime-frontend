@@ -30,7 +30,6 @@ export function NumberRangeFilter({ attribute, min, max, onChange }: NumberRange
           clearLabel=""
           searchable={false}
           showIndicator={false}
-          portal
         />
         <span className="price-range-inputs__dash">—</span>
         <SearchableSelect
@@ -41,7 +40,6 @@ export function NumberRangeFilter({ attribute, min, max, onChange }: NumberRange
           clearLabel=""
           searchable={false}
           showIndicator={false}
-          portal
         />
       </div>
     </div>

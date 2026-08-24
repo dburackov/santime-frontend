@@ -16,7 +16,6 @@ import { ProductListRow } from '@/components/product/ProductListRow';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import { Pagination } from '@/components/ui/Pagination';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { SkeletonCard, SkeletonRow } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
@@ -88,14 +87,6 @@ export function DiscountsPage({ initialViewMode }: { initialViewMode: ViewMode }
           </div>
 
           {isError && <ErrorState onRetry={refetch} />}
-
-          {isLoading && !page && (
-            <div className={viewMode === 'grid' ? 'category-page__grid' : 'category-page__list'}>
-              {Array.from({ length: viewMode === 'grid' ? 8 : 6 }).map((_, i) =>
-                viewMode === 'grid' ? <SkeletonCard key={i} /> : <SkeletonRow key={i} />,
-              )}
-            </div>
-          )}
 
           {!isError && page && page.content.length === 0 && (
             <EmptyState

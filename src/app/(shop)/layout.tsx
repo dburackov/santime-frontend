@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
 
 /** Бывший StorefrontLayout из App.tsx: <Outlet/> заменён на children. */
 export default function ShopLayout({ children }: { children: ReactNode }) {
@@ -9,6 +10,7 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       <Header />
       <main className="app-shell__main">{children}</main>
       <Footer />
+      <ScrollTopButton />
     </div>
   );
 }

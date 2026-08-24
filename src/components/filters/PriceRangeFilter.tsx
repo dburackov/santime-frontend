@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import './Filters.css';
+import { blurOnWheel } from '@/utils/numberInput';
 
 interface PriceRangeFilterProps {
   priceMin: number | undefined;
@@ -51,6 +52,7 @@ export function PriceRangeFilter({ priceMin, priceMax, onChange }: PriceRangeFil
       <div className="price-range-inputs">
         <input
           type="number"
+          onWheel={blurOnWheel}
           inputMode="numeric"
           min={0}
           placeholder="от"
@@ -62,6 +64,7 @@ export function PriceRangeFilter({ priceMin, priceMax, onChange }: PriceRangeFil
         <span className="price-range-inputs__dash">—</span>
         <input
           type="number"
+          onWheel={blurOnWheel}
           inputMode="numeric"
           min={0}
           placeholder="до"

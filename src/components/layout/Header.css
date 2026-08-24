@@ -51,11 +51,9 @@
   inset: -2px;
 }
 
+/* margin-right у ряда space-between: без него логотип в потоке снова встаёт по центру. */
 .header__logo {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin-right: auto;
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -296,8 +294,7 @@
   }
 
   .header__logo {
-    position: static;
-    transform: none;
+    margin-right: 0;
     flex: 0 0 auto;
   }
 

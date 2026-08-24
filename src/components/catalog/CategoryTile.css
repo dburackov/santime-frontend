@@ -62,14 +62,6 @@
   color: var(--color-chevron);
 }
 
-/* Двойной класс намеренно: скелетон несёт ещё и .skeleton-block с собственным
-   фоном, и при одинаковой специфичности победитель зависел бы от порядка
-   склейки CSS. Здесь заливка плитки гасится однозначно. */
-.home-category-tile.home-category-tile--skeleton {
-  border: none;
-  background: var(--color-line);
-}
-
 .category-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
