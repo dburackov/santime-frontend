@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import './Footer.css';
-import { SITE_LEGAL, SITE_PHONES } from '@/config/siteInfo';
+import { SITE_EMAIL, SITE_HOURS, SITE_LEGAL, SITE_PHONES } from '@/config/siteInfo';
 
 export function Footer() {
   return (
@@ -15,17 +15,24 @@ export function Footer() {
         </div>
 
         <div className="footer__phones">
+          <span className="footer__hours">
+            {SITE_HOURS.label} {SITE_HOURS.value}
+          </span>
           {SITE_PHONES.map((phone) => (
             <a key={phone.href} href={phone.href} className="footer__phone">
               {phone.display}
             </a>
           ))}
+          <a href={SITE_EMAIL.href} className="footer__phone">
+            {SITE_EMAIL.display}
+          </a>
         </div>
 
         <nav className="footer__links" aria-label="Информация">
           <Link href="/delivery">Доставка</Link>
           <Link href="/payment">Оплата</Link>
           <Link href="/terms">Пользовательское соглашение</Link>
+          <Link href="/privacy">Политика персональных данных</Link>
         </nav>
       </div>
 

@@ -3,6 +3,7 @@
 import { useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { buildCatalogQuery, parseCatalogParams, type CatalogQueryOptions } from './catalogQuery';
+import { scrollToTop } from '@/utils/scrollToTop';
 import type { CatalogFilterAttributeResponse } from '@/api/types';
 
 /**
@@ -65,7 +66,7 @@ export function useCatalogQueryState(
     commit(next);
     // Смена фильтра позицию сохраняет (scroll: false выше), а смена страницы — нет:
     // иначе новая страница открывается с середины списка.
-    window.scrollTo({ top: 0 });
+    scrollToTop();
   }
 
   const hasActiveFilters =

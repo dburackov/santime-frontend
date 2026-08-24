@@ -18,14 +18,16 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Price } from '@/components/ui/Price';
 import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
-import { EditIcon } from '@/components/ui/icons';
+import { ChevronLeftIcon, ChevronRightIcon, EditIcon } from '@/components/ui/icons';
 import {
   DELIVERY_METHODS,
   ORDER_STATUSES,
   PAYMENT_METHODS,
   deliveryMethodLabel,
+  nextOrderStatus,
   orderStatusLabel,
   paymentMethodLabel,
+  previousOrderStatus,
 } from '@/utils/orderLabels';
 
 interface FormState {
@@ -55,6 +57,22 @@ function toForm(order: OrderResponse): FormState {
     deliveryMethod: order.deliveryMethod,
     comment: order.comment ?? '',
     status: order.status,
+  };
+}
+
+function toRequest(form: FormState): AdminOrderUpdateRequest {
+  return {
+    firstName: form.firstName,
+    lastName: form.lastName,
+    email: form.email || null,
+    phone: form.phone || null,
+    city: form.city || null,
+    address: form.address || null,
+    postalCode: form.postalCode || null,
+    paymentMethod: form.paymentMethod,
+    deliveryMethod: form.deliveryMethod,
+    comment: form.comment || null,
+    status: form.status,
   };
 }
 
@@ -94,21 +112,17 @@ export function OrderDetailPage() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form) return;
-    const body: AdminOrderUpdateRequest = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email || null,
-      phone: form.phone || null,
-      city: form.city || null,
-      address: form.address || null,
-      postalCode: form.postalCode || null,
-      paymentMethod: form.paymentMethod,
-      deliveryMethod: form.deliveryMethod,
-      comment: form.comment || null,
-      status: form.status,
-    };
-    updateMutation.mutateAsync(body).then(() => setModalOpen(false)).catch(() => {});
+    updateMutation.mutateAsync(toRequest(form)).then(() => setModalOpen(false)).catch(() => {});
   }
+
+  /** Шаг по цепочке статусов: остальные поля заказа уходят как есть. */
+  function changeStatus(status: OrderStatus) {
+    if (!order) return;
+    updateMutation.mutate({ ...toRequest(toForm(order)), status });
+  }
+
+  const nextStatus = order ? nextOrderStatus(order.status) : null;
+  const previousStatus = order ? previousOrderStatus(order.status) : null;
 
   if (isError) {
     return (
@@ -133,6 +147,30 @@ export function OrderDetailPage() {
             >
               {orderStatusLabel(order.status)}
             </span>
+            {previousStatus && (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="order-status-step--prev"
+                onClick={() => changeStatus(previousStatus)}
+                disabled={updateMutation.isPending}
+              >
+                <ChevronLeftIcon width={16} height={16} />
+                {orderStatusLabel(previousStatus)}
+              </Button>
+            )}
+            {nextStatus && (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="order-status-step--next"
+                onClick={() => changeStatus(nextStatus)}
+                disabled={updateMutation.isPending}
+              >
+                {orderStatusLabel(nextStatus)}
+                <ChevronRightIcon width={16} height={16} />
+              </Button>
+            )}
             <PrintReceiptButton orderId={order.id} onError={setReceiptError} />
             <Button size="sm" onClick={openEdit}>
               <EditIcon width={16} height={16} />
@@ -143,6 +181,10 @@ export function OrderDetailPage() {
       </div>
 
       {receiptError != null && <div className="admin-banner-error">{formError(receiptError)}</div>}
+
+      {!modalOpen && formError(updateMutation.error) && (
+        <div className="admin-banner-error">{formError(updateMutation.error)}</div>
+      )}
 
       {order && (
         <div className="order-detail__grid">

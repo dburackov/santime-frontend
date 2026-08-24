@@ -12,7 +12,9 @@ export const SITE_PHONES = [
   { display: '+375 (44) 597-97-97', href: 'tel:+375445979797' },
 ];
 
-export const SITE_HOURS = { label: 'Работаем ежедневно', value: '09:00 – 21:00' };
+export const SITE_EMAIL = { display: 'info@santime.by', href: 'mailto:info@santime.by' };
+
+export const SITE_HOURS = { label: 'Работаем Пн-Сб', value: '09:00 – 21:00' };
 
 export const SITE_LEGAL = [
   'ИП Бураков Игорь Валентинович, УНП 400542389.',

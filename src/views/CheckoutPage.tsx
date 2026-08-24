@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FocusEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
@@ -105,6 +105,20 @@ export function CheckoutPage() {
       // стираться — в этом случае убираем ещё и цифру перед разделителем.
       const isStuck = formatted === f.phone && raw.length < f.phone.length;
       return { ...f, phone: isStuck ? formatPhone(phoneDigits(raw).slice(0, -1)) : formatted };
+    });
+  }
+
+  /**
+   * По Tab браузер выделяет содержимое поля целиком, и заполненный префикс +375 выглядит так,
+   * будто следующая цифра его сотрёт. Схлопываем такое выделение в курсор в конце строки;
+   * клик мышью не трогаем — там выделения нет и позиция каретки уже выбрана пользователем.
+   */
+  function handlePhoneFocus(event: FocusEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    requestAnimationFrame(() => {
+      if (input.selectionStart === 0 && input.selectionEnd === input.value.length) {
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
     });
   }
 
@@ -224,6 +238,7 @@ export function CheckoutPage() {
                 className="filter-text-input mono-num"
                 value={form.phone}
                 onChange={(e) => handlePhoneChange(e.target.value)}
+                onFocus={handlePhoneFocus}
                 required
               />
               {errorFor('phone') && <span className="admin-form-error">{errorFor('phone')}</span>}
@@ -308,7 +323,10 @@ export function CheckoutPage() {
               <Link href="/terms" target="_blank" rel="noopener noreferrer">
                 пользовательским соглашением
               </Link>{' '}
-              и согласен с обработкой персональных данных
+              и согласен с{' '}
+              <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+                обработкой персональных данных
+              </Link>
             </span>
           </label>
 

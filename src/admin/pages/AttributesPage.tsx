@@ -192,6 +192,7 @@ export function AttributesPage() {
             source={form.name}
             onChange={(slug) => setForm((f) => ({ ...f, slug }))}
             error={fieldError(activeMutation.error, 'slug')}
+            maxLength={46}
           />
           <div className="admin-form-row">
             <div className="admin-form-field">

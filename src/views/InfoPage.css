@@ -24,10 +24,27 @@
 
 .info-page__section {
   margin-bottom: var(--space-8);
+  /* Ссылка на раздел не должна прятать заголовок под липкую шапку. */
+  scroll-margin-top: calc(var(--space-16) + var(--space-8));
 }
 
 .info-page__section h2 {
   margin-bottom: var(--space-4);
+}
+
+.info-page a {
+  color: var(--color-accent-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.info-page a:hover {
+  color: var(--color-accent-hover);
+}
+
+.info-page__text {
+  color: var(--color-ink);
+  line-height: 1.6;
 }
 
 .info-page__list {

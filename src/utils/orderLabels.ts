@@ -18,6 +18,24 @@ export const ORDER_STATUSES: { value: OrderStatus; label: string }[] = [
   { value: 'CANCELLED', label: 'Отменён' },
 ];
 
+/**
+ * Рабочая цепочка статусов. CANCELLED в неё не входит: отмена — не шаг вперёд,
+ * её ставят из формы редактирования, а шаг назад возвращает заказ в работу.
+ */
+const ORDER_STATUS_FLOW: OrderStatus[] = ['NEW', 'CONFIRMED', 'DELIVERED'];
+
+export function nextOrderStatus(status: OrderStatus): OrderStatus | null {
+  const index = ORDER_STATUS_FLOW.indexOf(status);
+  if (index < 0) return null;
+  return ORDER_STATUS_FLOW[index + 1] ?? null;
+}
+
+export function previousOrderStatus(status: OrderStatus): OrderStatus | null {
+  if (status === 'CANCELLED') return 'NEW';
+  const index = ORDER_STATUS_FLOW.indexOf(status);
+  return index > 0 ? ORDER_STATUS_FLOW[index - 1] : null;
+}
+
 function labelOf(options: { value: string; label: string }[], value: string): string {
   return options.find((option) => option.value === value)?.label ?? value;
 }

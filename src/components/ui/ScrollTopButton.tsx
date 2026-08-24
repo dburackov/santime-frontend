@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import './ScrollTopButton.css';
 import { ArrowUpIcon } from './icons';
+import { scrollToTop } from '@/utils/scrollToTop';
 
 const SHOW_AFTER = 300;
 
@@ -18,11 +19,6 @@ export function ScrollTopButton() {
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
-
-  function scrollToTop() {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
-  }
 
   return (
     <button
