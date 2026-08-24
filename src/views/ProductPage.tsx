@@ -1,11 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useRouteParams } from '@/hooks/useRouteParams';
 import './ProductPage.css';
 import { useProductDetail } from '@/queries/useProductDetail';
 import { useCategories } from '@/queries/useCategories';
-import { useCartActions } from '@/cart/useCartActions';
+import { useCart } from '@/cart/useCart';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
 import { Button } from '@/components/ui/Button';
@@ -86,9 +87,9 @@ export function ProductPage() {
   const { variantSlug } = useRouteParams<{ variantSlug: string }>();
   const { data: variant, isLoading, isError, refetch } = useProductDetail(variantSlug);
   const { data: categories } = useCategories();
-  const { addItem } = useCartActions();
+  const { items, addItem } = useCart();
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
-  const [justAdded, setJustAdded] = useState(false);
 
   const categoryPath = useMemo(
     () => (categories && variant ? buildCategoryPath(categories, variant.categoryId) : []),
@@ -121,8 +122,20 @@ export function ProductPage() {
 
   if (isLoading || !variant) return null;
 
-  function handleAddToCart() {
+  /**
+   * Состояние кнопки выводится из самой корзины, а не из факта клика: так она
+   * остаётся верной и после перезагрузки страницы, и при переключении на соседнее
+   * исполнение, и после удаления товара из корзины.
+   */
+  const inCart = items.some((i) => i.variantId === variant.variantId);
+
+  function handleBuy() {
     if (!variant) return;
+    if (inCart) {
+      router.push('/cart');
+      return;
+    }
+    // Диалога здесь нет — отклик даёт сама кнопка, шапке остаётся пульс.
     addItem(
       {
         variantId: variant.variantId,
@@ -132,10 +145,9 @@ export function ProductPage() {
         attributes: variant.attributes,
         image: variant.images?.[0] ?? null,
       },
-      quantity,
+      Math.min(quantity, variant.stockQuantity),
+      { silent: true },
     );
-    setJustAdded(true);
-    window.setTimeout(() => setJustAdded(false), 2000);
   }
 
   return (
@@ -169,11 +181,16 @@ export function ProductPage() {
             )}
 
             <div className="product-page__cart-row">
-              <div className="product-page__qty" role="group" aria-label="Количество">
+              <div
+                className={`product-page__qty ${inCart ? 'product-page__qty--disabled' : ''}`}
+                role="group"
+                aria-label="Количество"
+              >
                 <button
                   type="button"
                   className="product-page__qty-btn touch-target"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={inCart}
                   aria-label="Уменьшить количество"
                 >
                   −
@@ -182,15 +199,20 @@ export function ProductPage() {
                 <button
                   type="button"
                   className="product-page__qty-btn touch-target"
-                  onClick={() => setQuantity((q) => q + 1)}
+                  onClick={() => setQuantity((q) => Math.min(variant.stockQuantity, q + 1))}
+                  disabled={inCart || quantity >= variant.stockQuantity}
                   aria-label="Увеличить количество"
                 >
                   +
                 </button>
               </div>
 
-              <Button disabled={variant.stockQuantity === 0} onClick={handleAddToCart}>
-                {justAdded ? 'Добавлено' : 'В корзину'}
+              <Button
+                disabled={variant.stockQuantity === 0}
+                className={inCart ? 'product-page__buy--in-cart' : ''}
+                onClick={handleBuy}
+              >
+                {inCart ? 'В корзине' : 'Купить'}
               </Button>
             </div>
           </div>

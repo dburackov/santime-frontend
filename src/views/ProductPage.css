@@ -121,8 +121,18 @@
   color: var(--color-ink);
 }
 
-.product-page__qty-btn:hover {
+.product-page__qty-btn:hover:not(:disabled) {
   background: var(--color-line);
+}
+
+.product-page__qty-btn:disabled {
+  color: var(--color-slate);
+  cursor: not-allowed;
+}
+
+/* Товар уже в корзине — количество правится там же, здесь счётчик только мешает. */
+.product-page__qty--disabled {
+  opacity: 0.5;
 }
 
 .product-page__qty-value {
@@ -141,4 +151,16 @@
     grid-template-columns: minmax(0, 420px) 1fr;
     align-items: start;
   }
+}
+
+/* Товар уже в корзине: кнопка меняет роль с «положить» на «перейти» и говорит об
+   этом цветом. Селектор с .btn — чтобы перебить заливку .btn--primary. */
+.btn.product-page__buy--in-cart {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.btn.product-page__buy--in-cart:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-success) 85%, black);
+  color: #fff;
 }

@@ -11,16 +11,25 @@ import { useCart } from '@/cart/useCart';
 import { NAV_LINKS, SITE_HOURS, SITE_PHONES } from '@/config/siteInfo';
 
 export function Header() {
-  const { totalCount } = useCart();
+  const { totalCount, pulseToken } = useCart();
   const pathname = usePathname() ?? '';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
+  const [cartPulsing, setCartPulsing] = useState(false);
+  const [lastPulseToken, setLastPulseToken] = useState(pulseToken);
 
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setMobileMenuOpen(false);
     setMobileSearchOpen(false);
+  }
+
+  // Корзина сообщает о себе ростом pulseToken; сравнение в рендере — тот же приём,
+  // что и с pathname выше, эффект здесь только добавил бы лишний кадр.
+  if (pulseToken !== lastPulseToken) {
+    setLastPulseToken(pulseToken);
+    setCartPulsing(true);
   }
 
   function isNavLinkActive(to: string) {
@@ -105,7 +114,12 @@ export function Header() {
                   <SearchIcon width={20} height={20} />
                 </button>
 
-                <Link href="/cart" className="header__cart" aria-label="Корзина">
+                <Link
+                  href="/cart"
+                  className={`header__cart ${cartPulsing ? 'header__cart--pulse' : ''}`}
+                  aria-label="Корзина"
+                  onAnimationEnd={() => setCartPulsing(false)}
+                >
                   <CartIcon width={18} height={18} />
                   {totalCount > 0 && <span className="header__cart-count">{totalCount}</span>}
                 </Link>

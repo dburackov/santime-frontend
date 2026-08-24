@@ -4,18 +4,14 @@ import Link from 'next/link';
 import './ProductCard.css';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
-import { Button } from '@/components/ui/Button';
-import { CartIcon } from '@/components/ui/icons';
+import { CartToggleButton } from '@/components/cart/CartToggleButton';
 import type { VariantCardResponse } from '@/api/types';
-import { useCartActions } from '@/cart/useCartActions';
 
 interface ProductCardProps {
   variant: VariantCardResponse;
 }
 
 export function ProductCard({ variant }: ProductCardProps) {
-  const { addItem } = useCartActions();
-
   return (
     <div className="product-card">
       <ProductPhoto image={variant.images?.[0]} alt={variant.name} size="card" />
@@ -31,25 +27,7 @@ export function ProductCard({ variant }: ProductCardProps) {
         {!variant.inStock && <span className="product-card__oos">Нет в наличии</span>}
         <div className="product-card__footer">
           <Price value={variant.price} oldValue={variant.oldPrice} size="md" stacked />
-          <Button
-            size="sm"
-            className="product-card__cart"
-            aria-label="В корзину"
-            title="В корзину"
-            disabled={!variant.inStock}
-            onClick={() =>
-              addItem({
-                variantId: variant.variantId,
-                variantSlug: variant.variantSlug,
-                productName: variant.name,
-                price: variant.price,
-                attributes: variant.attributes,
-                image: variant.images?.[0] ?? null,
-              })
-            }
-          >
-            <CartIcon width={18} height={18} />
-          </Button>
+          <CartToggleButton variant={variant} className="product-card__cart" />
         </div>
       </div>
     </div>

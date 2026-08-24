@@ -5,6 +5,8 @@ import type { ReactNode } from 'react';
 import {
   CartActionsContext,
   CartContext,
+  CartItemIdsContext,
+  type AddItemOptions,
   type CartActions,
   type CartContextValue,
   type CartItem,
@@ -31,6 +33,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [promoCode, setPromoCodeState] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [addedItem, setAddedItem] = useState<CartItem | null>(null);
+  const [pulseToken, setPulseToken] = useState(0);
 
   useEffect(() => {
     // Это и есть паттерн гидрации: localStorage существует только в браузере,
@@ -63,16 +67,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [promoCode, isHydrated]);
 
-  const addItem = useCallback((item: Omit<CartItem, 'quantity'>, quantity = 1) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.variantId === item.variantId);
-      if (existing) {
-        return prev.map((i) =>
-          i.variantId === item.variantId ? { ...i, quantity: i.quantity + quantity } : i,
-        );
-      }
-      return [...prev, { ...item, quantity }];
-    });
+  const addItem = useCallback(
+    (item: Omit<CartItem, 'quantity'>, quantity = 1, options: AddItemOptions = {}) => {
+      setItems((prev) => {
+        const existing = prev.find((i) => i.variantId === item.variantId);
+        if (existing) {
+          return prev.map((i) =>
+            i.variantId === item.variantId ? { ...i, quantity: i.quantity + quantity } : i,
+          );
+        }
+        return [...prev, { ...item, quantity }];
+      });
+      // Диалог подтверждения поднимает провайдер, а не кнопки: точек добавления
+      // четыре, и каждая новая получает его без единой правки.
+      if (options.silent) setPulseToken((token) => token + 1);
+      else setAddedItem({ ...item, quantity });
+    },
+    [],
+  );
+
+  const dismissAddedDialog = useCallback((options: { silent?: boolean } = {}) => {
+    setAddedItem(null);
+    if (!options.silent) setPulseToken((token) => token + 1);
   }, []);
 
   const removeItem = useCallback((variantId: number) => {
@@ -101,19 +117,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // жизнь провайдера: подписчики useCartActions переживают изменения корзины без
   // единого лишнего рендера.
   const actions = useMemo<CartActions>(
-    () => ({ addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear }),
-    [addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear],
+    () => ({ addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear, dismissAddedDialog }),
+    [addItem, removeItem, setQuantity, setPromoCode, clearPromoCode, clear, dismissAddedDialog],
   );
+
+  // Ключ строкой, а не сам массив: иначе useMemo пересобирал бы Set на каждое
+  // изменение количества и перерисовывал всю сетку каталога.
+  const idsKey = items.map((i) => i.variantId).join(',');
+  const itemIds = useMemo(() => new Set(idsKey ? idsKey.split(',').map(Number) : []), [idsKey]);
 
   const value = useMemo<CartContextValue>(() => {
     const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
     const totalPrice = items.reduce((sum, i) => sum + i.quantity * i.price, 0);
-    return { items, isHydrated, totalCount, totalPrice, promoCode, ...actions };
-  }, [items, isHydrated, promoCode, actions]);
+    return { items, isHydrated, totalCount, totalPrice, promoCode, addedItem, pulseToken, ...actions };
+  }, [items, isHydrated, promoCode, addedItem, pulseToken, actions]);
 
   return (
     <CartActionsContext.Provider value={actions}>
-      <CartContext.Provider value={value}>{children}</CartContext.Provider>
+      <CartItemIdsContext.Provider value={itemIds}>
+        <CartContext.Provider value={value}>{children}</CartContext.Provider>
+      </CartItemIdsContext.Provider>
     </CartActionsContext.Provider>
   );
 }

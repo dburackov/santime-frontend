@@ -4,10 +4,9 @@ import Link from 'next/link';
 import './ProductListRow.css';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
-import { Button } from '@/components/ui/Button';
+import { CartToggleButton } from '@/components/cart/CartToggleButton';
 import type { CatalogFilterAttributeResponse, VariantCardResponse } from '@/api/types';
 import { formatAttributeLine } from '@/utils/attributes';
-import { useCartActions } from '@/cart/useCartActions';
 
 interface ProductListRowProps {
   variant: VariantCardResponse;
@@ -15,8 +14,6 @@ interface ProductListRowProps {
 }
 
 export function ProductListRow({ variant, displayAttributes = [] }: ProductListRowProps) {
-  const { addItem } = useCartActions();
-
   const attrLines = displayAttributes
     .map((attr) => ({ slug: attr.slug, text: formatAttributeLine(attr, variant.attributes[attr.slug]) }))
     .filter((line): line is { slug: string; text: string } => Boolean(line.text));
@@ -44,22 +41,7 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
 
       <div className="product-row__end">
         <Price value={variant.price} oldValue={variant.oldPrice} size="md" stacked />
-        <Button
-          size="sm"
-          disabled={!variant.inStock}
-          onClick={() =>
-            addItem({
-              variantId: variant.variantId,
-              variantSlug: variant.variantSlug,
-              productName: variant.name,
-              price: variant.price,
-              attributes: variant.attributes,
-              image: variant.images?.[0] ?? null,
-            })
-          }
-        >
-          В корзину
-        </Button>
+        <CartToggleButton variant={variant} showLabel />
       </div>
     </div>
   );

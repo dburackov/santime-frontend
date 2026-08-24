@@ -61,10 +61,8 @@
 
 /* Квадрат под .btn--sm: у него уже min-height 36px, остаётся убрать текстовые
    паддинги. z-index — чтобы кнопка осталась над растянутой ссылкой. */
+/* Кнопка обязана лежать над растянутым ::after у product-card__link. */
 .product-card__cart {
   position: relative;
   z-index: 1;
-  width: 36px;
-  padding: 0;
-  flex-shrink: 0;
 }

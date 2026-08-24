@@ -108,6 +108,39 @@
   color: var(--color-accent);
 }
 
+/* Отклик на добавление товара: два коротких цикла, дальше класс снимается по
+   animationend. Пульс просят и кнопка, и счётчик — их анимации идут параллельно. */
+.header__cart--pulse {
+  animation: header-cart-pulse 0.45s ease-in-out 2;
+}
+
+.header__cart--pulse .header__cart-count {
+  animation: header-cart-count-pulse 0.45s ease-in-out 2;
+}
+
+@keyframes header-cart-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  50% {
+    transform: scale(1.12);
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 4px var(--color-gold-fill);
+  }
+}
+
+@keyframes header-cart-count-pulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
 .header__cart-count {
   position: absolute;
   top: -6px;

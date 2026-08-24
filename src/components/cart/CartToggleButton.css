@@ -1,0 +1,20 @@
+.cart-toggle {
+  flex-shrink: 0;
+}
+
+/* Плитка каталога: только иконка в квадрате 36×36. */
+.cart-toggle--icon {
+  width: 36px;
+  padding: 0;
+}
+
+/* Товар уже в корзине: селектор с .btn перебивает заливку .btn--primary. */
+.btn.cart-toggle--in-cart {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.btn.cart-toggle--in-cart:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-success) 85%, black);
+  color: #fff;
+}

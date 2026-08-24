@@ -1,0 +1,103 @@
+/* Лестница z-index: Header 30, FilterPanel 40, admin-modal и дровер 50,
+   этот диалог 55, портал SearchableSelect 60, лайтбокс 70 (см. ProductLightbox.css). */
+.cart-added {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.cart-added__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  animation: cart-added-fade var(--motion-fast);
+}
+
+.cart-added__dialog {
+  position: relative;
+  width: min(440px, 100%);
+  padding: var(--space-6);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  animation: cart-added-in var(--motion-base);
+}
+
+@keyframes cart-added-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cart-added-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cart-added__close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-slate);
+}
+
+.cart-added__close:hover {
+  color: var(--color-ink);
+}
+
+.cart-added__title {
+  margin: 0 var(--space-8) var(--space-5) 0;
+  font-size: var(--text-lg);
+}
+
+.cart-added__product {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* Размер --row задан жёстко (170×170) — в диалоге бокс нужен мельче, целиком. */
+.cart-added__product .product-photo {
+  width: 96px;
+  height: 96px;
+}
+
+.cart-added__name {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.cart-added__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.cart-added__actions > * {
+  flex: 1;
+  justify-content: center;
+}
+
+@media (max-width: 479px) {
+  .cart-added__actions {
+    flex-direction: column;
+  }
+}
