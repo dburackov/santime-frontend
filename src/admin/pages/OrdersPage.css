@@ -34,7 +34,7 @@
 }
 
 .orders-page__col--client {
-  width: 22%;
+  width: 20%;
 }
 
 .orders-page__col--payment {
@@ -50,9 +50,9 @@
 }
 
 .orders-page__col--date {
-  width: 18%;
+  width: 16%;
 }
 
 .orders-page__col--actions {
-  width: 10%;
+  width: 14%;
 }

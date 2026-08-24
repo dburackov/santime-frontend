@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import './OrdersPage.css';
 import { listOrders } from '@/api/admin';
 import type { OrderStatus } from '@/api/types';
+import { PrintReceiptButton } from '@/admin/components/PrintReceiptButton';
+import { formError } from '@/admin/formErrors';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Pagination } from '@/components/ui/Pagination';
 import { Price } from '@/components/ui/Price';
@@ -27,6 +30,8 @@ export function OrdersPage() {
     ? (statusParam as OrderStatus)
     : DEFAULT_STATUS;
   const page = Math.max(0, Number(searchParams.get('page') ?? '1') - 1) || 0;
+
+  const [receiptError, setReceiptError] = useState<unknown>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['admin-orders', status, page],
@@ -73,6 +78,8 @@ export function OrdersPage() {
         ))}
       </div>
 
+      {receiptError != null && <div className="admin-banner-error">{formError(receiptError)}</div>}
+
       {isError && <ErrorState description="Не удалось загрузить заказы." onRetry={refetch} />}
 
       {!isError && (
@@ -112,9 +119,12 @@ export function OrdersPage() {
                   </td>
                   <td className="mono-num">{new Date(order.createdAt).toLocaleString('ru-RU')}</td>
                   <td>
-                    <Link href={`/admin/orders/${order.id}`} className="admin-table__link-btn">
-                      Открыть
-                    </Link>
+                    <div className="admin-table__actions">
+                      <Link href={`/admin/orders/${order.id}`} className="admin-table__link-btn">
+                        Открыть
+                      </Link>
+                      <PrintReceiptButton orderId={order.id} variant="icon" onError={setReceiptError} />
+                    </div>
                   </td>
                 </tr>
               ))}

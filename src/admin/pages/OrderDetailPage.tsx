@@ -10,6 +10,7 @@ import './OrderDetailPage.css';
 import { getOrder, updateOrder } from '@/api/admin';
 import type { AdminOrderUpdateRequest, OrderResponse, OrderStatus } from '@/api/types';
 import { Modal } from '@/admin/components/Modal';
+import { PrintReceiptButton } from '@/admin/components/PrintReceiptButton';
 import { RequiredMark } from '@/admin/components/RequiredMark';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Button } from '@/components/ui/Button';
@@ -82,6 +83,7 @@ export function OrderDetailPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState<FormState | null>(null);
+  const [receiptError, setReceiptError] = useState<unknown>(null);
 
   function openEdit() {
     if (!order) return;
@@ -131,6 +133,7 @@ export function OrderDetailPage() {
             >
               {orderStatusLabel(order.status)}
             </span>
+            <PrintReceiptButton orderId={order.id} onError={setReceiptError} />
             <Button size="sm" onClick={openEdit}>
               <EditIcon width={16} height={16} />
               Редактировать
@@ -138,6 +141,8 @@ export function OrderDetailPage() {
           </div>
         )}
       </div>
+
+      {receiptError != null && <div className="admin-banner-error">{formError(receiptError)}</div>}
 
       {order && (
         <div className="order-detail__grid">

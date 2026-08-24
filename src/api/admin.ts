@@ -1,4 +1,4 @@
-import { apiRequest } from './client';
+import { apiRequest, apiRequestFile, type DownloadedFile } from './client';
 import type {
   AttributeOptionRequest,
   AttributeOptionResponse,
@@ -297,6 +297,10 @@ export function getOrder(id: number): Promise<OrderResponse> {
 
 export function updateOrder(id: number, body: AdminOrderUpdateRequest): Promise<OrderResponse> {
   return apiRequest(`/api/admin/orders/${id}`, { method: 'PUT', body });
+}
+
+export function getOrderReceipt(id: number): Promise<DownloadedFile> {
+  return apiRequestFile(`/api/admin/orders/${id}/receipt`);
 }
 
 // ---- Промокоды ----

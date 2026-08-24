@@ -131,7 +131,7 @@ async function parseError(response: Response): Promise<ApiError> {
   return new ApiError(response.status, errorBody);
 }
 
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+async function request(path: string, options: RequestOptions): Promise<Response> {
   let response = await doFetch(path, options);
 
   if (response.status === 401 && path.startsWith('/api/admin/') && !isAuthEndpoint(path)) {
@@ -145,6 +145,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     throw await parseError(response);
   }
 
+  return response;
+}
+
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const response = await request(path, options);
+
   if (response.status === 204) {
     return undefined as T;
   }
@@ -153,4 +159,35 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   // response.json() на пустой строке кидает SyntaxError, поэтому читаем текст сами.
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as T;
+}
+
+export interface DownloadedFile {
+  blob: Blob;
+  filename: string | null;
+}
+
+/**
+ * Для эндпоинтов, отвечающих файлом: тело читается как Blob, а не как JSON.
+ * Ошибка при этом остаётся обычным ApiError — бэкенд отдаёт её JSON-ом.
+ */
+export async function apiRequestFile(path: string, options: RequestOptions = {}): Promise<DownloadedFile> {
+  const response = await request(path, options);
+  return { blob: await response.blob(), filename: parseFilename(response) };
+}
+
+function parseFilename(response: Response): string | null {
+  const header = response.headers.get('Content-Disposition');
+  if (!header) return null;
+
+  // Кириллица в имени приезжает только в filename*=UTF-8''…
+  const encoded = /filename\*=UTF-8''([^;]+)/i.exec(header);
+  if (encoded) {
+    try {
+      return decodeURIComponent(encoded[1]);
+    } catch {
+      // битая процентная последовательность — падать из-за имени файла незачем
+    }
+  }
+  const plain = /filename="([^"]*)"/i.exec(header);
+  return plain ? plain[1] : null;
 }
