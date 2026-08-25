@@ -20,6 +20,7 @@ import { useAdminResource } from '@/admin/useAdminResource';
 import { useDragOrder } from '@/admin/useDragOrder';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
+import { CategoryImageModal } from '@/admin/components/CategoryImageModal';
 import { SlugField } from '@/admin/components/SlugField';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -63,6 +64,7 @@ export function CategoriesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [deleteTarget, setDeleteTarget] = useState<CategoryResponse | null>(null);
+  const [imageTarget, setImageTarget] = useState<CategoryResponse | null>(null);
 
   function openCreate() {
     setEditing(null);
@@ -119,6 +121,7 @@ export function CategoriesPage() {
             <colgroup>
               <col className="categories-page__col--grip" />
               <col className="categories-page__col--id" />
+              <col className="categories-page__col--photo" />
               <col className="categories-page__col--name" />
               <col className="categories-page__col--slug" />
               <col className="categories-page__col--parent" />
@@ -128,6 +131,7 @@ export function CategoriesPage() {
               <tr>
                 <th />
                 <th>ID</th>
+                <th>Фото</th>
                 <th>Название</th>
                 <th>Slug</th>
                 <th>Родительская категория</th>
@@ -141,6 +145,18 @@ export function CategoriesPage() {
                     <DragHandleIcon width={16} height={16} />
                   </td>
                   <td className="mono-num">{category.id}</td>
+                  <td>
+                    {category.image ? (
+                      <img
+                        className="categories-page__thumb"
+                        src={category.image.fallback}
+                        alt=""
+                        draggable={false}
+                      />
+                    ) : (
+                      '—'
+                    )}
+                  </td>
                   <td>{category.name}</td>
                   <td className="mono-num">{category.slug}</td>
                   <td>{list.find((c) => c.id === category.parentCategoryId)?.name ?? '—'}</td>
@@ -149,6 +165,18 @@ export function CategoriesPage() {
                       <Link href={`/admin/categories/${category.id}/attributes`} className="admin-table__link-btn">
                         Атрибуты
                       </Link>
+                      {/* Фото заводится только у корневой категории; у остальных кнопка
+                          остаётся, только пока фото есть — иначе его нечем было бы убрать
+                          после назначения родителя. */}
+                      {(category.parentCategoryId === null || category.image) && (
+                        <button
+                          type="button"
+                          className="admin-table__link-btn"
+                          onClick={() => setImageTarget(category)}
+                        >
+                          Фото
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="admin-table__icon-btn"
@@ -231,6 +259,14 @@ export function CategoriesPage() {
           </div>
         </form>
       </Modal>
+
+      {imageTarget && (
+        <CategoryImageModal
+          category={list.find((c) => c.id === imageTarget.id) ?? imageTarget}
+          queryKey={QUERY_KEY}
+          onClose={() => setImageTarget(null)}
+        />
+      )}
 
       <ConfirmDialog
         open={deleteTarget !== null}

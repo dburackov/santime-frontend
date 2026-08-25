@@ -42,6 +42,17 @@
   height: 40px;
 }
 
+.product-photo--menu {
+  height: 48px;
+  width: 48px;
+  border-radius: var(--radius-sm);
+}
+
+.product-photo--menu .product-photo__placeholder {
+  width: 20px;
+  height: 20px;
+}
+
 .product-photo--thumb {
   height: 60px;
   width: 60px;
@@ -50,6 +61,16 @@
 .product-photo--thumb .product-photo__placeholder {
   width: 24px;
   height: 24px;
+}
+
+.product-photo--tile {
+  height: 104px;
+  width: 104px;
+}
+
+.product-photo--tile .product-photo__placeholder {
+  width: 40px;
+  height: 40px;
 }
 
 .product-photo--row {

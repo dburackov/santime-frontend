@@ -10,6 +10,10 @@
   gap: var(--space-2);
 }
 
+.category-browser__roots--drilled {
+  display: none;
+}
+
 .category-browser__row {
   display: flex;
 }
@@ -19,153 +23,54 @@
   min-width: 0;
 }
 
-.category-browser__parent--active {
-  border-color: var(--color-accent-2);
-}
-
-/* Мега-панель — только десктоп; на узких экранах её роль играет погружение по уровням. */
-.category-browser__panel {
-  display: none;
-}
-
-.category-browser__panel-title {
-  display: inline-block;
-  margin-bottom: var(--space-4);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-lg);
-  color: var(--color-ink);
-  transition: color var(--motion-fast);
-}
-
-.category-browser__panel-title:hover {
-  color: var(--color-accent-2);
-}
-
-/* Multi-column, а не grid: браузер сам разливает группы по колонкам и балансирует их
-   высоту, поэтому блоки укладываются плотно, без дыр под короткими. Счётчик в columns —
-   это максимум: при узкой панели раскладка сама схлопывается до двух колонок, чтобы
-   столбец не стал уже 220px. */
-.category-browser__groups {
-  columns: 220px 3;
-  column-gap: var(--space-6);
-}
-
-/* Отступ между группами — margin: в multicol gap работает только между колонками. */
-.category-browser__group {
-  break-inside: avoid;
-  margin-bottom: var(--space-6);
-}
-
-.category-browser__group-title {
-  display: block;
-  margin-bottom: var(--space-2);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-base);
-  color: var(--color-ink);
-  text-wrap: pretty;
-  transition: color var(--motion-fast);
-}
-
-.category-browser__group-title:hover {
-  color: var(--color-accent-2);
-}
-
-.category-browser__group-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.category-browser__group-link {
-  font-size: var(--text-sm);
-  color: var(--color-slate);
-  text-wrap: pretty;
-  transition: color var(--motion-fast);
-}
-
-.category-browser__group-link:hover {
-  color: var(--color-accent-2);
-}
-
-/* Экран погружения. Скрыт всегда, кроме мобильной ширины с открытым уровнем — правило
-   на открытие живёт в @media ниже, чтобы состояние погружения не протекло на десктоп
-   после ресайза окна. */
+/* Экран погружения. Скрыт, пока его уровень не открыт. */
 .category-browser__level {
   display: none;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.category-browser__back {
+.category-browser__level--open {
   display: flex;
+}
+
+/* Форма .home-section-head__link: мелкая второстепенная ссылка, только стрелка слева. */
+.category-browser__back {
+  display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: var(--space-1);
-  padding: var(--space-2) 0;
+  padding: 0;
   border: none;
   background: none;
   cursor: pointer;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-lg);
-  color: var(--color-ink);
-  text-align: left;
-  transition: color var(--motion-fast);
-}
-
-.category-browser__back:hover {
-  color: var(--color-accent-2);
-}
-
-.category-browser__all {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-line-2);
-  border-radius: var(--radius);
-  background: var(--color-tint);
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-accent-2);
 }
 
-@media (max-width: 899px) {
-  .category-browser__roots--drilled {
-    display: none;
-  }
-
-  .category-browser__level--open {
-    display: flex;
-  }
+/* Заголовок уровня и одновременно вход в саму категорию — отсюда стрелка вправо. */
+.category-browser__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  max-width: 100%;
+  padding: var(--space-1) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+  transition: color var(--motion-fast);
 }
 
-@media (min-width: 900px) {
-  /* Левая колонка и панель — соседние ячейки одной сетки. display: contents у обёрток
-     нужен, чтобы строка и её панель стали прямыми элементами этой сетки, оставаясь при
-     этом одной группой в разметке. Хвостовой 1fr-трек забирает высоту, если панель выше
-     списка: иначе излишек распределился бы по строкам и плитки родителей разъехались бы. */
-  .category-browser {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-    grid-template-rows: repeat(var(--parent-count), min-content) 1fr;
-    column-gap: var(--space-6);
-    row-gap: var(--space-2);
-  }
+.category-browser__title:hover {
+  color: var(--color-accent-2);
+}
 
-  .category-browser__roots,
-  .category-browser__item {
-    display: contents;
-  }
-
-  .category-browser__row {
-    grid-column: 1;
-  }
-
-  .category-browser__panel--active {
-    display: block;
-    grid-column: 2;
-    grid-row: 1 / -1;
-  }
+.category-browser__title svg {
+  flex-shrink: 0;
+  color: var(--color-chevron);
 }

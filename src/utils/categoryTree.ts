@@ -29,3 +29,7 @@ export function getSubcategories(
 ): CategoryResponse[] {
   return categories.filter((category) => category.parentCategoryId === categoryId);
 }
+
+export function getRootCategories(categories: CategoryResponse[]): CategoryResponse[] {
+  return categories.filter((category) => category.parentCategoryId === null);
+}

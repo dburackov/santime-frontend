@@ -1,8 +1,47 @@
 .catalog-page {
-  padding-top: var(--space-6);
+  padding-top: var(--space-4);
   padding-bottom: var(--space-8);
 }
 
+/* Mobile-first: на узком экране заголовок мельче и ближе к содержимому —
+   место под первую плитку дороже. */
 .catalog-page__title {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xl);
+}
+
+@media (min-width: 640px) {
+  .catalog-page__title {
+    margin-bottom: var(--space-5);
+    font-size: var(--text-2xl);
+  }
+}
+
+/* Внутри уровня погружения «Каталог» уже не заголовок экрана — им работает название
+   текущей категории. Состояние берём из класса самого браузера через :has(), чтобы не
+   поднимать его в CatalogPage: ветвить рендер по ширине всё равно нельзя, и пришлось бы
+   городить и проп, и этот же медиазапрос. */
+.catalog-page:has(.category-browser__roots--drilled) .catalog-page__title {
+  display: none;
+}
+
+/* Плитки — десктопная раскладка, drill-down браузер — мобильная. */
+.catalog-page__tiles {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .catalog-page__tiles {
+    display: block;
+  }
+
+  .catalog-page__browser {
+    display: none;
+  }
+
+  /* Погружение живёт только на мобильной, но состояние переживает ресайз окна —
+     на десктопе заголовок обязан вернуться. */
+  .catalog-page:has(.category-browser__roots--drilled) .catalog-page__title {
+    display: block;
+  }
 }

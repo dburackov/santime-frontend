@@ -1,0 +1,113 @@
+/* Меню живёт внутри .header__nav, а он показывается только от 1024px — собственный
+   медиазапрос здесь не нужен. */
+.catalog-menu {
+  display: flex;
+}
+
+.catalog-menu__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.catalog-menu__chevron {
+  flex-shrink: 0;
+  transition: transform var(--motion-fast);
+}
+
+.catalog-menu__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Панель растянута по контейнеру шапки: .header__main-bar-inner уже position: relative.
+   Верхней границы нет — панель продолжает нижнюю границу шапки. */
+.catalog-menu__panel {
+  position: absolute;
+  top: 100%;
+  left: var(--space-6);
+  right: var(--space-6);
+  z-index: 40;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-7);
+  padding: var(--space-5);
+  border: 1px solid var(--color-line-2);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  animation: catalog-menu-in var(--motion-fast);
+}
+
+@keyframes catalog-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.catalog-menu__item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  transition: background var(--motion-fast);
+}
+
+.catalog-menu__item:hover {
+  background: var(--color-tint-3);
+}
+
+.catalog-menu__photo {
+  flex-shrink: 0;
+}
+
+.catalog-menu__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.catalog-menu__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+
+.catalog-menu__name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+.catalog-menu__count {
+  font-size: 0.6875rem;
+  color: var(--color-chevron);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.catalog-menu__subs {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-menu__sub {
+  align-self: flex-start;
+  max-width: 100%;
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+.catalog-menu__sub:hover {
+  color: var(--color-accent-2);
+}

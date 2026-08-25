@@ -45,7 +45,7 @@ export function resolveCategoryMeta(category: CategoryResponse): ResolvedMeta {
   // Двоеточие, а не тире: тире уже добавляет шаблон заголовка из app/layout.tsx,
   // и два подряд читались бы плохо.
   const title = `${category.name}: каталог и цены`;
-  const description = `Купить ${category.name.toLowerCase()} в интернет-магазине ${SITE_NAME}. Широкий выбор, честные характеристики, доставка по Беларуси.`;
+  const description = `Купить ${category.name.toLowerCase()} в интернет-магазине ${SITE_NAME}. Широкий выбор, гарантия, доставка по Беларуси.`;
 
   return { title, description: truncate(description, META_DESCRIPTION_LIMIT) };
 }

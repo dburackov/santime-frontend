@@ -1,42 +1,31 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { CSSProperties, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import Link from 'next/link';
 import './CategoryBrowser.css';
 import '@/components/catalog/CategoryTile.css';
-import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons';
+import { ArrowLeftIcon, ChevronRightIcon } from '@/components/ui/icons';
 import type { CategoryResponse } from '@/api/types';
-
-const MOBILE_QUERY = '(max-width: 899px)';
 
 interface CategoryRowProps {
   category: CategoryResponse;
   hasChildren: boolean;
   onDrill: () => void;
-  isActive?: boolean;
-  onActivate?: () => void;
 }
 
-function CategoryRow({ category, hasChildren, onDrill, isActive, onActivate }: CategoryRowProps) {
+function CategoryRow({ category, hasChildren, onDrill }: CategoryRowProps) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     if (!hasChildren) return;
-    // Ширина проверяется в момент клика, а не в рендере: разметка сервера и первого
-    // клиентского рендера обязана совпадать, а useState-инициализатор с matchMedia
-    // дал бы ровно тот рассинхрон гидрации, от которого правило и защищает.
-    if (!window.matchMedia(MOBILE_QUERY).matches) return;
     event.preventDefault();
     onDrill();
   }
 
   return (
-    <div className="category-browser__row" onMouseEnter={onActivate}>
+    <div className="category-browser__row">
       <Link
         href={`/category/${category.slug}`}
-        className={`home-category-tile home-category-tile--compact category-browser__parent${
-          isActive ? ' category-browser__parent--active' : ''
-        }`}
-        onFocus={onActivate}
+        className="home-category-tile home-category-tile--compact category-browser__parent"
         onClick={handleClick}
       >
         <span className="home-category-tile__text">
@@ -52,6 +41,10 @@ interface CategoryBrowserProps {
   categories: CategoryResponse[];
 }
 
+/**
+ * Мобильная раскладка каталога: список корневых категорий с погружением по уровням.
+ * Выше 900px её скрывает CatalogPage.css и показывает сетку плиток.
+ */
 export function CategoryBrowser({ categories }: CategoryBrowserProps) {
   const { roots, childrenOf } = useMemo(() => {
     const byParent = new Map<number | null, CategoryResponse[]>();
@@ -64,86 +57,29 @@ export function CategoryBrowser({ categories }: CategoryBrowserProps) {
     return { roots: byParent.get(null) ?? [], childrenOf: byParent };
   }, [categories]);
 
-  // Экраны погружения на мобильном — по одному на каждую категорию с детьми, любой
-  // глубины. На десктопе они скрыты, но остаются в разметке и индексируются.
+  // Экраны погружения — по одному на каждую категорию с детьми, любой глубины.
   const levels = useMemo(
     () => categories.filter((category) => childrenOf.has(category.id)),
     [categories, childrenOf],
   );
 
-  const [activeId, setActiveId] = useState<number | null>(roots[0]?.id ?? null);
   const [openId, setOpenId] = useState<number | null>(null);
 
   return (
-    <div
-      className="category-browser"
-      /* Число корневых нужно самой сетке: правая панель раскрывается на все строки
-         левой колонки через grid-row: 1 / -1, а для этого треки должны быть явными. */
-      style={{ '--parent-count': roots.length } as CSSProperties}
-    >
+    <div className="category-browser">
       <div
         className={`category-browser__roots${
           openId !== null ? ' category-browser__roots--drilled' : ''
         }`}
       >
-        {roots.map((root) => {
-          const children = childrenOf.get(root.id) ?? [];
-
-          return (
-            <div key={root.id} className="category-browser__item">
-              <CategoryRow
-                category={root}
-                hasChildren={children.length > 0}
-                isActive={root.id === activeId}
-                onActivate={() => setActiveId(root.id)}
-                onDrill={() => setOpenId(root.id)}
-              />
-
-              <div
-                className={`category-browser__panel${
-                  root.id === activeId ? ' category-browser__panel--active' : ''
-                }`}
-              >
-                <Link href={`/category/${root.slug}`} className="category-browser__panel-title">
-                  {root.name}
-                </Link>
-
-                {children.length > 0 && (
-                  <div className="category-browser__groups">
-                    {children.map((child) => {
-                      const grandchildren = childrenOf.get(child.id) ?? [];
-
-                      return (
-                        <div key={child.id} className="category-browser__group">
-                          <Link
-                            href={`/category/${child.slug}`}
-                            className="category-browser__group-title"
-                          >
-                            {child.name}
-                          </Link>
-                          {grandchildren.length > 0 && (
-                            <ul className="category-browser__group-list">
-                              {grandchildren.map((grandchild) => (
-                                <li key={grandchild.id}>
-                                  <Link
-                                    href={`/category/${grandchild.slug}`}
-                                    className="category-browser__group-link"
-                                  >
-                                    {grandchild.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {roots.map((root) => (
+          <CategoryRow
+            key={root.id}
+            category={root}
+            hasChildren={(childrenOf.get(root.id) ?? []).length > 0}
+            onDrill={() => setOpenId(root.id)}
+          />
+        ))}
       </div>
 
       {levels.map((level) => (
@@ -158,13 +94,15 @@ export function CategoryBrowser({ categories }: CategoryBrowserProps) {
             className="category-browser__back"
             onClick={() => setOpenId(level.parentCategoryId ?? null)}
           >
-            <ChevronLeftIcon width={18} height={18} />
-            {level.name}
+            <ArrowLeftIcon width={14} height={14} />
+            Назад
           </button>
 
-          <Link href={`/category/${level.slug}`} className="category-browser__all">
-            Все товары категории
-            <ChevronRightIcon width={16} height={16} />
+          {/* Заголовок уровня он же вход в саму категорию — отдельная плашка
+              «Все товары категории» после этого не нужна. */}
+          <Link href={`/category/${level.slug}`} className="category-browser__title">
+            {level.name}
+            <ChevronRightIcon width={18} height={18} />
           </Link>
 
           {(childrenOf.get(level.id) ?? []).map((child) => (

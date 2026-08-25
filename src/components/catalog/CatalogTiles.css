@@ -1,0 +1,103 @@
+/* Плитки — только десктоп: ниже 900px их место занимает CategoryBrowser (CatalogPage.css). */
+.catalog-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: var(--space-4);
+}
+
+.catalog-tile {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  transition: border-color var(--motion-base), box-shadow var(--motion-base);
+}
+
+.catalog-tile:hover {
+  border-color: var(--color-line-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.catalog-tile__photo {
+  flex-shrink: 0;
+}
+
+.catalog-tile__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Flex с переносом, а не строчный поток: между названием и счётчиком в разметке нет
+   пробела, поэтому в строчном потоке браузеру негде разорвать строку и счётчик уезжает
+   за плитку на длинных названиях вроде «Полотенцесушители». */
+.catalog-tile__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+  text-wrap: pretty;
+}
+
+.catalog-tile__name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-lg);
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  /* anywhere, а не break-word: только он уменьшает min-content самого элемента, иначе
+     флекс-элемент не даст себя сжать и одно длинное слово всё равно вылезет. */
+  overflow-wrap: anywhere;
+}
+
+.catalog-tile__count {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.catalog-tile__subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+
+.catalog-tile__sub {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  max-width: 100%;
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+.catalog-tile__sub:hover {
+  color: var(--color-accent-2);
+}
+
+.catalog-tile__sub-count {
+  font-size: 0.6875rem;
+  color: var(--color-chevron);
+  font-variant-numeric: tabular-nums;
+}
+
+/* margin-top: auto прижимает ссылку к низу — плитки в ряду разной высоты, а CTA стоят вровень. */
+.catalog-tile__cta {
+  margin-top: auto;
+  padding-top: var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-accent-2);
+}

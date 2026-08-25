@@ -1,0 +1,29 @@
+.category-image-modal__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius);
+  background: var(--color-photo-bg);
+  overflow: hidden;
+}
+
+.category-image-modal__preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background: var(--color-photo-surface);
+}
+
+.category-image-modal__empty {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
+
+.category-image-modal__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}

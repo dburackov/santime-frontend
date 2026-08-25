@@ -3,13 +3,18 @@
 import { useState } from 'react';
 import './ProductPhoto.css';
 import { BoxIcon } from './icons';
-import type { ProductImageResponse } from '@/api/types';
+import type { CategoryImageResponse, ProductImageResponse } from '@/api/types';
 
-type PhotoSize = 'thumb' | 'row' | 'card' | 'detail';
+type PhotoSize = 'menu' | 'thumb' | 'tile' | 'row' | 'card' | 'detail';
+
+/** Компонент читает только srcset/fallback/alt, поэтому фото категории (без id) ему тоже подходит. */
+type PhotoImage = Omit<ProductImageResponse, 'id'> | CategoryImageResponse;
 
 /** Примерные габариты контейнера по месту использования — только для CLS, не из реального разрешения файла. */
 const DIMENSIONS: Record<PhotoSize, { width: number; height: number }> = {
+  menu: { width: 48, height: 48 },
   thumb: { width: 60, height: 60 },
+  tile: { width: 104, height: 104 },
   row: { width: 170, height: 170 },
   card: { width: 282, height: 282 },
   detail: { width: 420, height: 420 },
@@ -17,7 +22,9 @@ const DIMENSIONS: Record<PhotoSize, { width: number; height: number }> = {
 
 /** sizes по умолчанию на случай, если конкретное место использования его не переопределяет. */
 const DEFAULT_SIZES: Record<PhotoSize, string> = {
+  menu: '48px',
   thumb: '60px',
+  tile: '104px',
   row: '170px',
   card: '(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw',
   detail: '(max-width: 767px) 100vw, 420px',
@@ -25,7 +32,7 @@ const DEFAULT_SIZES: Record<PhotoSize, string> = {
 
 interface ProductPhotoProps {
   /** Готовый набор srcset/fallback/alt с бэкенда (см. IMAGE-PIPELINE-SPEC.md, 5.3). Пока фото не загружено — плейсхолдер. */
-  image?: ProductImageResponse | null;
+  image?: PhotoImage | null;
   alt: string;
   size?: PhotoSize;
   /** Переопределяет sizes по умолчанию для данного места использования. */

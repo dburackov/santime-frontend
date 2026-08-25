@@ -163,15 +163,24 @@ export interface VariantDetailResponse {
 
 // ---- Админское API ----
 
+/** Фото категории. Форма ProductImageResponse без id: отдельной строки под фото нет. */
+export interface CategoryImageResponse {
+  alt: string;
+  srcset: string;
+  fallback: string;
+  zoom: string;
+}
+
 export interface CategoryResponse {
   id: number;
   name: string;
   slug: string;
   parentCategoryId: number | null;
   sortOrder: number;
-  /** Число товаров в категории. Опционально: /api/catalog/categories пока его не
-      отдаёт — плитка категории рисует счётчик только когда поле пришло. */
-  productCount?: number;
+  /** Число активных товаров во всём поддереве категории, а не только привязанных к ней напрямую. */
+  productCount: number;
+  /** Заводится только у корневых категорий, у остальных всегда null. */
+  image: CategoryImageResponse | null;
   createdAt: string;
   updatedAt: string;
 }

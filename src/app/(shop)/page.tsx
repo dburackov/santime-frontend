@@ -15,7 +15,7 @@ import { HomePage } from '@/views/HomePage';
 export const revalidate = 3600;
 
 const DESCRIPTION =
-  'Интернет-магазин сантехники Santime: каталог с точными характеристиками и фильтрами, доставка по Минску и области, гарантия на каждый товар.';
+  'Интернет-магазин сантехники Santime: сантехника с гарантией на каждый товар, доставкой по Минску и всей Беларуси';
 
 export const metadata: Metadata = {
   description: DESCRIPTION,

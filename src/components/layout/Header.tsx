@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import './Header.css';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBox } from './SearchBox';
+import { CatalogMenu } from './CatalogMenu';
 import { CartIcon, CloseIcon, MenuIcon, SearchIcon } from '@/components/ui/icons';
 import { useCart } from '@/cart/useCart';
 import { NAV_LINKS, SITE_HOURS, SITE_PHONES } from '@/config/siteInfo';
@@ -89,15 +90,20 @@ export function Header() {
               </Link>
 
               <nav className="header__nav" aria-label="Основная навигация">
-                {NAV_LINKS.map((link) => (
-                  <Link
-                    key={link.to}
-                    href={link.to}
-                    className={`header__nav-link ${isNavLinkActive(link.to) ? 'header__nav-link--active' : ''}`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {NAV_LINKS.map((link) => {
+                  const linkClassName = `header__nav-link ${
+                    isNavLinkActive(link.to) ? 'header__nav-link--active' : ''
+                  }`;
+
+                  // Каталог — единственный пункт с выпадающим меню категорий.
+                  return link.to === '/catalog' ? (
+                    <CatalogMenu key={link.to} className={linkClassName} />
+                  ) : (
+                    <Link key={link.to} href={link.to} className={linkClassName}>
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </nav>
 
               <div className="header__search-slot">

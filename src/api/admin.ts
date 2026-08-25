@@ -54,6 +54,17 @@ export function deleteCategory(id: number): Promise<void> {
   return apiRequest(`/api/admin/categories/${id}`, { method: 'DELETE' });
 }
 
+/** Фото есть только у корневой категории; подкатегории бэкенд отклоняет с 400. */
+export function uploadCategoryImage(id: number, file: File): Promise<CategoryResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest(`/api/admin/categories/${id}/image`, { method: 'POST', body: formData });
+}
+
+export function deleteCategoryImage(id: number): Promise<void> {
+  return apiRequest(`/api/admin/categories/${id}/image`, { method: 'DELETE' });
+}
+
 // ---- Бренды ----
 
 export function listBrands(): Promise<BrandResponse[]> {
