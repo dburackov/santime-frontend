@@ -7,7 +7,7 @@ import { DISCOUNTS_PAGE_OPTIONS } from '@/queries/discountsQuery';
 import { DISCOUNTED_BRANDS_QUERY_KEY } from '@/queries/useDiscountedBrands';
 import { createServerQueryClient } from '@/app/query-client';
 import { VIEW_MODE_COOKIE, parseViewMode } from '@/hooks/viewMode';
-import { SITE_NAME } from '@/config/siteInfo';
+import { OG_IMAGE, SITE_NAME } from '@/config/siteInfo';
 import { DiscountsPage } from '@/views/DiscountsPage';
 
 export const dynamic = 'force-dynamic';
@@ -35,6 +35,7 @@ export async function generateMetadata({
       siteName: SITE_NAME,
       locale: 'ru_BY',
       type: 'website',
+      images: [OG_IMAGE],
     },
     ...(hasFilters ? { robots: { index: false, follow: true } } : {}),
   };

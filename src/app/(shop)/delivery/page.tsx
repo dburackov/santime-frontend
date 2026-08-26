@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SITE_NAME } from '@/config/siteInfo';
+import { OG_IMAGE, SITE_NAME } from '@/config/siteInfo';
 export { DeliveryPage as default } from '@/views/DeliveryPage';
 
 const TITLE = 'Доставка';
@@ -17,5 +17,6 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: 'ru_BY',
     type: 'website',
+    images: [OG_IMAGE],
   },
 };

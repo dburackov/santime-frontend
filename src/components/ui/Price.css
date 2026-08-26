@@ -30,6 +30,12 @@
 .price--md { font-size: var(--text-lg); }
 .price--lg { font-size: var(--text-2xl); }
 
+/* Оптическая компенсация: одна и та же доля кегля на крупном размере читается
+   тяжелее, поэтому у lg знак ещё на 5% ниже базового 0.6679em. */
+.price--lg .currency-symbol__glyph {
+  --currency-glyph-height: 0.6345em;
+}
+
 .price--discounted {
   color: var(--color-danger);
 }
@@ -48,7 +54,7 @@
   font-size: var(--text-xs);
 }
 
-/* Линия только на сумме: глиф валюты из шрифта nbrb перечёркнутым читается грязно. */
+/* Линия только на сумме: знак валюты перечёркнутым читается грязно. */
 .price__old-value {
   text-decoration: line-through;
 }

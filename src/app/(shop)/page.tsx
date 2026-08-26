@@ -8,7 +8,7 @@ import { BESTSELLERS_QUERY_KEY } from '@/queries/bestsellersQueryKeys';
 import { KITS_QUERY_KEY } from '@/queries/kitsQueryKeys';
 import { DISCOUNTS_QUERY } from '@/queries/discountsQuery';
 import { buildHomeJsonLd } from '@/utils/websiteJsonLd';
-import { SITE_NAME } from '@/config/siteInfo';
+import { OG_IMAGE, SITE_NAME } from '@/config/siteInfo';
 import { PromoSlider } from '@/components/layout/PromoSlider';
 import { HomePage } from '@/views/HomePage';
 
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: 'ru_BY',
     type: 'website',
+    images: [OG_IMAGE],
   },
 };
 

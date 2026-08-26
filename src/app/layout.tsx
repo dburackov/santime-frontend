@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     template: `%s — ${SITE_NAME}`,
   },
   icons: { icon: '/favicon.svg' },
+  // Карточка 1200×630 — крупный формат. Страницы своё twitter не задают (кроме
+  // товара, у которого он уже такой), так что наследуется всеми.
+  twitter: { card: 'summary_large_image' },
 };
 
 export const viewport: Viewport = {

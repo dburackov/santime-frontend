@@ -7,7 +7,7 @@ import { buildCatalogQuery } from '@/hooks/catalogQuery';
 import { buildBreadcrumbJsonLd } from '@/utils/productJsonLd';
 import { buildCategoryPath } from '@/utils/categoryTree';
 import { resolveCategoryMeta } from '@/utils/seo';
-import { SITE_NAME } from '@/config/siteInfo';
+import { OG_IMAGE, SITE_NAME } from '@/config/siteInfo';
 import { createServerQueryClient } from '@/app/query-client';
 import { VIEW_MODE_COOKIE, parseViewMode } from '@/hooks/viewMode';
 import { CategoryPage } from '@/views/CategoryPage';
@@ -72,7 +72,15 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: path },
-    openGraph: { title, description, url: path, siteName: SITE_NAME, locale: 'ru_BY', type: 'website' },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      siteName: SITE_NAME,
+      locale: 'ru_BY',
+      type: 'website',
+      images: [OG_IMAGE],
+    },
     ...(hasFilters ? { robots: { index: false, follow: true } } : {}),
   };
 }

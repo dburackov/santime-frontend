@@ -6,7 +6,7 @@ import { ApiError } from '@/api/client';
 import { createServerQueryClient } from '@/app/query-client';
 import { buildBreadcrumbJsonLd, buildProductCrumbs, buildProductJsonLd } from '@/utils/productJsonLd';
 import { resolveProductMeta } from '@/utils/seo';
-import { SITE_NAME } from '@/config/siteInfo';
+import { OG_IMAGE, SITE_NAME } from '@/config/siteInfo';
 import { ProductPage } from '@/views/ProductPage';
 import type { VariantDetailResponse } from '@/api/types';
 
@@ -69,9 +69,11 @@ export async function generateMetadata({
       // 'product' типизированный API Next не принимает, а для мессенджеров
       // достаточно title/description/image.
       type: 'website',
-      ...(image ? { images: [image] } : {}),
+      // У товара без фото карточка не должна оставаться пустой — подставляем
+      // общую картинку магазина.
+      images: [image ?? OG_IMAGE],
     },
-    twitter: { card: 'summary_large_image', title, description, ...(image ? { images: [image] } : {}) },
+    twitter: { card: 'summary_large_image', title, description, images: [image ?? OG_IMAGE] },
   };
 }
 

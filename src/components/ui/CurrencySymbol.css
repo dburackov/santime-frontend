@@ -1,23 +1,14 @@
-@font-face {
-  font-family: 'nbrb';
-  src:
-    url('@/assets/fonts/nbrb.woff2') format('woff2'),
-    url('@/assets/fonts/nbrb.ttf') format('truetype'),
-    url('@/assets/fonts/nbrb.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+E901, U+42, U+59, U+4E;
-}
-
-.currency-symbol {
-  font-family: 'nbrb';
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.currency-symbol__glyph {
+  /* Перебивает `svg { display: block }` из reset.css: блочный глиф уносит знак
+     на строку под цену. */
+  display: inline-block;
+  /* Высота — единственное, что задаётся руками; ширина считается по пропорции
+     контура (945/1170 его bbox), чтобы её не забыли пересчитать.
+     0.6679em — cap height IBM Plex Sans (0.703em) минус 5%. Нижняя грань
+     viewBox совпадает с базовой линией, отсюда vertical-align: baseline. */
+  --currency-glyph-height: 0.6679em;
+  height: var(--currency-glyph-height);
+  width: calc(var(--currency-glyph-height) * 945 / 1170);
+  vertical-align: baseline;
+  overflow: visible;
 }
