@@ -55,7 +55,9 @@ export async function generateMetadata({
   const image = variant.images?.[0]?.zoom;
 
   return {
-    title,
+    // absolute — в обход шаблона '%s — Santime' из app/layout.tsx: названия
+    // товаров длинные, и приписка съедала бы хвост в выдаче.
+    title: { absolute: title },
     description,
     // Варианты одного товара считаем самостоятельными страницами: у них разные
     // SKU, цены и характеристики, поэтому каждый канонизируется сам на себя.
