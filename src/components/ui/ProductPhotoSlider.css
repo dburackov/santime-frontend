@@ -1,0 +1,123 @@
+/* База — тач-поведение: лента листается свайпом. Зоны наведения включает только media-запрос
+   ниже, поэтому устройство с непонятным сочетанием возможностей указателя получает рабочий
+   слайдер, а не пустой бокс. */
+.photo-slider {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+  /* Горизонталь разбирает слайдер, вертикаль остаётся браузеру под прокрутку страницы. */
+  touch-action: pan-y;
+  /* Перетаскивание не должно выделять содержимое карточки. */
+  user-select: none;
+}
+
+.photo-slider--card {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+}
+
+.photo-slider--row {
+  width: 170px;
+  height: 170px;
+}
+
+/* Проценты в translateX берутся от ширины самой ленты, а она равна ширине одного слайда: слайды
+   выходят за её границы, потому что flex-shrink у них нулевой. Отсюда шаг ровно в один кадр. */
+.photo-slider__track {
+  display: flex;
+  height: 100%;
+  transform: translateX(calc(var(--pos, 1) * -100% + var(--drag-x, 0px)));
+  transition: transform var(--motion-base);
+}
+
+/* За пальцем лента идёт 1:1, без сглаживания; доводка после отпускания — уже анимированная. */
+.photo-slider__track--dragging {
+  transition: none;
+}
+
+/* Перестановка с дубля на настоящий кадр: она обязана быть незаметной. */
+.photo-slider__track--jump {
+  transition: none;
+}
+
+.photo-slider__slide {
+  flex: 0 0 100%;
+}
+
+.photo-slider__zones {
+  display: none;
+}
+
+.photo-slider__bullets {
+  position: absolute;
+  left: var(--space-2);
+  right: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 2;
+  display: flex;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity var(--motion-fast);
+  pointer-events: none;
+}
+
+/* Плашка занимает свою долю ширины: сколько фото, столько равных сегментов. */
+.photo-slider__bullet {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-photo-bullet);
+}
+
+.photo-slider__bullet--active {
+  background: var(--color-photo-bullet-active);
+}
+
+/* На таче буллеты проявляются после первого касания и больше не прячутся. */
+.photo-slider--armed .photo-slider__bullets {
+  opacity: 1;
+}
+
+/* Указатель умеет наводиться — листаем не свайпом, а зонами. Разделение по возможностям
+   указателя, а не по ширине окна: тач-ноутбуку с широким экраном нужен свайп. */
+@media (hover: hover) and (pointer: fine) {
+  /* Курсору лента не едет: кадры лежат стопкой и меняются прозрачностью — иначе проход по
+     восьми зонам превратился бы в восемь проездов подряд. */
+  .photo-slider__track {
+    transform: none;
+  }
+
+  /* Кадры лежат стопкой в одном боксе, смена — переключением opacity, то есть работа
+     композитора без layout и paint. Переход намеренно мгновенный: на середине кроссфейда оба
+     кадра полупрозрачны и в тёмных участках складываются, давая заметное затемнение. */
+  .photo-slider__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .photo-slider__slide--active {
+    opacity: 1;
+  }
+
+  .photo-slider__zones {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+  }
+
+  .photo-slider__zone {
+    flex: 1;
+  }
+
+  /* Буллеты живут ровно на время наведения: armed после ухода курсора не гаснет. */
+  .photo-slider--armed .photo-slider__bullets {
+    opacity: 0;
+  }
+
+  .photo-slider:hover .photo-slider__bullets {
+    opacity: 1;
+  }
+}

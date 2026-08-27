@@ -16,6 +16,13 @@
   transform: translateY(-2px);
 }
 
+/* Над растянутым ::after у product-card__link — иначе слайдер не получает наведение. */
+.product-card__photo {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
 .product-card__body {
   padding: var(--space-3);
   display: flex;

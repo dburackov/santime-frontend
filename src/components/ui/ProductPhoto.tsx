@@ -39,27 +39,45 @@ interface ProductPhotoProps {
   sizes?: string;
   /** Первое/hero-изображение страницы — без lazy, с высоким приоритетом загрузки (влияет на LCP). */
   priority?: boolean;
+  /** Отложить загрузку: бокс и его габариты те же, но src/srcset не проставляются. Нужно слайдеру
+   *  карточки — соседние слайды не должны стоить сети, пока товар не начали листать. Плейсхолдер
+   *  при этом не показывается: иначе на первом кадре свайпа мигнёт иконка вместо фото. */
+  deferred?: boolean;
+  className?: string;
 }
 
-export function ProductPhoto({ image, alt, size = 'card', sizes, priority = false }: ProductPhotoProps) {
+export function ProductPhoto({
+  image,
+  alt,
+  size = 'card',
+  sizes,
+  priority = false,
+  deferred = false,
+  className,
+}: ProductPhotoProps) {
   const { width, height } = DIMENSIONS[size];
   const [failed, setFailed] = useState(false);
 
-  const showPlaceholder = !image || failed;
+  const showPlaceholder = (!image || failed) && !deferred;
 
   return (
-    <div className={`product-photo product-photo--${size}${showPlaceholder ? ' product-photo--empty' : ''}`}>
+    <div
+      className={`product-photo product-photo--${size}${showPlaceholder ? ' product-photo--empty' : ''}${className ? ` ${className}` : ''}`}
+    >
       {image && !failed ? (
         <img
           // Битая картинка из кеша к моменту гидратации уже complete, и onError по ней
-          // не выстрелит — распознаём её по нулевой natural-ширине.
+          // не выстрелит — распознаём её по нулевой natural-ширине. Отложенный слайд под это
+          // описание подходит буквально (src ещё нет), поэтому его проверка не касается.
           ref={(node) => {
-            if (node?.complete && node.naturalWidth === 0) setFailed(true);
+            if (!deferred && node?.complete && node.naturalWidth === 0) setFailed(true);
           }}
-          srcSet={image.srcset}
+          srcSet={deferred ? undefined : image.srcset}
           sizes={sizes ?? DEFAULT_SIZES[size]}
-          src={image.fallback}
-          alt={image.alt || alt}
+          src={deferred ? undefined : image.fallback}
+          // Пустой alt у отложенного слайда — без src браузер нарисовал бы вместо картинки
+          // альтернативный текст.
+          alt={deferred ? '' : image.alt || alt}
           width={width}
           height={height}
           loading={priority ? 'eager' : 'lazy'}
