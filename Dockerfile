@@ -23,6 +23,14 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ARG API_BASE_URL
 ENV API_BASE_URL=$API_BASE_URL
 
+# Коды подтверждения прав в Google Search Console и Яндекс.Вебмастере. Тоже на
+# сборке: metadata в layout.tsx вычисляется на пререндере, и для статической
+# главной meta вшивается в готовый HTML внутри образа.
+ARG GOOGLE_SITE_VERIFICATION
+ENV GOOGLE_SITE_VERIFICATION=$GOOGLE_SITE_VERIFICATION
+ARG YANDEX_VERIFICATION
+ENV YANDEX_VERIFICATION=$YANDEX_VERIFICATION
+
 # Флаг читает next.config.ts: включает output: 'standalone'.
 ENV BUILD_STANDALONE=1
 RUN npm run build
