@@ -8,9 +8,25 @@ export const STOREFRONT_BLOCK_SIZE = 8;
 /** Минимум, который нужен для чтения — ReadonlyURLSearchParams из Next сюда тоже подходит. */
 export type ReadableParams = Pick<URLSearchParams, 'get'>;
 
+/** Дефолт и набор пунктов страницы категории. Читают и серверный префетч, и клиентский хук —
+ * разъедутся значения, разъедутся и ключи react-query, и страница мигнёт после гидрации. */
+export const CATEGORY_DEFAULT_SORT: CatalogSort = 'POPULAR_DESC';
+
+export const CATEGORY_SORT_VALUES: CatalogSort[] = [
+  'POPULAR_DESC',
+  'PRICE_ASC',
+  'PRICE_DESC',
+  'NEW_DESC',
+  'DISCOUNT_DESC',
+];
+
 export interface CatalogQueryOptions {
   discounted?: boolean;
   defaultSort?: CatalogSort;
+  /** Значения sort, которые страница показывает в селекторе. Проверять надо именно по ним,
+   * а не по всему CatalogSort: DISCOUNT_DESC валиден на обеих страницах, а POPULAR_DESC — только
+   * в категории, и ссылка на чужой пункт оставила бы кнопку селектора пустой. */
+  allowedSorts?: CatalogSort[];
 }
 
 export function buildCatalogQuery(
@@ -19,7 +35,7 @@ export function buildCatalogQuery(
   filters: CatalogFilterAttributeResponse[] | undefined,
   options: CatalogQueryOptions = {},
 ): CatalogProductsQuery {
-  const parsed = parseCatalogParams(searchParams, filters, options.defaultSort);
+  const parsed = parseCatalogParams(searchParams, filters, options.defaultSort, options.allowedSorts);
   return {
     categoryId,
     brandIds: parsed.brandIds,
@@ -38,9 +54,12 @@ export function buildCatalogQuery(
 export function parseCatalogParams(
   searchParams: ReadableParams,
   filters: CatalogFilterAttributeResponse[] | undefined,
-  defaultSort: CatalogSort = 'NAME_ASC',
+  defaultSort: CatalogSort = CATEGORY_DEFAULT_SORT,
+  allowedSorts: CatalogSort[] = CATEGORY_SORT_VALUES,
 ) {
-  const sort = (searchParams.get('sort') as CatalogSort) || defaultSort;
+  // Чужой sort раньше уходил на бэк как есть (400) и оставлял кнопку селектора пустой.
+  const sortRaw = searchParams.get('sort') as CatalogSort | null;
+  const sort = sortRaw && allowedSorts.includes(sortRaw) ? sortRaw : defaultSort;
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
   const priceMinRaw = searchParams.get('priceMin');

@@ -9,6 +9,8 @@ export interface SearchableSelectOption {
   value: string;
   label: string;
   count?: number;
+  /** Текст на кнопке, если он отличается от подписи пункта в списке. */
+  summaryLabel?: string;
 }
 
 interface SearchableSelectProps {
@@ -159,7 +161,10 @@ export function SearchableSelect({
   }, [options, search, searchable]);
 
   const selectedLabels = useMemo(
-    () => options.filter((option) => selected.includes(option.value)).map((option) => option.label),
+    () =>
+      options
+        .filter((option) => selected.includes(option.value))
+        .map((option) => option.summaryLabel ?? option.label),
     [options, selected],
   );
 

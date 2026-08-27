@@ -41,7 +41,7 @@ export function useCatalogQueryState(
   }
 
   const { sort, page, priceMin, priceMax, inStock, inStockRaw, brandIds, attributeFilters, attributeRangeFilters } =
-    parseCatalogParams(searchParams, filters, options.defaultSort);
+    parseCatalogParams(searchParams, filters, options.defaultSort, options.allowedSorts);
 
   const query = buildCatalogQuery(categoryId, searchParams, filters, options);
 

@@ -25,11 +25,12 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
 import type { CatalogSort } from '@/api/types';
 
-const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
-  { value: 'NAME_ASC', label: 'По названию А-Я' },
-  { value: 'NAME_DESC', label: 'По названию Я-А' },
-  { value: 'PRICE_ASC', label: 'Сначала дешевле' },
-  { value: 'PRICE_DESC', label: 'Сначала дороже' },
+const SORT_OPTIONS: { value: CatalogSort; label: string; summaryLabel: string }[] = [
+  { value: 'POPULAR_DESC', label: 'Популярные', summaryLabel: 'Сначала популярные' },
+  { value: 'PRICE_ASC', label: 'Дешевые', summaryLabel: 'Сначала дешевые' },
+  { value: 'PRICE_DESC', label: 'Дорогие', summaryLabel: 'Сначала дорогие' },
+  { value: 'NEW_DESC', label: 'Новые', summaryLabel: 'Сначала новые' },
+  { value: 'DISCOUNT_DESC', label: 'Со скидкой', summaryLabel: 'Сначала со скидкой' },
 ];
 
 /**

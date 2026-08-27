@@ -11,4 +11,5 @@ export const DISCOUNTS_QUERY: CatalogProductsQuery = {
 export const DISCOUNTS_PAGE_OPTIONS: CatalogQueryOptions = {
   discounted: true,
   defaultSort: 'DISCOUNT_DESC',
+  allowedSorts: ['DISCOUNT_DESC', 'PRICE_ASC', 'PRICE_DESC'],
 };

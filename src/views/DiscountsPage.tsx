@@ -25,7 +25,6 @@ const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
   { value: 'DISCOUNT_DESC', label: 'Сначала большая скидка' },
   { value: 'PRICE_ASC', label: 'Сначала дешевле' },
   { value: 'PRICE_DESC', label: 'Сначала дороже' },
-  { value: 'NAME_ASC', label: 'По названию А-Я' },
 ];
 
 export function DiscountsPage({ initialViewMode }: { initialViewMode: ViewMode }) {

@@ -94,7 +94,12 @@ export interface SitemapResponse {
   products: SitemapEntryResponse[];
 }
 
-export type CatalogSort = 'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC' | 'DISCOUNT_DESC';
+export type CatalogSort =
+  | 'PRICE_ASC'
+  | 'PRICE_DESC'
+  | 'DISCOUNT_DESC'
+  | 'POPULAR_DESC'
+  | 'NEW_DESC';
 
 export interface CatalogProductsQuery {
   categoryId?: number;

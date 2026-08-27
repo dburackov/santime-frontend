@@ -13,7 +13,7 @@ export function useProductSearch(query: string) {
 
   const { data, isFetching } = useQuery({
     queryKey: ['product-search', debouncedQuery],
-    queryFn: () => getProducts({ name: debouncedQuery, size: RESULT_LIMIT, sort: 'NAME_ASC' }),
+    queryFn: () => getProducts({ name: debouncedQuery, size: RESULT_LIMIT, sort: 'POPULAR_DESC' }),
     enabled,
   });
 

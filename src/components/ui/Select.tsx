@@ -3,6 +3,8 @@ import { SearchableSelect } from './SearchableSelect';
 export interface SelectOption {
   value: string;
   label: string;
+  /** Текст на кнопке, если он отличается от подписи пункта в списке. */
+  summaryLabel?: string;
 }
 
 interface SelectProps {
@@ -32,6 +34,8 @@ export function Select({
   searchable = false,
   searchPlaceholder,
 }: SelectProps) {
+  const current = options.find((option) => option.value === value);
+
   return (
     <SearchableSelect
       id={id}
@@ -40,7 +44,7 @@ export function Select({
       onChange={(values) => {
         if (values[0] !== undefined) onChange(values[0]);
       }}
-      placeholder={options.find((option) => option.value === value)?.label ?? placeholder}
+      placeholder={current ? (current.summaryLabel ?? current.label) : placeholder}
       searchable={searchable}
       searchPlaceholder={searchPlaceholder}
       showIndicator={false}
