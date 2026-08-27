@@ -34,6 +34,10 @@
   animation: admin-modal-in var(--motion-base);
 }
 
+.admin-modal__dialog--wide {
+  max-width: 1040px;
+}
+
 @keyframes admin-modal-in {
   from {
     transform: translateY(16px);

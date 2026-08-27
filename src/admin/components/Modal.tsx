@@ -11,9 +11,11 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  /** wide — для форм в две колонки, чтобы не скроллить длинный список полей. */
+  size?: 'default' | 'wide';
 }
 
-export function Modal({ open, onClose, title, children, footer }: ModalProps) {
+export function Modal({ open, onClose, title, children, footer, size = 'default' }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const restoreRef = useRef<HTMLElement | null>(null);
 
@@ -75,7 +77,7 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       <div className="admin-modal__backdrop" onClick={onClose} />
       <div
         ref={dialogRef}
-        className="admin-modal__dialog"
+        className={`admin-modal__dialog${size === 'wide' ? ' admin-modal__dialog--wide' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}

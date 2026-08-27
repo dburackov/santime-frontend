@@ -72,6 +72,33 @@
 
 /* Категория, бренд и описание принадлежат модели, а не позиции: при создании они задаются
    здесь, потому и вынесены в отдельный блок. Дальше правятся в форме модели. */
+/* Характеристики категории уезжают во вторую колонку: длинный список полей
+   иначе тонет под остальной формой и общая картина товара не видна. */
+.admin-form.products-page__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .admin-form.products-page__form {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.products-page__form-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.products-page__form-hint {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
+
 .products-page__shared {
   display: flex;
   flex-direction: column;

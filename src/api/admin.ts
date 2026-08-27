@@ -13,6 +13,8 @@ import type {
   CategoryAttributeUpdateRequest,
   CategoryRequest,
   CategoryResponse,
+  ExternalProductRequest,
+  ExternalProductResponse,
   AdminOrderUpdateRequest,
   OrderResponse,
   OrderStatus,
@@ -359,4 +361,12 @@ export function importPrices(file: File): Promise<PriceImportResponse> {
   const formData = new FormData();
   formData.append('file', file);
   return apiRequest('/api/admin/price-import', { method: 'POST', body: formData });
+}
+
+// ---- Импорт из внешнего источника ----
+
+export function previewExternalProduct(
+  body: ExternalProductRequest,
+): Promise<ExternalProductResponse> {
+  return apiRequest('/api/admin/external-products/preview', { method: 'POST', body });
 }

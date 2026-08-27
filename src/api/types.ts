@@ -351,6 +351,34 @@ export type ProductVariantSiblingRequest = Omit<
   'categoryId' | 'brandId' | 'description'
 >;
 
+// ---- Импорт из внешнего источника (админка) ----
+
+export interface ExternalProductRequest {
+  url: string;
+  categoryId: number;
+}
+
+/** Характеристика источника, которую не удалось положить на нашу модель. */
+export interface ExternalAttributeSkip {
+  label: string;
+  value: string;
+  reason: string;
+}
+
+/**
+ * Данные для предзаполнения формы товара. Артикула и slug здесь нет намеренно:
+ * их задаёт администратор. brandId приходит, только если такой бренд уже заведён.
+ */
+export interface ExternalProductResponse {
+  name: string;
+  price: number;
+  brandId: number | null;
+  brandName: string;
+  description: string;
+  attributes: Record<string, AttributeValue>;
+  skipped: ExternalAttributeSkip[];
+}
+
 // ---- Фото товара (админка) ----
 
 /**
