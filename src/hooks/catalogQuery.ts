@@ -1,6 +1,6 @@
 import type { CatalogFilterAttributeResponse, CatalogProductsQuery, CatalogSort } from '@/api/types';
 
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 24;
 
 /** Размер витринного блока подборки. То же значение, что STOREFRONT_BLOCK_SIZE в CatalogController. */
 export const STOREFRONT_BLOCK_SIZE = 8;
