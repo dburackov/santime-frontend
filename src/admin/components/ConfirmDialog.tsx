@@ -11,6 +11,8 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   isPending?: boolean;
+  /** Ответ сервера, если удаление отклонено: без него диалог просто замирает. */
+  error?: string | null;
 }
 
 export function ConfirmDialog({
@@ -21,6 +23,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
   isPending,
+  error,
 }: ConfirmDialogProps) {
   return (
     <Modal
@@ -38,6 +41,7 @@ export function ConfirmDialog({
         </>
       }
     >
+      {error && <div className="admin-banner-error">{error}</div>}
       <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-slate)' }}>{description}</p>
     </Modal>
   );

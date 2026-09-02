@@ -197,16 +197,25 @@ export function AttributesPage() {
           <div className="admin-form-row">
             <div className="admin-form-field">
               <label htmlFor="attr-type">Тип</label>
-              <Select
-                id="attr-type"
-                options={(Object.keys(TYPE_LABELS) as AttributeType[]).map((type) => ({
-                  value: type,
-                  label: TYPE_LABELS[type],
-                }))}
-                value={form.type}
-                onChange={(value) => setForm((f) => ({ ...f, type: value as AttributeType }))}
-                portal
-              />
+              {editing ? (
+                <>
+                  <input id="attr-type" className="filter-text-input" value={TYPE_LABELS[form.type]} readOnly />
+                  <span className="admin-form-hint">
+                    Тип нельзя изменить после создания — заведите новый атрибут нужного типа
+                  </span>
+                </>
+              ) : (
+                <Select
+                  id="attr-type"
+                  options={(Object.keys(TYPE_LABELS) as AttributeType[]).map((type) => ({
+                    value: type,
+                    label: TYPE_LABELS[type],
+                  }))}
+                  value={form.type}
+                  onChange={(value) => setForm((f) => ({ ...f, type: value as AttributeType }))}
+                  portal
+                />
+              )}
             </div>
             <div className="admin-form-field">
               <label htmlFor="attr-unit">Единица измерения</label>

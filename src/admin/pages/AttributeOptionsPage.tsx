@@ -59,6 +59,11 @@ export function AttributeOptionsPage() {
     setModalOpen(true);
   }
 
+  function openDelete(option: AttributeOptionResponse) {
+    deleteMutation.reset();
+    setDeleteTarget(option);
+  }
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const body: AttributeOptionRequest = { value };
@@ -119,7 +124,7 @@ export function AttributeOptionsPage() {
                       <button
                         type="button"
                         className="admin-table__icon-btn admin-table__icon-btn--danger"
-                        onClick={() => setDeleteTarget(option)}
+                        onClick={() => openDelete(option)}
                         aria-label="Удалить"
                       >
                         <TrashIcon width={16} height={16} />
@@ -175,6 +180,7 @@ export function AttributeOptionsPage() {
         description={`Значение «${deleteTarget?.value}» будет удалено.`}
         onCancel={() => setDeleteTarget(null)}
         isPending={deleteMutation.isPending}
+        error={formError(deleteMutation.error)}
         onConfirm={() => {
           if (!deleteTarget) return;
           deleteMutation.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) });
