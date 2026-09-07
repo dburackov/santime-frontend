@@ -103,6 +103,7 @@ export type CatalogSort =
 
 export interface CatalogProductsQuery {
   categoryId?: number;
+  categoryIds?: number[];
   brandIds?: number[];
   priceMin?: number;
   priceMax?: number;
@@ -116,6 +117,18 @@ export interface CatalogProductsQuery {
   attributeFilters?: Record<string, string>;
   /** slug -> {min?, max?} for NUMBER attributes */
   attributeRangeFilters?: Record<string, { min?: number; max?: number }>;
+}
+
+export interface SearchCategoryFacetResponse {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+}
+
+export interface SearchFacetsResponse {
+  brands: BrandResponse[];
+  categories: SearchCategoryFacetResponse[];
 }
 
 export interface VariantDetailAttributeMeta {
