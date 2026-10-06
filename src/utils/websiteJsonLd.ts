@@ -5,9 +5,9 @@ import { buildOrganizationJsonLd } from './organizationJsonLd';
  * schema.org/WebSite для главной. publisher ссылается на @id организации, а не
  * дублирует её данные, — поэтому обе сущности отдаются одним @graph.
  *
- * potentialAction/SearchAction намеренно нет: страницы результатов поиска в
- * витрине не существует — SearchBox уводит сразу на карточку товара, и шаблон
- * в разметке указывал бы на несуществующий URL.
+ * potentialAction/SearchAction намеренно нет, хотя страница результатов теперь есть:
+ * /search?q= отдаётся под noindex и закрыта `Disallow: /*?*` в robots.ts, так что шаблон
+ * рекламировал бы краулеру цель, которую ему же запрещено скачивать.
  */
 export function buildWebSiteJsonLd(): Record<string, unknown> {
   return {

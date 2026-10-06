@@ -5,6 +5,7 @@ import type {
   CatalogProductsQuery,
   CategoryResponse,
   PageResponse,
+  SearchFacetsResponse,
   VariantCardResponse,
   SitemapResponse,
   VariantDetailResponse,
@@ -36,6 +37,7 @@ export function getProducts(
 ): Promise<PageResponse<VariantCardResponse>> {
   const searchParams: Record<string, string | number | boolean | undefined> = {
     categoryId: query.categoryId,
+    categoryIds: query.categoryIds?.length ? query.categoryIds.join(',') : undefined,
     brandIds: query.brandIds?.length ? query.brandIds.join(',') : undefined,
     priceMin: query.priceMin,
     priceMax: query.priceMax,
@@ -80,4 +82,9 @@ export function getKits(opts: CatalogFetchOptions = {}): Promise<VariantCardResp
 
 export function getDiscountedBrands(opts: CatalogFetchOptions = {}): Promise<BrandResponse[]> {
   return apiRequest('/api/catalog/discounts/brands', opts);
+}
+
+/** name обязателен на бэкенде: с пустым buildUrl вырежет параметр, и ответ будет 400. */
+export function getSearchFacets(name: string, opts: CatalogFetchOptions = {}): Promise<SearchFacetsResponse> {
+  return apiRequest('/api/catalog/search/facets', { searchParams: { name }, ...opts });
 }

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import './SearchBox.css';
+import { isUsableSearchTerm, normalizeSearchTerm } from '@/hooks/catalogQuery';
 import { CloseIcon, SearchIcon } from '@/components/ui/icons';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
 import { Price } from '@/components/ui/Price';
@@ -20,7 +21,7 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { results, isSearching, isQueryTooShort } = useProductSearch(query);
 
@@ -49,6 +50,24 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
     router.push(`/product/${variantSlug}`);
   }
 
+  /**
+   * Enter в поле и кнопка «Перейти к результатам» идут одним путём через submit формы:
+   * нативный submit даёт кнопку «Поиск» на мобильной клавиатуре и корректно ведёт себя
+   * при IME-композиции, чего onKeyDown по e.key не обеспечивает.
+   */
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const term = normalizeSearchTerm(query);
+    if (!isUsableSearchTerm(term)) return;
+    setOpen(false);
+    // Иначе на мобильном поле остаётся в фокусе и клавиатура закрывает выдачу.
+    inputRef.current?.blur();
+    onNavigate?.();
+    // Строку в поле, в отличие от goToProduct, не чистим: пользователь остаётся
+    // на выдаче по этому запросу, и пустое поле читалось бы как потеря запроса.
+    router.push(`/search?q=${encodeURIComponent(term)}`);
+  }
+
   function handleTrailingClick() {
     if (query.length > 0) {
       setQuery('');
@@ -59,11 +78,14 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
     }
   }
 
-  const showPanel = open && query.trim().length > 0;
+  const normalizedQuery = normalizeSearchTerm(query);
+  const showPanel = open && normalizedQuery.length > 0;
   const showTrailingButton = query.length > 0 || Boolean(onClose);
+  // Кнопка показывается и при нулевой выдаче — выход на /search должен быть всегда.
+  const showGoToResults = isUsableSearchTerm(normalizedQuery);
 
   return (
-    <div className="search-box" ref={rootRef}>
+    <form className="search-box" role="search" ref={rootRef} onSubmit={handleSubmit}>
       <SearchIcon width={16} height={16} className="search-box__icon" />
       <input
         ref={inputRef}
@@ -118,8 +140,14 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
               ))}
             </ul>
           )}
+
+          {showGoToResults && (
+            <button type="submit" className="search-box__go">
+              Перейти к результатам поиска
+            </button>
+          )}
         </div>
       )}
-    </div>
+    </form>
   );
 }

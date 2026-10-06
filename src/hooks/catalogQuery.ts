@@ -20,6 +20,20 @@ export const CATEGORY_SORT_VALUES: CatalogSort[] = [
   'DISCOUNT_DESC',
 ];
 
+/** Имя параметра строки поиска в публичном URL. На бэкенд уходит как name. */
+export const SEARCH_TERM_PARAM = 'q';
+
+export const SEARCH_MIN_TERM_LENGTH = 2;
+
+/** Один нормализатор на сервер, клиент и выпадашку: иначе ключи react-query разъедутся. */
+export function normalizeSearchTerm(raw: string | null | undefined): string {
+  return (raw ?? '').trim().replace(/\s+/g, ' ');
+}
+
+export function isUsableSearchTerm(term: string): boolean {
+  return term.length >= SEARCH_MIN_TERM_LENGTH;
+}
+
 export interface CatalogQueryOptions {
   discounted?: boolean;
   defaultSort?: CatalogSort;
@@ -27,6 +41,10 @@ export interface CatalogQueryOptions {
    * а не по всему CatalogSort: DISCOUNT_DESC валиден на обеих страницах, а POPULAR_DESC — только
    * в категории, и ссылка на чужой пункт оставила бы кнопку селектора пустой. */
   allowedSorts?: CatalogSort[];
+  /** Читать ?q= и отправлять его как name. Включает только страница поиска: `q` не входит
+   * в RESERVED_PARAMS бэкенда и остаётся легальным слагом атрибута (SlugRules.PATTERN
+   * допускает слаг из одной буквы), поэтому безусловное чтение дало бы ему двойной смысл. */
+  readSearchTerm?: boolean;
 }
 
 export function buildCatalogQuery(
@@ -35,9 +53,15 @@ export function buildCatalogQuery(
   filters: CatalogFilterAttributeResponse[] | undefined,
   options: CatalogQueryOptions = {},
 ): CatalogProductsQuery {
-  const parsed = parseCatalogParams(searchParams, filters, options.defaultSort, options.allowedSorts);
+  const parsed = parseCatalogParams(searchParams, filters, options);
   return {
     categoryId,
+    // Скалярный categoryId и список взаимоисключающи: случайный ?categoryIds= на странице
+    // категории не должен сбивать её атрибутные фильтры, которые завязаны на categoryId.
+    ...(categoryId === undefined && parsed.categoryIds.length > 0
+      ? { categoryIds: parsed.categoryIds }
+      : {}),
+    ...(isUsableSearchTerm(parsed.term) ? { name: parsed.term } : {}),
     brandIds: parsed.brandIds,
     priceMin: parsed.priceMin,
     priceMax: parsed.priceMax,
@@ -54,9 +78,10 @@ export function buildCatalogQuery(
 export function parseCatalogParams(
   searchParams: ReadableParams,
   filters: CatalogFilterAttributeResponse[] | undefined,
-  defaultSort: CatalogSort = CATEGORY_DEFAULT_SORT,
-  allowedSorts: CatalogSort[] = CATEGORY_SORT_VALUES,
+  options: CatalogQueryOptions = {},
 ) {
+  const defaultSort = options.defaultSort ?? CATEGORY_DEFAULT_SORT;
+  const allowedSorts = options.allowedSorts ?? CATEGORY_SORT_VALUES;
   // Чужой sort раньше уходил на бэк как есть (400) и оставлял кнопку селектора пустой.
   const sortRaw = searchParams.get('sort') as CatalogSort | null;
   const sort = sortRaw && allowedSorts.includes(sortRaw) ? sortRaw : defaultSort;
@@ -70,6 +95,11 @@ export function parseCatalogParams(
   const inStock = inStockRaw === null ? true : inStockRaw === 'true';
   const brandIdsRaw = searchParams.get('brandIds');
   const brandIds = brandIdsRaw ? brandIdsRaw.split(',').map(Number).filter((n) => !Number.isNaN(n)) : [];
+  const categoryIdsRaw = searchParams.get('categoryIds');
+  const categoryIds = categoryIdsRaw
+    ? categoryIdsRaw.split(',').map(Number).filter((n) => !Number.isNaN(n))
+    : [];
+  const term = options.readSearchTerm ? normalizeSearchTerm(searchParams.get(SEARCH_TERM_PARAM)) : '';
 
   const attributeFilters: Record<string, string> = {};
   const attributeRangeFilters: Record<string, { min?: number; max?: number }> = {};
@@ -90,5 +120,17 @@ export function parseCatalogParams(
     }
   }
 
-  return { sort, page, priceMin, priceMax, inStock, inStockRaw, brandIds, attributeFilters, attributeRangeFilters };
+  return {
+    sort,
+    page,
+    priceMin,
+    priceMax,
+    inStock,
+    inStockRaw,
+    brandIds,
+    categoryIds,
+    term,
+    attributeFilters,
+    attributeRangeFilters,
+  };
 }

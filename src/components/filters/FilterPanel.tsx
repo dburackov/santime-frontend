@@ -10,19 +10,34 @@ import { BooleanFilter } from './BooleanFilter';
 import { OptionFilter } from './OptionFilter';
 import { PriceRangeFilter } from './PriceRangeFilter';
 import { BrandFilter } from './BrandFilter';
-import type { BrandResponse, CatalogFilterAttributeResponse } from '@/api/types';
+import { CategoryFacetFilter } from './CategoryFacetFilter';
+import type {
+  BrandResponse,
+  CatalogFilterAttributeResponse,
+  SearchCategoryFacetResponse,
+} from '@/api/types';
 import type { CatalogQueryState } from '@/hooks/useCatalogQueryState';
 
 interface FilterPanelProps {
   filters: CatalogFilterAttributeResponse[];
   brands: BrandResponse[];
+  /** Фасет разделов — только у страницы поиска: в каталоге раздел задаёт сам URL. */
+  categories?: SearchCategoryFacetResponse[];
   state: CatalogQueryState;
   open: boolean;
   onClose: () => void;
   resultCount?: number;
 }
 
-export function FilterPanel({ filters, brands, state, open, onClose, resultCount }: FilterPanelProps) {
+export function FilterPanel({
+  filters,
+  brands,
+  categories,
+  state,
+  open,
+  onClose,
+  resultCount,
+}: FilterPanelProps) {
   useEffect(() => {
     if (!open) return;
     document.body.classList.add('no-scroll');
@@ -48,6 +63,12 @@ export function FilterPanel({ filters, brands, state, open, onClose, resultCount
 
           <div className="filter-drawer__body">
             <div className="filter-drawer__filters">
+              <CategoryFacetFilter
+                categories={categories ?? []}
+                categoryIds={state.categoryIds}
+                onChange={(ids) => state.updateParams({ categoryIds: ids.join(',') || undefined })}
+              />
+
               <PriceRangeFilter
                 priceMin={state.priceMin}
                 priceMax={state.priceMax}

@@ -2,7 +2,12 @@
 
 import { useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { buildCatalogQuery, parseCatalogParams, type CatalogQueryOptions } from './catalogQuery';
+import {
+  SEARCH_TERM_PARAM,
+  buildCatalogQuery,
+  parseCatalogParams,
+  type CatalogQueryOptions,
+} from './catalogQuery';
 import { scrollToTop } from '@/utils/scrollToTop';
 import type { CatalogFilterAttributeResponse } from '@/api/types';
 
@@ -40,8 +45,19 @@ export function useCatalogQueryState(
     });
   }
 
-  const { sort, page, priceMin, priceMax, inStock, inStockRaw, brandIds, attributeFilters, attributeRangeFilters } =
-    parseCatalogParams(searchParams, filters, options.defaultSort, options.allowedSorts);
+  const {
+    sort,
+    page,
+    priceMin,
+    priceMax,
+    inStock,
+    inStockRaw,
+    brandIds,
+    categoryIds,
+    term,
+    attributeFilters,
+    attributeRangeFilters,
+  } = parseCatalogParams(searchParams, filters, options);
 
   const query = buildCatalogQuery(categoryId, searchParams, filters, options);
 
@@ -55,8 +71,13 @@ export function useCatalogQueryState(
     commit(next);
   }
 
+  /** Строка поиска — не фильтр, а сама страница: сбросить её вместе с фильтрами значило бы
+   * оставить /search без запроса. */
   function resetAllFilters() {
-    commit(new URLSearchParams());
+    const next = new URLSearchParams();
+    const currentTerm = searchParams.get(SEARCH_TERM_PARAM);
+    if (options.readSearchTerm && currentTerm) next.set(SEARCH_TERM_PARAM, currentTerm);
+    commit(next);
   }
 
   function setPage(nextPage: number) {
@@ -75,7 +96,8 @@ export function useCatalogQueryState(
     priceMin !== undefined ||
     priceMax !== undefined ||
     inStockRaw === 'false' ||
-    brandIds.length > 0;
+    brandIds.length > 0 ||
+    categoryIds.length > 0;
 
   return {
     query,
@@ -85,6 +107,8 @@ export function useCatalogQueryState(
     priceMax,
     inStock,
     brandIds,
+    categoryIds,
+    term,
     attributeFilters,
     attributeRangeFilters,
     searchParams,
