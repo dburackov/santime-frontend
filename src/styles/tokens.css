@@ -12,6 +12,11 @@
   --color-line: #E7E5E1;
   --color-danger: #B3261E;
   --color-success: #2E6B4F;
+  /* Положительный статус на светлой плашке: «Бесплатно», «В наличии». Пара фон/рамка/текст,
+     а не один --color-success, потому что плашка должна читаться и в тёмной теме. */
+  --color-ok-bg: #EEF7F0;
+  --color-ok-border: #8CC59B;
+  --color-ok-ink: #1F6B37;
   --color-photo-bg: #F2F0EC;
   /* Тон предметной студийной съёмки — фиксированный в обеих темах (не переопределяется
      в data-theme='dark'): реальные фото товаров сняты на светлом фоне, и тёмная плашка
@@ -130,6 +135,9 @@
   --color-line: #33383D;
   --color-danger: #E5695F;
   --color-success: #5FA684;
+  --color-ok-bg: #16261B;
+  --color-ok-border: #3F7A50;
+  --color-ok-ink: #8FD3A2;
   --color-photo-bg: #24282B;
 
   --color-tint: #20272D;

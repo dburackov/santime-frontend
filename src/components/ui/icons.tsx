@@ -292,3 +292,31 @@ export function TrashIcon(props: SVGProps<SVGSVGElement>) {
     </Icon>
   );
 }
+
+export function WarehouseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M3 9l2-4h14l2 4" />
+      <path d="M4 9h16v11H4z" />
+      <path d="M9 20v-6h6v6" />
+    </Icon>
+  );
+}
+
+export function ClockIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </Icon>
+  );
+}
+
+export function CardCheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M8 12l2.5 2.5L16 9" />
+    </Icon>
+  );
+}

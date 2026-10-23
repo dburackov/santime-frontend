@@ -1,0 +1,14 @@
+.payment-method {
+  gap: 14px;
+  padding: 26px;
+}
+
+.payment-method__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.payment-method__title {
+  font-size: 1.125rem;
+}

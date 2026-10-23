@@ -1,0 +1,71 @@
+/* Общие кирпичи полных блоков «Доставка» и «Оплата». */
+
+.info-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3vw, 40px);
+}
+
+.info-blocks__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.info-blocks__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  letter-spacing: -0.015em;
+}
+
+.info-blocks__heading::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  background: var(--color-gold);
+}
+
+.info-blocks__grid {
+  display: grid;
+  /* min() — чтобы трек сжимался на экранах уже минимальной ширины колонки. */
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--info-col, 300px), 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-line-2);
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.info-card__title {
+  font-size: 1.0625rem;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.info-card__text {
+  font-size: 0.9375rem;
+  color: var(--color-slate);
+  text-wrap: pretty;
+}
+
+.info-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line-3);
+  border-radius: 12px;
+  background: var(--color-tint);
+  color: var(--color-accent);
+}

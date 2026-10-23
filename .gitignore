@@ -29,3 +29,5 @@ next-env.d.ts
 
 # артефакт инкрементальной сборки TypeScript
 tsconfig.tsbuildinfo
+
+tasks

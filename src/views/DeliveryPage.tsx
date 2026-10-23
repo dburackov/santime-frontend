@@ -1,73 +1,27 @@
-import './InfoPage.css';
+import './InfoLanding.css';
+import { InfoHero } from '@/components/info/InfoHero';
+import { InfoCta } from '@/components/info/InfoCta';
+import { DeliveryInfo } from '@/components/info/DeliveryInfo';
+import { SITE_PHONES } from '@/config/siteInfo';
 
 export function DeliveryPage() {
+  const phone = SITE_PHONES[0];
+
   return (
-    <div className="container info-page">
-      <h1 className="info-page__title">Доставка</h1>
-
-      <section className="info-page__section">
-        <h2>Варианты доставки</h2>
-        <ul className="info-page__list">
-          <li>
-            <strong>Собственная курьерская служба</strong> — оптимально для доставки хрупких изделий и
-            крупногабаритных товаров в пределах города и района.
-          </li>
-          <li>
-            <strong>Транспортные компании (ТК)</strong> — для доставки в регионы. Стоимость рассчитывается по
-            тарифам ТК в зависимости от веса и объёма.
-          </li>
-          <li>
-            <strong>Самовывоз</strong> — возможность забрать заказ самостоятельно со склада после подтверждения
-            наличия менеджером.
-          </li>
-        </ul>
-      </section>
-
-      <section className="info-page__section">
-        <h2>Стоимость и сроки</h2>
-        <div className="info-page__table-wrap">
-          <table className="info-page__table">
-            <thead>
-              <tr>
-                <th>Зона доставки</th>
-                <th>Стоимость</th>
-                <th>Сроки</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>По городу Минск + 10 км от МКАД</td>
-                <td>
-                  При заказе до 100 руб. стоимость доставки составляет 8 руб. Бесплатно при заказе от 100 руб.
-                </td>
-                <td>
-                  С 11:00 до 16:00 и с 18:00 до 22:00. Заказы, поступившие после 15:00, переносятся на следующий
-                  рабочий день.
-                </td>
-              </tr>
-              <tr>
-                <td>Регионы</td>
-                <td>По тарифам ТК (от 10 рублей)</td>
-                <td>От 1 до 5 рабочих дней в зависимости от удалённости.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="info-page__section">
-        <h2>Важные условия приёмки</h2>
-        <ul className="info-page__list">
-          <li>
-            <strong>Проверка при получении</strong> — клиент обязан вскрыть упаковку в присутствии курьера,
-            осмотреть товар на наличие сколов, трещин и проверить комплектацию.
-          </li>
-          <li>
-            <strong>Подъём на этаж</strong> — доставка обычно осуществляется до подъезда. Подъём в квартиру — это
-            дополнительная платная услуга, которую нужно согласовать заранее.
-          </li>
-        </ul>
-      </section>
+    <div className="info-landing">
+      <InfoHero
+        title="Доставка"
+        subtitle="Своя курьерская служба в Минске, транспортные компании по регионам и самовывоз со склада."
+      />
+      <div className="container info-landing__body">
+        <DeliveryInfo />
+      </div>
+      <InfoCta
+        title="Остались вопросы по доставке?"
+        text="Позвоните — рассчитаем стоимость и подберём удобный интервал."
+        action={{ label: phone.display, href: phone.href }}
+        link={{ label: 'Способы оплаты', to: '/payment' }}
+      />
     </div>
   );
 }
