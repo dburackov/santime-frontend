@@ -1,0 +1,16 @@
+.delivery-compact__price {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+.delivery-compact__price--free,
+.delivery-compact__free-note {
+  color: var(--color-ok-ink);
+}
+
+.delivery-compact__free-note {
+  font-size: 0.75rem;
+}

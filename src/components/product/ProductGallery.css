@@ -1,0 +1,228 @@
+.product-gallery {
+  display: grid;
+  grid-template-columns: clamp(64px, 7vw, 88px) minmax(0, 1fr);
+  gap: 14px;
+  min-width: 0;
+}
+
+.product-gallery--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ---------- Главное фото ---------- */
+
+.product-gallery__main {
+  position: relative;
+  grid-row: 1;
+  grid-column: -2 / -1;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-photo-surface);
+}
+
+.product-gallery__main > .product-photo,
+.product-gallery__main .product-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.product-gallery__zoom {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+}
+
+.product-gallery__zoom:focus-visible {
+  outline-offset: -3px;
+  border-radius: var(--radius-lg);
+}
+
+.product-gallery__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--motion-base),
+    visibility var(--motion-base);
+}
+
+.product-gallery__slide--active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.product-gallery__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-top: -18px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition:
+    opacity var(--motion-fast),
+    border-color var(--motion-fast);
+}
+
+.product-gallery__arrow--previous {
+  left: var(--space-3);
+}
+
+.product-gallery__arrow--next {
+  right: var(--space-3);
+}
+
+.product-gallery__main:hover .product-gallery__arrow,
+.product-gallery__arrow:focus-visible {
+  opacity: 1;
+}
+
+.product-gallery__arrow:hover {
+  border-color: var(--color-accent);
+}
+
+.product-gallery__counter {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  padding: var(--space-1) 10px;
+  border-radius: 999px;
+  background: var(--color-photo-counter-bg);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-on-dark);
+  pointer-events: none;
+}
+
+/* ---------- Лента миниатюр ---------- */
+
+.product-gallery__rail {
+  position: relative;
+  grid-row: 1;
+  grid-column: 1;
+  min-height: 0;
+}
+
+/* Лента абсолютная, чтобы не распирать строку сетки: её высоту задаёт главное фото. */
+.product-gallery__thumbnails {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y proximity;
+  scrollbar-width: none;
+}
+
+.product-gallery__thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+.product-gallery__thumbnail {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  scroll-snap-align: start;
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius);
+  background: var(--color-photo-surface);
+  opacity: 0.72;
+  transition:
+    border-color var(--motion-fast),
+    opacity var(--motion-fast);
+}
+
+.product-gallery__thumbnail:hover {
+  opacity: 1;
+}
+
+.product-gallery__thumbnail--active {
+  border: 2px solid var(--color-accent-2);
+  opacity: 1;
+}
+
+.product-gallery__thumbnail .product-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.product-gallery__rail-arrow {
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--motion-fast);
+}
+
+.product-gallery__rail-arrow[hidden] {
+  display: none;
+}
+
+.product-gallery__rail-arrow:hover {
+  border-color: var(--color-accent);
+}
+
+.product-gallery__rail-arrow--up {
+  top: -8px;
+}
+
+.product-gallery__rail-arrow--down {
+  bottom: -8px;
+}
+
+@media (max-width: 1023px) {
+  .product-gallery__arrow {
+    display: none;
+  }
+
+  .product-gallery__main {
+    touch-action: pan-y;
+  }
+}
+
+/* На телефоне миниатюр нет: кадры листаются свайпом, номер кадра показывает счётчик. */
+@media (max-width: 640px) {
+  .product-gallery {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .product-gallery__main {
+    grid-column: 1;
+  }
+
+  .product-gallery__rail {
+    display: none;
+  }
+}

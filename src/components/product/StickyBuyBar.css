@@ -1,0 +1,143 @@
+.sticky-buy-bar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .sticky-buy-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 10px var(--space-4) calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-line);
+    background: var(--color-header-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-up);
+    animation: sticky-buy-bar-in 250ms ease-out;
+  }
+
+  /* Бар закрывает низ страницы: футеру нужен запас, кнопке «наверх» — подняться над баром. */
+  .app-shell:has(.sticky-buy-bar) .footer {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell:has(.sticky-buy-bar) .scroll-top {
+    bottom: calc(74px + var(--space-4) + env(safe-area-inset-bottom));
+  }
+}
+
+.sticky-buy-bar__total {
+  flex-shrink: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+.sticky-buy-bar__total .currency-symbol {
+  color: var(--color-slate);
+}
+
+.sticky-buy-bar__action {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 0;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: var(--space-3);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: #fff;
+}
+
+.sticky-buy-bar__action:active {
+  background: var(--color-accent-hover);
+}
+
+a.sticky-buy-bar__action:hover {
+  color: #fff;
+}
+
+.sticky-buy-bar__stepper {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  animation: sticky-buy-bar-stepper-in 180ms ease-out;
+}
+
+.sticky-buy-bar__stepper:active {
+  background: var(--color-accent);
+}
+
+.sticky-buy-bar__step {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 100%;
+  color: #fff;
+}
+
+.sticky-buy-bar__step:active:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.sticky-buy-bar__step:disabled {
+  opacity: 0.45;
+}
+
+.sticky-buy-bar__count {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  line-height: 1.1;
+}
+
+.sticky-buy-bar__count-value {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sticky-buy-bar__count-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+@keyframes sticky-buy-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sticky-buy-bar-stepper-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,6 +1,6 @@
 import './InfoLanding.css';
 import { InfoHero } from '@/components/info/InfoHero';
-import { InfoCta } from '@/components/info/InfoCta';
+import { InfoContactStrip } from '@/components/info/InfoContactStrip';
 import { PaymentInfo } from '@/components/info/PaymentInfo';
 import { SITE_EMAIL } from '@/config/siteInfo';
 
@@ -14,7 +14,7 @@ export function PaymentPage() {
       <div className="container info-landing__body">
         <PaymentInfo />
       </div>
-      <InfoCta
+      <InfoContactStrip
         title="Нужен счёт или безналичный расчёт?"
         text="Напишите нам — подготовим документы для организации."
         action={{ label: SITE_EMAIL.display, href: SITE_EMAIL.href }}

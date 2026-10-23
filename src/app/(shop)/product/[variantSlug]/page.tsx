@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getCategories, getProductBySlug } from '@/api/catalog';
+import { getCategories, getProductBySlug, getSimilarProducts } from '@/api/catalog';
 import { ApiError } from '@/api/client';
 import { createServerQueryClient } from '@/app/query-client';
+import { similarProductsQueryKey } from '@/queries/similarProductsQueryKey';
 import { buildBreadcrumbJsonLd, buildProductCrumbs, buildProductJsonLd } from '@/utils/productJsonLd';
 import { resolveProductMeta } from '@/utils/seo';
 import { OG_IMAGE, SITE_NAME } from '@/config/siteInfo';
@@ -92,10 +93,18 @@ export default async function Page({ params }: { params: Promise<{ variantSlug: 
   // заново, а в HTML уедет пустая страница вместо товара.
   queryClient.setQueryData(['product-detail', variantSlug], variant);
   // Категории нужны хлебным крошкам — и разметке, и самой странице.
-  const categories = await queryClient.fetchQuery({
-    queryKey: ['categories'],
-    queryFn: () => getCategories({ revalidate }),
-  });
+  const [categories] = await Promise.all([
+    queryClient.fetchQuery({
+      queryKey: ['categories'],
+      queryFn: () => getCategories({ revalidate }),
+    }),
+    // Похожие — внутренние ссылки, их краулер должен увидеть в HTML. prefetchQuery не
+    // бросает: без блока страница всё равно отдаётся, клиент дозапросит его сам.
+    queryClient.prefetchQuery({
+      queryKey: similarProductsQueryKey(variantSlug),
+      queryFn: () => getSimilarProducts(variantSlug, { revalidate }),
+    }),
+  ]);
 
   const { description } = resolveProductMeta(variant);
   const jsonLd = [

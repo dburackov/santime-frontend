@@ -33,6 +33,8 @@
      пропала на белом поле фото. */
   --color-photo-bullet: #C2CFDA;
   --color-photo-bullet-active: #1D3F5E;
+  /* Плашка счётчика кадров поверх фото — по той же причине фиксирована в обеих темах. */
+  --color-photo-counter-bg: rgba(21, 24, 29, 0.72);
 
   /* Холодные тинты — фоны секций, чипов и полей ввода. Отдельная от --color-line
      шкала: она уходит в синеву, а --color-line/--color-bg тёплые. */
@@ -86,6 +88,8 @@
   --shadow-sm: 0 1px 2px rgba(21, 24, 29, 0.04);
   --shadow-md: 0 4px 16px rgba(21, 24, 29, 0.06);
   --shadow-lg: 0 12px 32px rgba(21, 24, 29, 0.10);
+  /* Тень вверх — у панелей, прижатых к низу экрана. */
+  --shadow-up: 0 -2px 12px rgba(21, 24, 29, 0.06);
 
   /* ---- Spacing — шаг 4px ---- */
   --space-1: 4px;
@@ -176,6 +180,7 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-up: 0 -2px 12px rgba(0, 0, 0, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

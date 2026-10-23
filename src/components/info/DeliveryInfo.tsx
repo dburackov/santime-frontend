@@ -43,7 +43,7 @@ const RULES = [
   },
 ];
 
-const col = (width: number) => ({ '--info-col': `${width}px` }) as CSSProperties;
+const columnWidth = (width: number) => ({ '--info-column': `${width}px` }) as CSSProperties;
 
 /** Страховка, если браузер не поддерживает scrollend: длинная плавная прокрутка укладывается примерно в секунду. */
 const SCROLL_FALLBACK_MS = 1000;
@@ -95,19 +95,19 @@ export function DeliveryInfo() {
 
   return (
     <div className="info-blocks">
-      <div className="info-blocks__grid" style={col(260)}>
-        {METHODS.map((m) => (
+      <div className="info-blocks__grid" style={columnWidth(260)}>
+        {METHODS.map((method) => (
           <button
-            key={m.key}
+            key={method.key}
             type="button"
             className="info-card delivery-method"
-            onClick={() => showMethod(m.key)}
+            onClick={() => showMethod(method.key)}
           >
-            <span className="info-icon">{m.icon}</span>
-            <span className="info-card__title">{m.title}</span>
+            <span className="info-icon">{method.icon}</span>
+            <span className="info-card__title">{method.title}</span>
             <span className="delivery-method__footer">
-              <span className={`delivery-method__note${m.free ? ' delivery-method__note--free' : ''}`}>
-                {m.note}
+              <span className={`delivery-method__note${method.free ? ' delivery-method__note--free' : ''}`}>
+                {method.note}
               </span>
               <span className="delivery-method__more">
                 Подробнее
@@ -138,7 +138,7 @@ export function DeliveryInfo() {
                 Бесплатно при заказе от {COURIER.freeFrom} Br
               </div>
               <div className="tariff__details">
-                <span className="tariff__details-main">Интервалы: {COURIER.intervals}</span>
+                <span className="tariff__details-main">Интервалы: {COURIER.intervals.join(' и ')}</span>
                 <span className="tariff__details-note">{COURIER.cutoffNote}</span>
               </div>
             </div>
@@ -212,14 +212,14 @@ export function DeliveryInfo() {
       <section className="info-blocks__group">
         <h2 className="info-blocks__heading">Условия приёмки</h2>
         <ol className="info-blocks__grid">
-          {RULES.map((r, i) => (
-            <li key={r.title} className="info-card rule">
+          {RULES.map((rule, index) => (
+            <li key={rule.title} className="info-card rule">
               <span className="rule__num" aria-hidden="true">
-                {i + 1}
+                {index + 1}
               </span>
               <span className="rule__body">
-                <span className="rule__title">{r.title}</span>
-                <span className="info-card__text">{r.text}</span>
+                <span className="rule__title">{rule.title}</span>
+                <span className="info-card__text">{rule.text}</span>
               </span>
             </li>
           ))}

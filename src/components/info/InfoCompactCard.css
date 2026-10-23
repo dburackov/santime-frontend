@@ -1,0 +1,167 @@
+.info-compact {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-line-2);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.info-compact__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-line-2);
+  background: var(--color-tint-3);
+  text-align: left;
+  cursor: default;
+}
+
+.info-compact__icon {
+  display: flex;
+  color: var(--color-accent);
+}
+
+.info-compact__title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.info-compact__chevron {
+  display: none;
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--color-slate);
+  transition: transform var(--motion-base);
+}
+
+.info-compact__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.info-compact__rows {
+  display: flex;
+  flex-direction: column;
+  padding: 6px var(--space-5) var(--space-2);
+}
+
+.info-compact__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-line-2);
+}
+
+.info-compact__row:last-child {
+  border-bottom: none;
+}
+
+.info-compact__row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.info-compact__row-title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.info-compact__row-note {
+  font-size: 0.8125rem;
+  color: var(--color-slate);
+}
+
+.info-compact__row-aside {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.info-compact__more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: 14px var(--space-5);
+  border-top: 1px solid var(--color-line-2);
+  background: var(--color-tint-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-accent-2);
+  transition: background var(--motion-fast);
+}
+
+.info-compact__more:hover {
+  background: var(--color-tint);
+  color: var(--color-accent-2);
+}
+
+/* Шапка — кнопка аккордеона только на телефоне; на десктопе она просто заголовок. */
+@media (min-width: 641px) {
+  .info-compact__head {
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .info-compact {
+    height: auto;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .info-compact__head {
+    min-height: 56px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .info-compact__chevron {
+    display: block;
+  }
+
+  .info-compact[data-open='true'] .info-compact__chevron {
+    transform: rotate(180deg);
+  }
+
+  .info-compact[data-open='false'] .info-compact__head {
+    border-bottom: 0;
+  }
+
+  .info-compact[data-open='false'] .info-compact__body {
+    display: none;
+  }
+
+  .info-compact[data-open='true'] .info-compact__body {
+    animation: info-compact-in 200ms ease-out;
+  }
+
+  .info-compact__more {
+    background: var(--color-surface);
+  }
+}
+
+@keyframes info-compact-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

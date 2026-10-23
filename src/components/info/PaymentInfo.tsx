@@ -20,14 +20,14 @@ const METHODS = [
 export function PaymentInfo() {
   return (
     <div className="info-blocks">
-      <div className="info-blocks__grid" style={{ '--info-col': '320px' } as CSSProperties}>
-        {METHODS.map((m) => (
-          <div key={m.title} className="info-card payment-method">
+      <div className="info-blocks__grid" style={{ '--info-column': '320px' } as CSSProperties}>
+        {METHODS.map((method) => (
+          <div key={method.title} className="info-card payment-method">
             <div className="payment-method__head">
-              <span className="info-icon">{m.icon}</span>
-              <h2 className="info-card__title payment-method__title">{m.title}</h2>
+              <span className="info-icon">{method.icon}</span>
+              <h2 className="info-card__title payment-method__title">{method.title}</h2>
             </div>
-            <p className="info-card__text">{m.text}</p>
+            <p className="info-card__text">{method.text}</p>
           </div>
         ))}
       </div>

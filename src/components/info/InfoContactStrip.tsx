@@ -1,8 +1,8 @@
-import './InfoCta.css';
+import './InfoContactStrip.css';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@/components/ui/icons';
 
-interface InfoCtaProps {
+interface InfoContactStripProps {
   title: string;
   text: string;
   /** Внешняя ссылка (tel:, mailto:) — основное действие, золотая кнопка. */
@@ -12,19 +12,19 @@ interface InfoCtaProps {
 }
 
 /** Нижняя полоса информационных страниц: вопрос, пояснение и две кнопки. */
-export function InfoCta({ title, text, action, link }: InfoCtaProps) {
+export function InfoContactStrip({ title, text, action, link }: InfoContactStripProps) {
   return (
-    <section className="info-cta">
-      <div className="container info-cta__inner">
-        <div className="info-cta__text">
-          <h2 className="info-cta__title">{title}</h2>
-          <p className="info-cta__lead">{text}</p>
+    <section className="info-contact-strip">
+      <div className="container info-contact-strip__inner">
+        <div className="info-contact-strip__text">
+          <h2 className="info-contact-strip__title">{title}</h2>
+          <p className="info-contact-strip__lead">{text}</p>
         </div>
-        <div className="info-cta__actions">
-          <a href={action.href} className="info-cta__btn info-cta__btn--gold">
+        <div className="info-contact-strip__actions">
+          <a href={action.href} className="info-contact-strip__button info-contact-strip__button--gold">
             {action.label}
           </a>
-          <Link href={link.to} className="info-cta__btn info-cta__btn--outline">
+          <Link href={link.to} className="info-contact-strip__button info-contact-strip__button--outline">
             {link.label}
             <ArrowRightIcon width={15} height={15} />
           </Link>

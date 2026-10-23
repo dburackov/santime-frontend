@@ -41,6 +41,6 @@
 .info-hero__subtitle {
   max-width: 60ch;
   font-size: clamp(1rem, 1.1vw, 1.125rem);
-  color: rgba(255, 255, 255, 0.74);
+  color: var(--color-on-dark-muted);
   text-wrap: pretty;
 }

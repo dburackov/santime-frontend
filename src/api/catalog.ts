@@ -68,6 +68,13 @@ export function getProductBySlug(
   return apiRequest(`/api/catalog/products/${encodeURIComponent(variantSlug)}`, opts);
 }
 
+export function getSimilarProducts(
+  variantSlug: string,
+  opts: CatalogFetchOptions = {},
+): Promise<VariantCardResponse[]> {
+  return apiRequest(`/api/catalog/products/${encodeURIComponent(variantSlug)}/similar`, opts);
+}
+
 export function getSitemap(opts: CatalogFetchOptions = {}): Promise<SitemapResponse> {
   return apiRequest('/api/catalog/sitemap', opts);
 }

@@ -1,6 +1,6 @@
 import './InfoLanding.css';
 import { InfoHero } from '@/components/info/InfoHero';
-import { InfoCta } from '@/components/info/InfoCta';
+import { InfoContactStrip } from '@/components/info/InfoContactStrip';
 import { DeliveryInfo } from '@/components/info/DeliveryInfo';
 import { SITE_PHONES } from '@/config/siteInfo';
 
@@ -16,7 +16,7 @@ export function DeliveryPage() {
       <div className="container info-landing__body">
         <DeliveryInfo />
       </div>
-      <InfoCta
+      <InfoContactStrip
         title="Остались вопросы по доставке?"
         text="Позвоните — рассчитаем стоимость и подберём удобный интервал."
         action={{ label: phone.display, href: phone.href }}

@@ -32,7 +32,7 @@
 .info-blocks__grid {
   display: grid;
   /* min() — чтобы трек сжимался на экранах уже минимальной ширины колонки. */
-  grid-template-columns: repeat(auto-fit, minmax(min(var(--info-col, 300px), 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--info-column, 300px), 100%), 1fr));
   gap: var(--space-4);
 }
 
