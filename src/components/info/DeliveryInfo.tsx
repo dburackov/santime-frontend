@@ -203,9 +203,7 @@ export function DeliveryInfo() {
             </div>
             <p className="pickup__storage">{PICKUP.storageNote}</p>
           </div>
-          <div className="pickup__map">
-            <PickupMap className="pickup__map-frame" />
-          </div>
+          <PickupMap className="pickup__map" />
         </div>
       </section>
 

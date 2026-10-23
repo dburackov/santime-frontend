@@ -51,6 +51,7 @@
 }
 
 .tariff__tag {
+  text-align: right;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -221,20 +222,11 @@
 }
 
 .pickup__map {
-  position: relative;
   min-height: 340px;
   overflow: hidden;
   border: 1px solid var(--color-line-2);
   border-radius: 14px;
   background: var(--color-tint);
-}
-
-.pickup__map-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
 }
 
 /* ---------- Условия приёмки ---------- */

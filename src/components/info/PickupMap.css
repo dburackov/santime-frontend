@@ -1,0 +1,53 @@
+.pickup-map {
+  position: relative;
+}
+
+.pickup-map__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.pickup-map__guard {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: var(--space-4);
+  cursor: pointer;
+}
+
+.pickup-map__hint {
+  padding: 6px var(--space-3);
+  border-radius: 999px;
+  background: var(--color-photo-counter-bg);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-on-dark);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--motion-fast),
+    transform var(--motion-fast);
+}
+
+.pickup-map__guard:hover .pickup-map__hint,
+.pickup-map__guard:focus-visible .pickup-map__hint {
+  opacity: 1;
+  transform: none;
+}
+
+.pickup-map__guard:focus-visible {
+  outline-offset: -3px;
+}
+
+/* Без наведения подсказку не увидеть иначе — на тач-экранах она видна всегда. */
+@media (hover: none) {
+  .pickup-map__hint {
+    opacity: 1;
+    transform: none;
+  }
+}
