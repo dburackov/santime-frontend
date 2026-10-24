@@ -1,0 +1,68 @@
+/* Рамка и фон — у обёртки, а не у кнопки: раскрытые номера живут в той же плашке. */
+.phone-order {
+  overflow: hidden;
+  border: 1px solid var(--color-line-2);
+  border-radius: var(--radius);
+  background: var(--color-tint-3);
+  transition: border-color var(--motion-fast);
+}
+
+.phone-order:has(.phone-order__toggle:hover) {
+  border-color: var(--color-accent);
+}
+
+.phone-order__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 42px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+.phone-order__panel {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4) 14px;
+  border-top: 1px solid var(--color-line-2);
+  background: var(--color-surface);
+  animation: phone-order-in 200ms ease-out;
+}
+
+.phone-order__numbers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.phone-order__number {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.phone-order__number:hover {
+  color: var(--color-accent-2);
+}
+
+@keyframes phone-order-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-order__panel {
+    animation: none;
+  }
+}

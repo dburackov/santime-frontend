@@ -2,12 +2,13 @@
 
 import './InfoBlocks.css';
 import './DeliveryInfo.css';
-import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { CARRIER, COURIER, PICKUP } from '@/config/delivery';
 import { SITE_PHONES } from '@/config/siteInfo';
 import { BoxIcon, CheckIcon, ChevronDownIcon, ClockIcon, PhoneIcon, TruckIcon, WarehouseIcon } from '@/components/ui/icons';
 import { useScrollEnd } from '@/hooks/useScrollEnd';
 import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
+import { formatPrice } from '@/utils/price';
 import { PickupMap } from './PickupMap';
 
 type MethodKey = 'courier' | 'pickup' | 'carrier';
@@ -49,7 +50,6 @@ const columnWidth = (width: number) => ({ '--info-column': `${width}px` }) as CS
 
 /** Полный блок условий доставки для страницы /delivery. */
 export function DeliveryInfo() {
-  const phone = SITE_PHONES[0];
   const courierRef = useRef<HTMLDivElement>(null);
   const pickupRef = useRef<HTMLDivElement>(null);
   const carrierRef = useRef<HTMLDivElement>(null);
@@ -123,7 +123,7 @@ export function DeliveryInfo() {
             <div className="tariff__body">
               <div className="tariff__price-row">
                 <span className="tariff__price">
-                  {COURIER.price} <CurrencySymbol />
+                  {formatPrice(COURIER.price)} <CurrencySymbol />
                 </span>
                 <span className="tariff__price-note">при заказе до {COURIER.freeFrom} <CurrencySymbol /></span>
               </div>
@@ -150,7 +150,7 @@ export function DeliveryInfo() {
             <div className="tariff__body">
               <div className="tariff__price-row">
                 <span className="tariff__price">
-                  от {CARRIER.priceFrom} <CurrencySymbol />
+                  от {formatPrice(CARRIER.priceFrom)} <CurrencySymbol />
                 </span>
                 <span className="tariff__price-note">по тарифам ТК</span>
               </div>
@@ -192,10 +192,14 @@ export function DeliveryInfo() {
                 <PhoneIcon width={17} height={17} strokeWidth={1.8} />
                 <span>
                   Перед выездом позвоните
-                  <br />
-                  <a href={phone.href} className="pickup__phone">
-                    {phone.display}
-                  </a>
+                  {SITE_PHONES.map((phone) => (
+                    <Fragment key={phone.href}>
+                      <br />
+                      <a href={phone.href} className="pickup__phone">
+                        {phone.display}
+                      </a>
+                    </Fragment>
+                  ))}
                 </span>
               </div>
             </div>

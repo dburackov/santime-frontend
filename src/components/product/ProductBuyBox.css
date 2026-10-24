@@ -120,26 +120,6 @@
   background: color-mix(in srgb, var(--color-success) 85%, black);
 }
 
-.product-buy-box__phone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: 44px;
-  border: 1px solid var(--color-line-2);
-  border-radius: var(--radius);
-  background: var(--color-tint-3);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-accent);
-  transition: border-color var(--motion-fast);
-}
-
-.product-buy-box__phone:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
 .product-buy-box__jumps {
   display: flex;
   flex-direction: column;

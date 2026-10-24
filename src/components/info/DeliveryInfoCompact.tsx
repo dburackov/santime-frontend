@@ -2,6 +2,7 @@ import './DeliveryInfoCompact.css';
 import { CARRIER, COURIER, PICKUP, isCourierFree } from '@/config/delivery';
 import { TruckIcon } from '@/components/ui/icons';
 import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
+import { formatPrice } from '@/utils/price';
 import { InfoCompactCard, InfoCompactRow } from './InfoCompactCard';
 
 interface DeliveryInfoCompactProps {
@@ -30,7 +31,7 @@ export function DeliveryInfoCompact({ orderTotal }: DeliveryInfoCompactProps) {
             </>
           ) : (
             <>
-              <span className="delivery-compact__price">{COURIER.price} <CurrencySymbol /></span>
+              <span className="delivery-compact__price">{formatPrice(COURIER.price)} <CurrencySymbol /></span>
               <span className="delivery-compact__free-note">от {COURIER.freeFrom} <CurrencySymbol /> — бесплатно</span>
             </>
           )
@@ -44,7 +45,7 @@ export function DeliveryInfoCompact({ orderTotal }: DeliveryInfoCompactProps) {
       <InfoCompactRow
         title="Транспортной компанией"
         note={CARRIER.term}
-        aside={<span className="delivery-compact__price">от {CARRIER.priceFrom} <CurrencySymbol /></span>}
+        aside={<span className="delivery-compact__price">от {formatPrice(CARRIER.priceFrom)} <CurrencySymbol /></span>}
       />
     </InfoCompactCard>
   );

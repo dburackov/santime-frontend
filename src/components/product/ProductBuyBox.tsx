@@ -6,16 +6,15 @@ import { Price } from '@/components/ui/Price';
 import { VariantOptions } from './VariantOptions';
 import { SkuCopy } from './SkuCopy';
 import { StockBadge } from './StockBadge';
+import { PhoneOrder } from './PhoneOrder';
 import {
   ArrowRightIcon,
   BulletListIcon,
   ChevronDownIcon,
   MinusIcon,
-  PhoneIcon,
   PlusIcon,
   TruckIcon,
 } from '@/components/ui/icons';
-import { SITE_PHONES } from '@/config/siteInfo';
 import type { ProductCartState } from './useProductCart';
 import type { VariantDetailResponse } from '@/api/types';
 
@@ -27,8 +26,6 @@ interface ProductBuyBoxProps {
 
 /** Блок покупки справа от галереи. На телефоне его заменяет ProductMobileDetails. */
 export function ProductBuyBox({ variant, cart, onJump }: ProductBuyBoxProps) {
-  const phone = SITE_PHONES[0];
-
   return (
     <div className="product-buy-box">
       <div className="product-buy-box__head">
@@ -83,10 +80,7 @@ export function ProductBuyBox({ variant, cart, onJump }: ProductBuyBoxProps) {
           </div>
         )}
 
-        <a href={phone.href} className="product-buy-box__phone">
-          <PhoneIcon width={15} height={15} strokeWidth={1.8} />
-          Заказ по телефону
-        </a>
+        <PhoneOrder />
       </div>
 
       <div className="product-buy-box__jumps">
