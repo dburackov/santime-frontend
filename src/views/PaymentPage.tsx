@@ -6,7 +6,7 @@ import { SITE_EMAIL } from '@/config/siteInfo';
 
 export function PaymentPage() {
   return (
-    <div className="info-landing page-in">
+    <div className="info-landing">
       <InfoHero
         title="Оплата"
         subtitle="Платите так, как удобно: курьеру наличными или картой, либо онлайн при оформлении заказа."

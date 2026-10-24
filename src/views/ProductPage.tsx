@@ -63,11 +63,11 @@ function ProductView({ variant }: { variant: VariantDetailResponse }) {
   );
   const category = categoryPath.at(-1);
 
-  // Бар — снаружи .product-page: у неё анимация появления (.page-in) с transform, а под transform
-  // position: fixed считается от родителя, и бар на время анимации уезжал под низ страницы.
+  // Бар — снаружи .product-page: position: fixed считается от ближайшего предка с transform
+  // или filter, и любой такой эффект на обёртке страницы унёс бы бар с экрана.
   return (
     <>
-      <div className="product-page page-in">
+      <div className="product-page">
         <div className="container product-page__crumbs">
           <Breadcrumbs
             items={[
