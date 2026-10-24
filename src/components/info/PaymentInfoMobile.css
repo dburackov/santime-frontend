@@ -1,0 +1,29 @@
+.payment-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 14px var(--space-4);
+  list-style: none;
+}
+
+.payment-mobile__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.payment-mobile__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: var(--color-tint);
+  color: var(--color-accent);
+}

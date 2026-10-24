@@ -14,3 +14,8 @@
 .delivery-compact__free-note {
   font-size: 0.75rem;
 }
+
+.delivery-compact__price-note {
+  font-size: 0.75rem;
+  color: var(--color-slate);
+}

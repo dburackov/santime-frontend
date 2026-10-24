@@ -59,3 +59,21 @@
     transform: translateX(-50%);
   }
 }
+
+.sku-copy--end .sku-copy__tooltip {
+  right: 0;
+  left: auto;
+  transform: none;
+  animation-name: sku-copy-in-end;
+}
+
+@keyframes sku-copy-in-end {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

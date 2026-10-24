@@ -1,0 +1,187 @@
+.about-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.about-sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--color-scrim);
+  animation: about-sheet-fade 200ms ease-out;
+}
+
+.about-sheet__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 88svh;
+  border-radius: 20px 20px 0 0;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sheet);
+  animation: about-sheet-in 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.about-sheet__panel:focus {
+  outline: none;
+}
+
+.about-sheet__head {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-2) 0 var(--space-5);
+}
+
+.about-sheet__grabber {
+  align-self: center;
+  width: 36px;
+  height: 4px;
+  margin-left: calc(-1 * var(--space-3));
+  border-radius: 999px;
+  background: var(--color-line);
+}
+
+.about-sheet__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 56px;
+}
+
+.about-sheet__title {
+  font-size: 1.1875rem;
+  letter-spacing: -0.015em;
+}
+
+.about-sheet__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: var(--color-slate);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.about-sheet__close:active {
+  background: var(--color-tint);
+}
+
+.about-sheet__chips {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) var(--space-3) 0;
+}
+
+.about-sheet__chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  background: var(--color-tint-2);
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--motion-fast), color var(--motion-fast);
+}
+
+.about-sheet__chip[aria-current='true'] {
+  background: var(--color-tint);
+  font-weight: 500;
+  color: var(--color-accent-2);
+}
+
+.about-sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-2) var(--space-5) calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+.about-sheet__specs {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding-top: var(--space-1);
+}
+
+.about-sheet__spec {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line-2);
+  font-size: 0.9375rem;
+}
+
+.about-sheet__spec dt {
+  color: var(--color-slate);
+}
+
+.about-sheet__spec dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+  color: var(--color-ink);
+}
+
+.about-sheet__description {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-7);
+}
+
+.about-sheet__description:first-child {
+  padding-top: var(--space-1);
+}
+
+/* Запас высоты, чтобы чип «Описание» мог докрутить раздел до верха даже у короткого текста. */
+.about-sheet__description--anchored {
+  min-height: calc(88svh - 140px);
+}
+
+.about-sheet__description-title {
+  font-size: 1.0625rem;
+  letter-spacing: -0.015em;
+}
+
+.about-sheet__description p {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color-ink);
+  text-wrap: pretty;
+  white-space: pre-line;
+}
+
+@keyframes about-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes about-sheet-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-sheet__panel,
+  .about-sheet__scrim {
+    animation: none;
+  }
+}

@@ -12,6 +12,7 @@ import { ArrowLeftIcon } from '@/components/ui/icons';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductBuyBox } from '@/components/product/ProductBuyBox';
 import { ProductCharacteristics } from '@/components/product/ProductCharacteristics';
+import { ProductMobileDetails } from '@/components/product/ProductMobileDetails';
 import { StickyBuyBar } from '@/components/product/StickyBuyBar';
 import { SimilarProducts } from '@/components/product/SimilarProducts';
 import { ProductHelpPromo } from '@/components/product/ProductHelpPromo';
@@ -85,6 +86,7 @@ function ProductView({ variant }: { variant: VariantDetailResponse }) {
 
         <ProductGallery images={variant.images ?? []} productName={variant.name} />
         <ProductBuyBox variant={variant} cart={cart} onJump={jumpTo} />
+        <ProductMobileDetails variant={variant} cart={cart} />
       </section>
 
       <ProductCharacteristics id={SECTION_IDS.characteristics} variant={variant} />
@@ -92,7 +94,7 @@ function ProductView({ variant }: { variant: VariantDetailResponse }) {
       <section id={SECTION_IDS.delivery} className="container product-page__shipping">
         <h2 className="product-section-title product-section-title--gold product-page__shipping-title">Доставка и оплата</h2>
         <div className="product-page__shipping-grid">
-          <DeliveryInfoCompact />
+          <DeliveryInfoCompact orderTotal={variant.price * cart.quantity} />
           <PaymentInfoCompact />
         </div>
       </section>

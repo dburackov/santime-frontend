@@ -10,6 +10,11 @@ export const COURIER = {
   cutoffNote: 'Заказы после 15:00 переносятся на следующий рабочий день.',
 };
 
+/** Бесплатен ли курьер для заказа на эту сумму — одно правило для мобильной и десктопной сводки. */
+export function isCourierFree(orderTotal: number) {
+  return orderTotal >= Number(COURIER.freeFrom);
+}
+
 export const CARRIER = {
   zone: 'Регионы Беларуси',
   priceFrom: '10,00',

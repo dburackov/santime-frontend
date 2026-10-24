@@ -6,7 +6,13 @@ import { CheckIcon, CopyIcon } from '@/components/ui/icons';
 
 const FEEDBACK_MS = 1600;
 
-export function SkuCopy({ sku }: { sku: string }) {
+interface SkuCopyProps {
+  sku: string;
+  /** У правого края экрана подсказку «Скопировано» прижимаем вправо, иначе она уедет за край. */
+  tooltipAlign?: 'center' | 'end';
+}
+
+export function SkuCopy({ sku, tooltipAlign = 'center' }: SkuCopyProps) {
   const [copied, setCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
 
@@ -24,7 +30,7 @@ export function SkuCopy({ sku }: { sku: string }) {
   };
 
   return (
-    <span className="sku-copy">
+    <span className={`sku-copy${tooltipAlign === 'end' ? ' sku-copy--end' : ''}`}>
       Артикул:
       <button type="button" className="sku-copy__button" onClick={copy} title="Скопировать артикул">
         <span className="mono-num">{sku}</span>

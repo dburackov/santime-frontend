@@ -1,0 +1,33 @@
+.info-mobile-card {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--color-line-2);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.info-mobile-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-mobile-card__more {
+  display: flex;
+  flex-shrink: 0;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  margin-left: calc(-1 * var(--space-2));
+  padding-right: 6px;
+  color: var(--color-slate);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.info-mobile-card__more:hover {
+  color: var(--color-slate);
+}
+
+.info-mobile-card__more:active {
+  background: var(--color-tint-3);
+}

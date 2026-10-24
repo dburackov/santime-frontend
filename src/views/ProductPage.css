@@ -86,17 +86,18 @@
   }
 }
 
-/* На телефоне крошки сворачиваются в одну ссылку «назад в категорию», а доставка и
-   оплата идут вплотную аккордеонами от края до края экрана. */
+/* На телефоне крошки сворачиваются в одну ссылку «назад в категорию». Доставку и оплату
+   (как и характеристики) там показывает ProductMobileDetails, десктопная секция скрыта. */
 @media (max-width: 640px) {
   .product-page__crumbs {
     display: none;
   }
 
+  /* Снизу без отступа: следующая секция на телефоне — «Похожие товары» со своим верхним. */
   .product-page__main {
     gap: var(--space-4);
     padding-top: var(--space-1);
-    padding-bottom: var(--space-6);
+    padding-bottom: 0;
   }
 
   .product-page__back {
@@ -136,23 +137,6 @@
   }
 
   .product-page__shipping {
-    padding-top: 0;
-  }
-
-  .product-page__shipping-title {
     display: none;
-  }
-
-  .product-page__shipping-grid {
-    gap: 0;
-    margin: 0 calc(-1 * var(--space-4));
-  }
-
-  .product-page__shipping-grid > :first-child {
-    border-top: 0;
-  }
-
-  .product-page__shipping-grid > * + * {
-    border-top: 0;
   }
 }

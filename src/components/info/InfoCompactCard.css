@@ -16,8 +16,6 @@
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-line-2);
   background: var(--color-tint-3);
-  text-align: left;
-  cursor: default;
 }
 
 .info-compact__icon {
@@ -31,14 +29,6 @@
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--color-ink);
-}
-
-.info-compact__chevron {
-  display: none;
-  flex-shrink: 0;
-  margin-left: auto;
-  color: var(--color-slate);
-  transition: transform var(--motion-base);
 }
 
 .info-compact__body {
@@ -107,61 +97,4 @@
 .info-compact__more:hover {
   background: var(--color-tint);
   color: var(--color-accent-2);
-}
-
-/* Шапка — кнопка аккордеона только на телефоне; на десктопе она просто заголовок. */
-@media (min-width: 641px) {
-  .info-compact__head {
-    pointer-events: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .info-compact {
-    height: auto;
-    border-right: 0;
-    border-left: 0;
-    border-radius: 0;
-  }
-
-  .info-compact__head {
-    min-height: 56px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .info-compact__chevron {
-    display: block;
-  }
-
-  .info-compact[data-open='true'] .info-compact__chevron {
-    transform: rotate(180deg);
-  }
-
-  .info-compact[data-open='false'] .info-compact__head {
-    border-bottom: 0;
-  }
-
-  .info-compact[data-open='false'] .info-compact__body {
-    display: none;
-  }
-
-  .info-compact[data-open='true'] .info-compact__body {
-    animation: info-compact-in 200ms ease-out;
-  }
-
-  .info-compact__more {
-    background: var(--color-surface);
-  }
-}
-
-@keyframes info-compact-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }

@@ -1,0 +1,111 @@
+.product-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .product-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    margin-top: var(--space-1);
+  }
+}
+
+.product-mobile__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-mobile__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.product-mobile__meta .sku-copy__button {
+  min-height: 36px;
+  margin-right: calc(-1 * var(--space-2));
+  margin-left: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.product-mobile__meta .sku-copy__button:active {
+  background: var(--color-tint);
+}
+
+.product-mobile__title {
+  font-size: 1.3125rem;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.product-mobile__price.price {
+  padding-top: 2px;
+  font-size: 2rem;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+/* Вся карточка — одна кнопка: сводка характеристик в две строки, а «о товаре» наплывает
+   на конец второй строки через градиент и подсказывает, что дальше есть ещё. */
+.product-mobile__about {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 14px var(--space-4);
+  border: 1px solid var(--color-line-2);
+  border-radius: 16px;
+  background: var(--color-surface);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--motion-fast);
+}
+
+.product-mobile__about-text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-slate);
+}
+
+.product-mobile__about-more {
+  position: absolute;
+  right: var(--space-4);
+  bottom: 14px;
+  padding-left: 2px;
+  background: var(--color-surface);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-accent-2);
+  pointer-events: none;
+  transition: background var(--motion-fast);
+}
+
+.product-mobile__about-more::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 100%;
+  bottom: 0;
+  width: 56px;
+  background: linear-gradient(to right, transparent, var(--color-surface));
+}
+
+.product-mobile__about:active,
+.product-mobile__about:active .product-mobile__about-more {
+  background: var(--color-tint-3);
+}
+
+.product-mobile__about:active .product-mobile__about-more::before {
+  background: linear-gradient(to right, transparent, var(--color-tint-3));
+}

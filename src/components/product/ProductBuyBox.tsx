@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Price } from '@/components/ui/Price';
 import { VariantOptions } from './VariantOptions';
 import { SkuCopy } from './SkuCopy';
+import { StockBadge } from './StockBadge';
 import {
   ArrowRightIcon,
   BulletListIcon,
@@ -18,17 +19,15 @@ import { SITE_PHONES } from '@/config/siteInfo';
 import type { ProductCartState } from './useProductCart';
 import type { VariantDetailResponse } from '@/api/types';
 
-const LOW_STOCK = 5;
-
 interface ProductBuyBoxProps {
   variant: VariantDetailResponse;
   cart: ProductCartState;
   onJump: (sectionId: 'characteristics' | 'delivery') => void;
 }
 
+/** Блок покупки справа от галереи. На телефоне его заменяет ProductMobileDetails. */
 export function ProductBuyBox({ variant, cart, onJump }: ProductBuyBoxProps) {
   const phone = SITE_PHONES[0];
-  const stock = variant.stockQuantity;
 
   return (
     <div className="product-buy-box">
@@ -36,16 +35,8 @@ export function ProductBuyBox({ variant, cart, onJump }: ProductBuyBoxProps) {
         <h1 className="product-buy-box__title">{variant.name}</h1>
         <div className="product-buy-box__meta">
           <SkuCopy sku={variant.sku} />
-          <span className={`product-buy-box__stock${stock > 0 ? '' : ' product-buy-box__stock--out'}`}>
-            <span className="product-buy-box__stock-dot" aria-hidden="true" />
-            {stock > 0
-              ? `В наличии${stock <= LOW_STOCK ? ` — осталось ${stock}` : ''}`
-              : 'Нет в наличии'}
-          </span>
+          <StockBadge stock={variant.stockQuantity} />
         </div>
-        <span className="product-buy-box__mobile-price">
-          <Price value={variant.price} oldValue={variant.oldPrice} size="lg" className="product-buy-box__price" />
-        </span>
       </div>
 
       <VariantOptions groups={variant.variantOptions} metadata={variant.attributeMetadata} />

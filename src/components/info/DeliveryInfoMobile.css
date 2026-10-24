@@ -1,0 +1,54 @@
+.delivery-mobile__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin: var(--space-3);
+  padding: var(--space-1);
+  border: 1px solid var(--color-line-2);
+  border-radius: 12px;
+  background: var(--color-tint-2);
+}
+
+.delivery-mobile__tab {
+  min-height: 40px;
+  padding: 0 var(--space-1);
+  border-radius: 9px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-slate);
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--motion-fast), color var(--motion-fast);
+}
+
+.delivery-mobile__tab[aria-selected='true'] {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.delivery-mobile__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px var(--space-4) 18px;
+}
+
+.delivery-mobile__price {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.delivery-mobile__price--free {
+  color: var(--color-ok-ink);
+}
+
+.delivery-mobile__note {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
