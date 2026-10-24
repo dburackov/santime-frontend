@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import './VariantOptions.css';
 import { formatAttributeValue } from '@/utils/attributes';
-import type { VariantDetailAttributeMeta, VariantOptionGroup } from '@/api/types';
+import type { VariantDetailAttributeMeta, VariantOptionGroup, VariantOptionItem } from '@/api/types';
 
 interface VariantOptionsProps {
   groups: VariantOptionGroup[];
@@ -17,10 +17,20 @@ export function VariantOptions({ groups, metadata }: VariantOptionsProps) {
         // Тип оси приходит только в метаданных атрибутов: без него BOOLEAN-значение
         // true/false React не печатает вовсе и остаётся пустая плашка.
         const meta = metadata.find((item) => item.slug === group.attributeSlug);
+        const label = (value: VariantOptionItem['value']) =>
+          meta ? formatAttributeValue(meta.type, value, meta.unit) : String(value);
+        const current = group.options.find((option) => option.current);
 
         return (
           <div className="variant-options" key={group.attributeSlug}>
-            <div className="variant-options__title">{group.attributeName}</div>
+            <div className="variant-options__title">
+              {group.attributeName}
+              {current && (
+                <span className="variant-options__current">
+                  : <b>{label(current.value)}</b>
+                </span>
+              )}
+            </div>
             <div className="variant-options__list">
               {group.options.map((option) => (
                 <Link
@@ -34,9 +44,7 @@ export function VariantOptions({ groups, metadata }: VariantOptionsProps) {
                   ].join(' ')}
                   aria-current={option.current ? 'true' : undefined}
                 >
-                  {meta
-                    ? formatAttributeValue(meta.type, option.value, meta.unit)
-                    : String(option.value)}
+                  {label(option.value)}
                   {!option.available && (
                     <span className="visually-hidden"> (в этом сочетании нет, откроется ближайшее)</span>
                   )}
