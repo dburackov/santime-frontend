@@ -52,3 +52,8 @@
   font-size: var(--text-sm);
   color: var(--color-slate);
 }
+
+/* Знак валюты приглушён, как у Price. */
+.delivery-mobile__price .currency-symbol {
+  color: var(--color-slate);
+}

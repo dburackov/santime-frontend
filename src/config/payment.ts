@@ -15,7 +15,7 @@ export const PAYMENT_METHODS = [
     key: 'online',
     title: 'Онлайн-оплата картой (E-POS)',
     shortTitle: 'Онлайн картой через E-POS',
-    text: 'Оплата банковской картой при оформлении заказа через систему E-POS.',
+    text: 'Оплата банковской картой через систему E-POS.',
   },
 ] as const;
 

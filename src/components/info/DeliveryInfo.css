@@ -80,8 +80,8 @@
   color: var(--color-ink);
 }
 
-.tariff__currency {
-  font-size: 0.9375rem;
+/* Знак валюты — в кегль цены и приглушённый, как у Price. */
+.tariff__price .currency-symbol {
   color: var(--color-slate);
 }
 

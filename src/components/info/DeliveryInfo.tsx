@@ -7,6 +7,7 @@ import { CARRIER, COURIER, PICKUP } from '@/config/delivery';
 import { SITE_PHONES } from '@/config/siteInfo';
 import { BoxIcon, CheckIcon, ChevronDownIcon, ClockIcon, PhoneIcon, TruckIcon, WarehouseIcon } from '@/components/ui/icons';
 import { useScrollEnd } from '@/hooks/useScrollEnd';
+import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
 import { PickupMap } from './PickupMap';
 
 type MethodKey = 'courier' | 'pickup' | 'carrier';
@@ -39,7 +40,7 @@ const RULES = [
     text: 'Вскройте упаковку при курьере, осмотрите товар на сколы и трещины, проверьте комплектацию.',
   },
   {
-    title: 'Подъём на этаж',
+    title: 'До подъезда',
     text: 'Доставка выполняется до подъезда. Подъём в квартиру — платная услуга, согласуйте её заранее.',
   },
 ];
@@ -122,13 +123,17 @@ export function DeliveryInfo() {
             <div className="tariff__body">
               <div className="tariff__price-row">
                 <span className="tariff__price">
-                  {COURIER.price} <span className="tariff__currency">Br</span>
+                  {COURIER.price} <CurrencySymbol />
                 </span>
-                <span className="tariff__price-note">при заказе до {COURIER.freeFrom} Br</span>
+                <span className="tariff__price-note">при заказе до {COURIER.freeFrom} <CurrencySymbol /></span>
               </div>
               <div className="tariff__badge tariff__badge--free">
                 <CheckIcon width={16} height={16} />
-                Бесплатно при заказе от {COURIER.freeFrom} Br
+                {/* Текст — одним элементом: иначе знак валюты становится отдельным
+                    flex-элементом, отъезжает на gap и встаёт по центру, а не по базовой линии. */}
+                <span>
+                  Бесплатно при заказе от {COURIER.freeFrom} <CurrencySymbol />
+                </span>
               </div>
               <div className="tariff__details">
                 <span className="tariff__details-main">Интервалы: {COURIER.intervals.join(' и ')}</span>
@@ -145,7 +150,7 @@ export function DeliveryInfo() {
             <div className="tariff__body">
               <div className="tariff__price-row">
                 <span className="tariff__price">
-                  от {CARRIER.priceFrom} <span className="tariff__currency">Br</span>
+                  от {CARRIER.priceFrom} <CurrencySymbol />
                 </span>
                 <span className="tariff__price-note">по тарифам ТК</span>
               </div>

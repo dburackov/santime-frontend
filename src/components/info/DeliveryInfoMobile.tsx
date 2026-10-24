@@ -1,25 +1,48 @@
 'use client';
 
 import './DeliveryInfoMobile.css';
-import { useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { CARRIER, COURIER, PICKUP, isCourierFree } from '@/config/delivery';
+import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
 import { InfoMobileCard } from './InfoMobileCard';
 
 const TABS = ['Курьер', 'Самовывоз', 'ТК'] as const;
 
 interface DeliveryPanel {
-  price: string;
+  price: ReactNode;
   free: boolean;
-  note: string;
+  note: ReactNode;
 }
 
 /** Курьер бесплатен от порога, поэтому его панель зависит от суммы заказа. */
 function deliveryPanel(tab: number, orderTotal: number): DeliveryPanel {
   if (tab === 1) return { price: 'Бесплатно', free: true, note: `${PICKUP.street}, ${PICKUP.hours}` };
-  if (tab === 2) return { price: `от ${CARRIER.priceFrom} Br`, free: false, note: 'по тарифам транспортной компании' };
+  if (tab === 2) {
+    return { price: <>от {CARRIER.priceFrom} <CurrencySymbol /></>, free: false, note: 'по тарифам транспортной компании' };
+  }
   return isCourierFree(orderTotal)
-    ? { price: 'Бесплатно', free: true, note: `для заказа от ${COURIER.freeFrom} Br, иначе ${COURIER.price} Br` }
-    : { price: `${COURIER.price} Br`, free: false, note: `бесплатно при заказе от ${COURIER.freeFrom} Br` };
+    ? {
+        price: 'Бесплатно',
+        free: true,
+        note: (
+          <>
+            для заказа от {COURIER.freeFrom} <CurrencySymbol />, иначе {COURIER.price} <CurrencySymbol />
+          </>
+        ),
+      }
+    : {
+        price: (
+          <>
+            {COURIER.price} <CurrencySymbol />
+          </>
+        ),
+        free: false,
+        note: (
+          <>
+            бесплатно при заказе от {COURIER.freeFrom} <CurrencySymbol />
+          </>
+        ),
+      };
 }
 
 interface DeliveryInfoMobileProps {
