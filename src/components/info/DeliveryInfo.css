@@ -318,16 +318,9 @@
   color: var(--color-accent-2);
 }
 
-/* Цель перехода с плитки: прокрутка с block:'start' не должна прятать её под
-   липкую шапку (56px на мобильном, 34 + 64px с служебной полосой на десктопе). */
+/* Цель перехода с плитки: прокрутка с block:'start' не должна прятать её под липкую шапку. */
 .info-highlight {
-  scroll-margin-top: 72px;
-}
-
-@media (min-width: 1024px) {
-  .info-highlight {
-    scroll-margin-top: 114px;
-  }
+  scroll-margin-top: var(--anchor-offset);
 }
 
 /* Отклик по мотивам пульса корзины в шапке: золотая рамка и мягкое кольцо

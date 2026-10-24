@@ -8,7 +8,7 @@ export function DeliveryPage() {
   const phone = SITE_PHONES[0];
 
   return (
-    <div className="info-landing">
+    <div className="info-landing page-in">
       <InfoHero
         title="Доставка"
         subtitle="Своя курьерская служба в Минске, транспортные компании по регионам и самовывоз со склада."

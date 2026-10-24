@@ -129,7 +129,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <>
             <button
               type="button"
-              className="product-gallery__arrow product-gallery__arrow--previousious"
+              className="product-gallery__arrow product-gallery__arrow--previous"
               onClick={() => select(active - 1)}
               aria-label="Предыдущее фото"
             >

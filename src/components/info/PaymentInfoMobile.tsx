@@ -1,21 +1,24 @@
 import './PaymentInfoMobile.css';
+import type { ReactNode } from 'react';
 import { BanknoteIcon, CardIcon } from '@/components/ui/icons';
+import { PAYMENT_METHODS, type PaymentMethodKey } from '@/config/payment';
 import { InfoMobileCard } from './InfoMobileCard';
 
-const METHODS = [
-  { title: 'Наличными или картой курьеру', icon: <BanknoteIcon width={18} height={18} strokeWidth={1.8} /> },
-  { title: 'Онлайн картой через E-POS', icon: <CardIcon width={18} height={18} strokeWidth={1.8} /> },
-];
+// Иконки разные по макетам: в мобильной сводке оплата при получении — купюра.
+const ICONS: Record<PaymentMethodKey, ReactNode> = {
+  'on-delivery': <BanknoteIcon width={18} height={18} strokeWidth={1.8} />,
+  online: <CardIcon width={18} height={18} strokeWidth={1.8} />,
+};
 
 /** Оплата на мобильной карточке товара: только названия способов, подробности — по стрелке. */
 export function PaymentInfoMobile() {
   return (
     <InfoMobileCard to="/payment" moreLabel="Подробнее об оплате">
       <ul className="payment-mobile">
-        {METHODS.map((method) => (
-          <li key={method.title} className="payment-mobile__row">
-            <span className="payment-mobile__icon">{method.icon}</span>
-            {method.title}
+        {PAYMENT_METHODS.map((method) => (
+          <li key={method.key} className="payment-mobile__row">
+            <span className="payment-mobile__icon">{ICONS[method.key]}</span>
+            {method.shortTitle}
           </li>
         ))}
       </ul>

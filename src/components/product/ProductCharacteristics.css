@@ -2,13 +2,7 @@
   border-top: 1px solid var(--color-line-2);
   border-bottom: 1px solid var(--color-line-2);
   background: var(--color-surface);
-  scroll-margin-top: 72px;
-}
-
-@media (min-width: 1024px) {
-  .product-characteristics {
-    scroll-margin-top: 98px;
-  }
+  scroll-margin-top: var(--anchor-offset);
 }
 
 .product-characteristics__inner {

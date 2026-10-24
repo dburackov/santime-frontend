@@ -6,6 +6,7 @@ import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { CARRIER, COURIER, PICKUP } from '@/config/delivery';
 import { SITE_PHONES } from '@/config/siteInfo';
 import { BoxIcon, CheckIcon, ChevronDownIcon, ClockIcon, PhoneIcon, TruckIcon, WarehouseIcon } from '@/components/ui/icons';
+import { useScrollEnd } from '@/hooks/useScrollEnd';
 import { PickupMap } from './PickupMap';
 
 type MethodKey = 'courier' | 'pickup' | 'carrier';
@@ -45,9 +46,6 @@ const RULES = [
 
 const columnWidth = (width: number) => ({ '--info-column': `${width}px` }) as CSSProperties;
 
-/** Страховка, если браузер не поддерживает scrollend: длинная плавная прокрутка укладывается примерно в секунду. */
-const SCROLL_FALLBACK_MS = 1000;
-
 /** Полный блок условий доставки для страницы /delivery. */
 export function DeliveryInfo() {
   const phone = SITE_PHONES[0];
@@ -55,6 +53,7 @@ export function DeliveryInfo() {
   const pickupRef = useRef<HTMLDivElement>(null);
   const carrierRef = useRef<HTMLDivElement>(null);
   const [highlighted, setHighlighted] = useState<MethodKey | null>(null);
+  const scrollEnd = useScrollEnd();
 
   // Плитка способа ведёт к своему блоку условий: докручиваем, а когда прокрутка
   // закончилась — подсвечиваем блок, иначе анимация отыграла бы за кадром.
@@ -63,6 +62,8 @@ export function DeliveryInfo() {
     if (!target) return;
 
     setHighlighted(null);
+    // Прокрутка от прошлого клика ещё может идти — её подсветка уже не нужна.
+    scrollEnd.cancel();
 
     // Блок уже целиком на экране (ниже липкой шапки) — крутить нечего, подсвечиваем сразу.
     const rect = target.getBoundingClientRect();
@@ -77,15 +78,7 @@ export function DeliveryInfo() {
     const fits = target.offsetHeight < window.innerHeight * 0.8;
     target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: fits ? 'center' : 'start' });
 
-    let done = false;
-    const highlight = () => {
-      if (done) return;
-      done = true;
-      window.removeEventListener('scrollend', highlight);
-      setHighlighted(key);
-    };
-    window.addEventListener('scrollend', highlight);
-    window.setTimeout(highlight, SCROLL_FALLBACK_MS);
+    scrollEnd.wait(window, () => setHighlighted(key));
   };
 
   const highlightProps = (key: MethodKey) => ({

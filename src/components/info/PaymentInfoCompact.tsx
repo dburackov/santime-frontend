@@ -1,4 +1,5 @@
 import { CardIcon } from '@/components/ui/icons';
+import { PAYMENT_METHODS } from '@/config/payment';
 import { InfoCompactCard, InfoCompactRow } from './InfoCompactCard';
 
 /** Сводка способов оплаты для страницы товара. */
@@ -9,14 +10,9 @@ export function PaymentInfoCompact() {
       title="Оплата"
       more={{ label: 'Все способы оплаты', to: '/payment' }}
     >
-      <InfoCompactRow
-        title="Наличными или картой курьеру"
-        note="Расчёт в белорусских рублях курьеру — наличными либо картой через мобильный терминал."
-      />
-      <InfoCompactRow
-        title="Онлайн картой через E-POS"
-        note="Оплата банковской картой при оформлении заказа через систему E-POS."
-      />
+      {PAYMENT_METHODS.map((method) => (
+        <InfoCompactRow key={method.key} title={method.shortTitle} note={method.text} />
+      ))}
     </InfoCompactCard>
   );
 }

@@ -18,7 +18,7 @@ export function SimilarProducts({ variantSlug, category }: SimilarProductsProps)
   return (
     <section className="container similar-products">
       <div className="similar-products__head">
-        <h2 className="product-section-title product-section-title--accent">Похожие товары</h2>
+        <h2 className="product-section-title">Похожие товары</h2>
         {category && (
           <Link href={`/category/${category.slug}`} className="similar-products__all">
             Все {category.name.charAt(0).toLowerCase() + category.name.slice(1)}

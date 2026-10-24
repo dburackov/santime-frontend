@@ -66,3 +66,46 @@
 .info-contact-strip__button--outline:hover {
   border-color: var(--color-accent);
 }
+
+/* ---- Золотой вариант для страницы товара ---- */
+
+.info-contact-strip--promo {
+  border-bottom: 1px solid var(--color-line-gold);
+  border-top-color: var(--color-line-gold);
+  background: linear-gradient(90deg, var(--color-promo-1) 0%, var(--color-promo-2) 55%, var(--color-tint-gold) 100%);
+}
+
+.info-contact-strip--promo .info-contact-strip__inner {
+  padding-top: clamp(24px, 3vw, 36px);
+  padding-bottom: clamp(24px, 3vw, 36px);
+}
+
+.info-contact-strip--promo .info-contact-strip__text {
+  gap: 6px;
+  min-width: 0;
+}
+
+.info-contact-strip--promo .info-contact-strip__title {
+  font-size: 1.25rem;
+  letter-spacing: -0.015em;
+}
+
+.info-contact-strip--promo .info-contact-strip__button--outline {
+  border-color: var(--color-promo-border);
+  background: var(--color-surface);
+  color: var(--color-promo-ink-strong);
+}
+
+.info-contact-strip--promo .info-contact-strip__button--outline:hover {
+  border-color: var(--color-promo-border);
+  background: var(--color-promo-hover);
+  color: var(--color-promo-ink-strong);
+}
+
+@media (max-width: 640px) {
+  .info-contact-strip--promo .info-contact-strip__inner {
+    gap: 14px;
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-5);
+  }
+}

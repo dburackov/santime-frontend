@@ -95,6 +95,12 @@
   --shadow-xs: 0 1px 3px rgba(21, 24, 29, 0.10);
   --color-scrim: rgba(10, 14, 18, 0.5);
 
+  /* ---- Липкая шапка ----
+     Высота с нижней рамкой: 56 + 1 на телефоне и планшете, 34 + 64 + 1 на десктопе.
+     --anchor-offset — куда встаёт верх раздела при прокрутке к якорю: под шапкой с зазором. */
+  --header-height: 57px;
+  --anchor-offset: calc(var(--header-height) + 15px);
+
   /* ---- Spacing — шаг 4px ---- */
   --space-1: 4px;
   --space-2: 8px;
@@ -187,6 +193,12 @@
   --shadow-up: 0 -2px 12px rgba(0, 0, 0, 0.45);
   --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.55);
   --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 99px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

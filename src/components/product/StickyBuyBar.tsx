@@ -8,18 +8,15 @@ import { formatPrice } from '@/utils/price';
 import type { ProductCartState } from './useProductCart';
 
 interface StickyBuyBarProps {
-  price: number;
   cart: ProductCartState;
 }
 
 /** Нижний бар покупки на планшете и телефоне: сумма и «Купить», после покупки — степпер. */
-export function StickyBuyBar({ price, cart }: StickyBuyBarProps) {
-  const total = Math.round(price * cart.quantity * 100) / 100;
-
+export function StickyBuyBar({ cart }: StickyBuyBarProps) {
   return (
     <div className="sticky-buy-bar">
       <span className="sticky-buy-bar__total">
-        {formatPrice(total)} <CurrencySymbol />
+        {formatPrice(cart.total)} <CurrencySymbol />
       </span>
 
       {!cart.inStock ? (

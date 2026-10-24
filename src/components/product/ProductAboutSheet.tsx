@@ -4,15 +4,13 @@ import './ProductAboutSheet.css';
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type TouchEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseIcon } from '@/components/ui/icons';
+import { useScrollEnd } from '@/hooks/useScrollEnd';
 import type { SpecRow } from './productSpecs';
 
 /** Свайп вниз по шапке длиннее этого закрывает шторку. */
 const SWIPE_CLOSE_PX = 60;
 /** Описание считается текущим разделом, когда его верх подошёл к верху тела ближе этого. */
 const SECTION_SWITCH_PX = 60;
-/** Сколько игнорировать прокрутку после нажатия на чип: плавный скролл проходит через
- * чужой раздел, и без паузы чип мигал бы обратно. */
-const PROGRAMMATIC_SCROLL_MS = 700;
 
 type Section = 'specs' | 'description';
 
@@ -30,7 +28,10 @@ export function ProductAboutSheet({ rows, paragraphs, onClose }: ProductAboutShe
   const descriptionRef = useRef<HTMLDivElement>(null);
   const restoreRef = useRef<HTMLElement | null>(null);
   const swipeStartRef = useRef<number | null>(null);
-  const programmaticUntilRef = useRef(0);
+  // Пока едем к разделу по нажатию на чип, прокрутка проходит через чужой раздел —
+  // следить за ней нельзя, иначе чип мигнёт обратно.
+  const programmaticRef = useRef(false);
+  const scrollEnd = useScrollEnd();
   const hasSpecs = rows.length > 0;
   const hasDescription = paragraphs.length > 0;
   const [section, setSection] = useState<Section>(hasSpecs ? 'specs' : 'description');
@@ -71,16 +72,20 @@ export function ProductAboutSheet({ rows, paragraphs, onClose }: ProductAboutShe
     const body = bodyRef.current;
     if (!body) return;
     setSection(target);
-    programmaticUntilRef.current = Date.now() + PROGRAMMATIC_SCROLL_MS;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    body.scrollTo({
-      top: target === 'description' ? body.scrollTop + descriptionOffset() : 0,
-      behavior: reduced ? 'auto' : 'smooth',
+    const maxTop = body.scrollHeight - body.clientHeight;
+    const top = target === 'description' ? Math.min(body.scrollTop + descriptionOffset(), maxTop) : 0;
+    // Уже на месте — прокрутки и её конца не будет, ждать нечего.
+    if (Math.abs(top - body.scrollTop) < 1) return;
+    programmaticRef.current = true;
+    scrollEnd.wait(body, () => {
+      programmaticRef.current = false;
     });
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    body.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
   };
 
   const handleScroll = () => {
-    if (!hasSpecs || !hasDescription || Date.now() < programmaticUntilRef.current) return;
+    if (!hasSpecs || !hasDescription || programmaticRef.current) return;
     setSection(descriptionOffset() <= SECTION_SWITCH_PX ? 'description' : 'specs');
   };
 

@@ -56,7 +56,7 @@ export function ProductMobileDetails({ variant, cart }: ProductMobileDetailsProp
         </button>
       )}
 
-      <DeliveryInfoMobile orderTotal={variant.price * cart.quantity} />
+      <DeliveryInfoMobile orderTotal={cart.total} />
       <PaymentInfoMobile />
 
       {aboutOpen && <ProductAboutSheet rows={rows} paragraphs={paragraphs} onClose={() => setAboutOpen(false)} />}

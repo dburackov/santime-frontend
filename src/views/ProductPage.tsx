@@ -15,11 +15,12 @@ import { ProductCharacteristics } from '@/components/product/ProductCharacterist
 import { ProductMobileDetails } from '@/components/product/ProductMobileDetails';
 import { StickyBuyBar } from '@/components/product/StickyBuyBar';
 import { SimilarProducts } from '@/components/product/SimilarProducts';
-import { ProductHelpPromo } from '@/components/product/ProductHelpPromo';
 import { useProductCart } from '@/components/product/useProductCart';
 import { DeliveryInfoCompact } from '@/components/info/DeliveryInfoCompact';
 import { PaymentInfoCompact } from '@/components/info/PaymentInfoCompact';
+import { InfoContactStrip } from '@/components/info/InfoContactStrip';
 import { buildCategoryPath } from '@/utils/categoryTree';
+import { SITE_EMAIL, SITE_PHONES } from '@/config/siteInfo';
 import type { VariantDetailResponse } from '@/api/types';
 
 const SECTION_IDS = { characteristics: 'characteristics', delivery: 'delivery-and-payment' } as const;
@@ -62,48 +63,58 @@ function ProductView({ variant }: { variant: VariantDetailResponse }) {
   );
   const category = categoryPath.at(-1);
 
+  // Бар — снаружи .product-page: у неё анимация появления (.page-in) с transform, а под transform
+  // position: fixed считается от родителя, и бар на время анимации уезжал под низ страницы.
   return (
-    <div className="product-page">
-      <div className="container product-page__crumbs">
-        <Breadcrumbs
-          items={[
-            { label: 'Каталог', to: '/catalog' },
-            ...categoryPath.map((item) => ({ label: item.name, to: `/category/${item.slug}` })),
-            { label: variant.name },
-          ]}
+    <>
+      <div className="product-page page-in">
+        <div className="container product-page__crumbs">
+          <Breadcrumbs
+            items={[
+              { label: 'Каталог', to: '/catalog' },
+              ...categoryPath.map((item) => ({ label: item.name, to: `/category/${item.slug}` })),
+              { label: variant.name },
+            ]}
+          />
+        </div>
+
+        <section className="container product-page__main">
+          <Link
+            href={category ? `/category/${category.slug}` : '/catalog'}
+            className="product-page__back"
+            aria-label={`Назад: ${category?.name ?? 'Каталог'}`}
+          >
+            <ArrowLeftIcon width={20} height={20} />
+            <span className="product-page__back-label">{category?.name ?? 'Каталог'}</span>
+          </Link>
+
+          <ProductGallery images={variant.images ?? []} productName={variant.name} />
+          <ProductBuyBox variant={variant} cart={cart} onJump={jumpTo} />
+          <ProductMobileDetails variant={variant} cart={cart} />
+        </section>
+
+        <ProductCharacteristics id={SECTION_IDS.characteristics} variant={variant} />
+
+        <section id={SECTION_IDS.delivery} className="container product-page__shipping">
+          <h2 className="product-section-title product-section-title--gold product-page__shipping-title">Доставка и оплата</h2>
+          <div className="product-page__shipping-grid">
+            <DeliveryInfoCompact orderTotal={cart.total} />
+            <PaymentInfoCompact />
+          </div>
+        </section>
+
+        <SimilarProducts variantSlug={variant.variantSlug} category={category} />
+
+        <InfoContactStrip
+          tone="promo"
+          title="Не уверены, что Вам подойдёт?"
+          text="Подскажем по размерам, установке и комплектации."
+          action={{ label: SITE_PHONES[0].display, href: SITE_PHONES[0].href }}
+          link={{ label: SITE_EMAIL.display, href: SITE_EMAIL.href }}
         />
       </div>
 
-      <section className="container product-page__main">
-        <Link
-          href={category ? `/category/${category.slug}` : '/catalog'}
-          className="product-page__back"
-          aria-label={`Назад: ${category?.name ?? 'Каталог'}`}
-        >
-          <ArrowLeftIcon width={20} height={20} />
-          <span className="product-page__back-label">{category?.name ?? 'Каталог'}</span>
-        </Link>
-
-        <ProductGallery images={variant.images ?? []} productName={variant.name} />
-        <ProductBuyBox variant={variant} cart={cart} onJump={jumpTo} />
-        <ProductMobileDetails variant={variant} cart={cart} />
-      </section>
-
-      <ProductCharacteristics id={SECTION_IDS.characteristics} variant={variant} />
-
-      <section id={SECTION_IDS.delivery} className="container product-page__shipping">
-        <h2 className="product-section-title product-section-title--gold product-page__shipping-title">Доставка и оплата</h2>
-        <div className="product-page__shipping-grid">
-          <DeliveryInfoCompact orderTotal={variant.price * cart.quantity} />
-          <PaymentInfoCompact />
-        </div>
-      </section>
-
-      <SimilarProducts variantSlug={variant.variantSlug} category={category} />
-
-      <ProductHelpPromo />
-
-      <StickyBuyBar price={variant.price} cart={cart} />
-    </div>
+      <StickyBuyBar cart={cart} />
+    </>
   );
 }

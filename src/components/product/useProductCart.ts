@@ -15,6 +15,8 @@ export function useProductCart(variant: VariantDetailResponse) {
   const cartItem = items.find((item) => item.variantId === variant.variantId);
   const stock = variant.stockQuantity;
   const quantity = cartItem?.quantity ?? Math.min(draft, Math.max(stock, 1));
+  // Сумма по этому товару — её показывают нижний бар и сводки доставки (порог бесплатного курьера).
+  const total = Math.round(variant.price * quantity * 100) / 100;
 
   const increment = () => {
     if (cartItem) setQuantity(variant.variantId, Math.min(stock, cartItem.quantity + 1));
@@ -48,6 +50,7 @@ export function useProductCart(variant: VariantDetailResponse) {
     inCart: !!cartItem,
     inStock: stock > 0,
     quantity,
+    total,
     canIncrement: quantity < stock,
     increment,
     decrement,
