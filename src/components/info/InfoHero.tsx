@@ -1,12 +1,13 @@
 import './InfoHero.css';
 import Link from 'next/link';
+import { ChevronRightIcon } from '@/components/ui/icons';
 
 interface InfoHeroProps {
   title: string;
   subtitle: string;
 }
 
-/** Тёмная шапка информационных страниц: крошки «Главная / …», заголовок и подзаголовок. */
+/** Тёмная шапка информационных страниц: крошки «Главная › …», заголовок и подзаголовок. */
 export function InfoHero({ title, subtitle }: InfoHeroProps) {
   return (
     <section className="info-hero">
@@ -16,7 +17,9 @@ export function InfoHero({ title, subtitle }: InfoHeroProps) {
             <li>
               <Link href="/">Главная</Link>
             </li>
-            <li aria-hidden="true">/</li>
+            <li aria-hidden="true">
+              <ChevronRightIcon width={14} height={14} />
+            </li>
             <li aria-current="page">{title}</li>
           </ol>
         </nav>

@@ -65,6 +65,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
+}
+
+.category-page__toolbar-left .searchable-select {
+  min-width: 0;
 }
 
 /* Селект в тулбаре ужимаем адресно, а не в самом SearchableSelect: тот же компонент
