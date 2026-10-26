@@ -37,7 +37,7 @@ export function CatalogTiles({ categories }: CatalogTilesProps) {
                 <div className="catalog-tile__subs">
                   {subcategories.map((sub) => (
                     <Link href={`/category/${sub.slug}`} className="catalog-tile__sub" key={sub.id}>
-                      <span>{sub.name}</span>
+                      <span className="catalog-tile__sub-name">{sub.name}</span>
                       {sub.productCount > 0 && (
                         <span className="catalog-tile__sub-count">{sub.productCount}</span>
                       )}

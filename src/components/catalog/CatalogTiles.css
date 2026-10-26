@@ -70,23 +70,29 @@
 
 .catalog-tile__sub {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-1);
+  gap: 0 var(--space-1);
   max-width: 100%;
   font-size: var(--text-sm);
   color: var(--color-slate);
   text-wrap: pretty;
-  overflow-wrap: anywhere;
 }
 
 .catalog-tile__sub:hover {
   color: var(--color-accent-2);
 }
 
+.catalog-tile__sub-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .catalog-tile__sub-count {
   font-size: 0.6875rem;
   color: var(--color-chevron);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* margin-top: auto прижимает ссылку к низу — плитки в ряду разной высоты, а CTA стоят вровень. */
