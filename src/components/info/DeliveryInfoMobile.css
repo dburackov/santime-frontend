@@ -17,7 +17,6 @@
   font-weight: 500;
   white-space: nowrap;
   color: var(--color-slate);
-  -webkit-tap-highlight-color: transparent;
   transition: background var(--motion-fast), color var(--motion-fast);
 }
 

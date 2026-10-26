@@ -1,3 +1,11 @@
+/* На телефоне поле уже, чем на остальных страницах: в двух колонках плиток каждый пиксель
+   на счету. .container в селекторе — чтобы перебить global.css без оглядки на порядок стилей. */
+@media (max-width: 639px) {
+  .container.category-page {
+    --container-gutter: var(--space-3);
+  }
+}
+
 .category-page {
   padding-top: var(--space-6);
   padding-bottom: var(--space-12);
@@ -33,9 +41,17 @@
   gap: var(--space-6);
 }
 
+/* На телефоне панель встаёт вровень с краями экрана: поле контейнера и поле панели
+   иначе складывались и съедали ширину у двух колонок плиток. Её собственное поле
+   равно полю контейнера, чтобы товары стояли на одной вертикали с заголовком. */
 .category-page__content {
   min-width: 0;
   flex: 1;
+  margin: 0 calc(-1 * var(--container-gutter));
+  padding: var(--space-3) var(--container-gutter) var(--space-4);
+  border-top: var(--border);
+  border-bottom: var(--border);
+  background: var(--color-surface);
 }
 
 .category-page__toolbar {
@@ -43,7 +59,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border);
 }
 
 /* Два места под счётчик: на мобильном он стоит строкой с заголовком, на десктопе —
@@ -81,8 +99,25 @@
 
 .category-page__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6) var(--space-3);
+}
+
+/* В панели плитки не отделяются ничем, кроме воздуха: рамку и фон им даёт сама панель. */
+.category-page__grid .product-card {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  background: none;
+}
+
+.category-page__grid .product-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.category-page__grid .product-card__body {
+  padding: var(--space-3) 0 0;
 }
 
 .category-page__list {
@@ -111,8 +146,16 @@
     margin-bottom: var(--space-3);
   }
 
+  .category-page__content {
+    margin: 0;
+    padding: var(--space-4) var(--space-5) var(--space-6);
+    border: var(--border);
+    border-radius: var(--radius);
+  }
+
   .category-page__toolbar {
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
   }
 
   /* База 0 при flex-grow: 1 — лента забирает остаток строки после заголовка и
@@ -127,8 +170,8 @@
   }
 
   .category-page__grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-8) var(--space-5);
   }
 
   .category-page__count {
@@ -166,7 +209,11 @@
     align-items: flex-start;
   }
 
+  .category-page__content {
+    padding: var(--space-5) var(--space-6) var(--space-8);
+  }
+
   .category-page__grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   }
 }

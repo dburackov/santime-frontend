@@ -27,19 +27,19 @@ export function ProductCard({ variant }: ProductCardProps) {
         <ProductPhotoSlider images={variant.images} alt={variant.name} size="card" />
       </Link>
       <div className="product-card__body">
-        {/* Ссылка обёрнута в заголовок, а не в карточку целиком: кнопка корзины
-            не может лежать внутри ссылки. Кликабельность всей карточки даёт
-            растянутый ::after у product-card__link. */}
-        <h3 className="product-card__title">
-          <Link href={`/product/${variant.variantSlug}`} className="product-card__link">
-            {variant.name}
-          </Link>
-        </h3>
-        {!variant.inStock && <span className="product-card__oos">Нет в наличии</span>}
-        <div className="product-card__footer">
-          <Price value={variant.price} oldValue={variant.oldPrice} size="md" stacked />
-          <CartToggleButton variant={variant} className="product-card__cart" />
+        <div className="product-card__info">
+          <Price value={variant.price} oldValue={variant.oldPrice} size="md" />
+          {/* Ссылка обёрнута в заголовок, а не в карточку целиком: кнопка корзины
+              не может лежать внутри ссылки. Кликабельность всей карточки даёт
+              растянутый ::after у product-card__link. */}
+          <h3 className="product-card__title">
+            <Link href={`/product/${variant.variantSlug}`} className="product-card__link">
+              {variant.name}
+            </Link>
+          </h3>
+          {!variant.inStock && <span className="product-card__oos">Нет в наличии</span>}
         </div>
+        <CartToggleButton variant={variant} className="product-card__cart" />
       </div>
     </div>
   );

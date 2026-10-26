@@ -23,21 +23,37 @@
   display: block;
 }
 
+.product-card__photo img {
+  transition: transform var(--motion-slow);
+}
+
 .product-card__body {
-  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 2px;
   flex: 1;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.product-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.product-card__info .price-group {
+  row-gap: 0;
 }
 
 .product-card__title {
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: normal;
   color: var(--color-ink);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -49,27 +65,24 @@
   inset: 0;
 }
 
-.product-card__footer {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-2);
-  /* auto, а не фиксированный отступ: заголовок занимает одну или две строки, и без
-     этого цена вставала бы на разной высоте у соседних карточек. */
-  margin-top: auto;
-  padding-top: var(--space-2);
-}
-
 .product-card__oos {
   font-size: var(--text-xs);
   color: var(--color-danger);
   font-weight: 500;
 }
 
-/* Квадрат под .btn--sm: у него уже min-height 36px, остаётся убрать текстовые
-   паддинги. z-index — чтобы кнопка осталась над растянутой ссылкой. */
-/* Кнопка обязана лежать над растянутым ::after у product-card__link. */
+/* margin-top: auto ставит кнопки соседних карточек на одну линию при названии в одну и в
+   три строки. z-index — кнопка обязана лежать над растянутым ::after у product-card__link. */
 .product-card__cart {
   position: relative;
   z-index: 1;
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Только для мыши: на таче :hover залипает после касания, и карточка оставалась бы выделенной. */
+@media (hover: hover) {
+  .product-card:hover .product-card__photo img {
+    transform: scale(1.06);
+  }
 }

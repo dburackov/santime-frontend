@@ -1,20 +1,53 @@
+/* Контурная, а не залитая: в сетке два десятка кнопок, и сплошная заливка перетягивала
+   внимание с фото и цены. */
 .cart-toggle {
-  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--space-3);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-accent);
+  transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast);
 }
 
-/* Плитка каталога: только иконка в квадрате 36×36. */
-.cart-toggle--icon {
-  width: 36px;
-  padding: 0;
+.cart-toggle:active:not(:disabled) {
+  background: var(--color-accent);
+  color: var(--color-on-dark);
 }
 
-/* Товар уже в корзине: селектор с .btn перебивает заливку .btn--primary. */
-.btn.cart-toggle--in-cart {
-  background: var(--color-success);
-  color: #fff;
+.cart-toggle--in-cart {
+  border-color: var(--color-ok-border);
+  background: var(--color-ok-bg);
+  color: var(--color-ok-ink);
 }
 
-.btn.cart-toggle--in-cart:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-success) 85%, black);
-  color: #fff;
+.cart-toggle--in-cart:active:not(:disabled) {
+  background: color-mix(in srgb, var(--color-ok-bg) 80%, var(--color-ok-border));
+  color: var(--color-ok-ink);
+}
+
+.cart-toggle:disabled {
+  border-color: var(--color-line);
+  background: var(--color-line);
+  color: var(--color-slate);
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .cart-toggle:hover:not(:disabled) {
+    background: var(--color-accent);
+    color: var(--color-on-dark);
+  }
+
+  .cart-toggle--in-cart:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-ok-bg) 80%, var(--color-ok-border));
+    color: var(--color-ok-ink);
+  }
 }

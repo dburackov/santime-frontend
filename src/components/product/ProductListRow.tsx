@@ -53,7 +53,7 @@ export function ProductListRow({ variant, displayAttributes = [] }: ProductListR
 
       <div className="product-row__end">
         <Price value={variant.price} oldValue={variant.oldPrice} size="md" stacked />
-        <CartToggleButton variant={variant} showLabel />
+        <CartToggleButton variant={variant} className="product-row__cart" />
       </div>
     </div>
   );

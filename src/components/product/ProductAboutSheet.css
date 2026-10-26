@@ -66,7 +66,6 @@
   height: 44px;
   border-radius: 999px;
   color: var(--color-slate);
-  -webkit-tap-highlight-color: transparent;
 }
 
 .about-sheet__close:active {
@@ -86,7 +85,6 @@
   background: var(--color-tint-2);
   font-size: 0.9375rem;
   color: var(--color-ink);
-  -webkit-tap-highlight-color: transparent;
   transition: background var(--motion-fast), color var(--motion-fast);
 }
 

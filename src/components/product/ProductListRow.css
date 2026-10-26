@@ -6,6 +6,14 @@
   border-bottom: var(--border);
 }
 
+.product-row:first-child {
+  padding-top: 0;
+}
+
+.product-row:last-child {
+  border-bottom: none;
+}
+
 /* Раскладка «фото + текст» переехала сюда со ссылки: фото теперь её сосед, а не потомок —
    слайдеру нужна собственная ссылка (см. ProductCard). */
 .product-row__lead {
@@ -17,6 +25,22 @@
 .product-row__photo {
   display: block;
   flex-shrink: 0;
+}
+
+.product-row__photo .photo-slider--row,
+.product-row__photo .product-photo--row {
+  width: 120px;
+  height: 120px;
+}
+
+.product-row__photo img {
+  transition: transform var(--motion-slow);
+}
+
+@media (hover: hover) {
+  .product-row:hover .product-row__photo img {
+    transform: scale(1.06);
+  }
 }
 
 .product-row__link {
@@ -40,7 +64,8 @@
 .product-row__title {
   font-family: var(--font-body);
   font-size: var(--text-base);
-  font-weight: 500;
+  font-weight: 400;
+  line-height: 1.4;
   color: var(--color-ink);
   letter-spacing: normal;
 }
@@ -89,6 +114,10 @@
   gap: var(--space-3);
 }
 
+.product-row__cart {
+  flex: 0 1 160px;
+}
+
 /* Планшет и десктоп — прежнее поведение: список считается в 2 колонки только
    когда не помещается по высоте фото (170px), column-fill: auto заполняет первую
    колонку целиком и переносит остаток во вторую только при переполнении, короткие
@@ -110,6 +139,12 @@
 
   .product-row__attrs li:nth-child(n + 8) {
     display: list-item;
+  }
+
+  .product-row__photo .photo-slider--row,
+  .product-row__photo .product-photo--row {
+    width: 170px;
+    height: 170px;
   }
 }
 
@@ -136,7 +171,14 @@
   }
 
   .product-row__end {
+    flex-direction: column;
+    align-items: stretch;
     flex-shrink: 0;
-    gap: var(--space-6);
+    gap: var(--space-3);
+    width: 160px;
+  }
+
+  .product-row__cart {
+    flex: none;
   }
 }

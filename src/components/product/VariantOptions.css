@@ -31,7 +31,6 @@
   background: var(--color-surface);
   font-size: 0.9375rem;
   color: var(--color-ink);
-  -webkit-tap-highlight-color: transparent;
   transition: border-color var(--motion-fast), background var(--motion-fast);
 }
 

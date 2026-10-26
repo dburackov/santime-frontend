@@ -81,7 +81,8 @@ export function SubcategoryChips({ categories }: SubcategoryChipsProps) {
         {categories.map((category) => (
           <li key={category.id}>
             <Link href={`/category/${category.slug}`} className="subcategory-chips__link">
-              {category.name}
+              {category.name}{' '}
+              <span className="subcategory-chips__count">{category.productCount}</span>
             </Link>
           </li>
         ))}

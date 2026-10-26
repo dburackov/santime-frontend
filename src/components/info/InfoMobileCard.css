@@ -21,7 +21,6 @@
   margin-left: calc(-1 * var(--space-2));
   padding-right: 6px;
   color: var(--color-slate);
-  -webkit-tap-highlight-color: transparent;
 }
 
 .info-mobile-card__more:hover {
