@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import './SearchBox.css';
 import { isUsableSearchTerm, normalizeSearchTerm } from '@/hooks/catalogQuery';
@@ -43,11 +44,11 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
     };
   }, [open]);
 
-  function goToProduct(variantSlug: string) {
+  function handleProductClick(e: ReactMouseEvent<HTMLAnchorElement>) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     setQuery('');
     setOpen(false);
     onNavigate?.();
-    router.push(`/product/${variantSlug}`);
   }
 
   /**
@@ -124,10 +125,10 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
             <ul className="search-box__list">
               {results.map((variant) => (
                 <li key={variant.variantId}>
-                  <button
-                    type="button"
+                  <Link
+                    href={`/product/${variant.variantSlug}`}
                     className="search-box__item"
-                    onClick={() => goToProduct(variant.variantSlug)}
+                    onClick={handleProductClick}
                   >
                     <ProductPhoto image={variant.images?.[0]} alt={variant.name} size="thumb" />
                     <div className="search-box__item-main">
@@ -135,7 +136,7 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
                       {!variant.inStock && <span className="search-box__item-oos">Нет в наличии</span>}
                     </div>
                     <Price value={variant.price} oldValue={variant.oldPrice} size="sm" stacked />
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>

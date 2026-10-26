@@ -91,6 +91,7 @@
   cursor: pointer;
   font-family: inherit;
   color: var(--color-ink);
+  text-decoration: none;
 }
 
 .search-box__list li:last-child .search-box__item {
