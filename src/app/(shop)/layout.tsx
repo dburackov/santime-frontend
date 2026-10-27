@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
 import { CartAddedDialog } from '@/components/cart/CartAddedDialog';
+import { CookieNotice } from '@/components/ui/CookieNotice';
 import { createServerQueryClient } from '@/app/query-client';
 import { getCategories } from '@/api/catalog';
 
@@ -28,6 +29,7 @@ export default async function ShopLayout({ children }: { children: ReactNode }) 
         <Footer />
         <ScrollTopButton />
         <CartAddedDialog />
+        <CookieNotice />
       </div>
     </HydrationBoundary>
   );

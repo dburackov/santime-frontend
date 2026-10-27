@@ -1,0 +1,100 @@
+.cookie-notice {
+  position: fixed;
+  right: var(--space-3);
+  bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  left: var(--space-3);
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--color-toast-bg);
+  color: var(--color-toast-ink);
+  box-shadow: var(--shadow-lg);
+  animation: cookie-notice-in var(--motion-slow) 800ms both;
+}
+
+.cookie-notice--leaving {
+  animation: cookie-notice-out var(--motion-base) both;
+}
+
+.cookie-notice__text {
+  flex: 1;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.cookie-notice__link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-notice__link:hover {
+  color: var(--color-toast-action);
+}
+
+.cookie-notice__action {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-toast-action);
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.cookie-notice__action:hover {
+  background: var(--color-on-dark-line);
+}
+
+.cookie-notice__action:focus-visible,
+.cookie-notice__link:focus-visible {
+  outline: 2px solid var(--color-toast-action);
+  outline-offset: 2px;
+}
+
+body.no-scroll .cookie-notice {
+  visibility: hidden;
+}
+
+@keyframes cookie-notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cookie-notice-out {
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (max-width: 767px) {
+  .app-shell:has(.cookie-notice) .scroll-top {
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 1023px) {
+  .app-shell:has(.sticky-buy-bar) .cookie-notice {
+    bottom: calc(74px + var(--space-3) + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 768px) {
+  .cookie-notice {
+    right: auto;
+    bottom: var(--space-6);
+    left: var(--space-6);
+    max-width: 400px;
+  }
+}
