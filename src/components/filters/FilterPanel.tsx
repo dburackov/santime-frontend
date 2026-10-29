@@ -5,7 +5,6 @@ import './FilterPanel.css';
 import { CloseIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { formatProductsCount } from '@/utils/plural';
-import { splitOptionValues } from '@/utils/attributes';
 import { NumberRangeFilter } from './NumberRangeFilter';
 import { BooleanFilter } from './BooleanFilter';
 import { OptionFilter } from './OptionFilter';
@@ -115,11 +114,8 @@ export function FilterPanel({
                       <OptionFilter
                         key={attribute.slug}
                         attribute={attribute}
-                        selectedValues={splitOptionValues(
-                          state.attributeFilters[attribute.slug] ?? '',
-                          (attribute.options ?? []).map((option) => option.value),
-                        )}
-                        onChange={(values) => state.updateParams({ [attribute.slug]: values.join(',') || undefined })}
+                        selectedValues={(state.attributeFilters[attribute.slug] ?? '').split('|').filter(Boolean)}
+                        onChange={(values) => state.updateParams({ [attribute.slug]: values.join('|') || undefined })}
                       />
                     );
                   default:

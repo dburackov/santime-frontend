@@ -44,24 +44,3 @@ export function formatAttributeLine(
 
   return String(value);
 }
-
-/** Зеркало CatalogProductService.splitFilterValues: запятая — и разделитель мультивыбора, и часть опций ("37,5х37,5"). */
-export function splitOptionValues(raw: string, knownValues: string[]): string[] {
-  const known = new Set(knownValues);
-  const parts = raw.split(',');
-  const values: string[] = [];
-  let i = 0;
-  while (i < parts.length) {
-    let end = i + 1;
-    for (let j = parts.length; j > i + 1; j--) {
-      if (known.has(parts.slice(i, j).join(',').trim())) {
-        end = j;
-        break;
-      }
-    }
-    const value = parts.slice(i, end).join(',').trim();
-    if (value) values.push(value);
-    i = end;
-  }
-  return values;
-}
