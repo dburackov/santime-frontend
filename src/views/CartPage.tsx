@@ -79,6 +79,7 @@ export function CartPage() {
                   type="button"
                   className="cart-item__qty-btn"
                   onClick={() => setQuantity(item.variantId, item.quantity - 1)}
+                  disabled={item.quantity <= 1}
                   aria-label="Уменьшить количество"
                 >
                   <MinusIcon width={14} height={14} />

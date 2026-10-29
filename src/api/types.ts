@@ -427,7 +427,7 @@ export interface OrderItemRequest {
 
 export interface OrderRequest {
   firstName: string;
-  lastName: string;
+  lastName?: string | null;
   email?: string | null;
   phone?: string | null;
   address?: string | null;
@@ -453,7 +453,7 @@ export interface OrderItemResponse {
 /** Правка заказа оператором: контакты, доставка и статус. Состав и суммы не меняются. */
 export interface AdminOrderUpdateRequest {
   firstName: string;
-  lastName: string;
+  lastName?: string | null;
   email?: string | null;
   phone?: string | null;
   address?: string | null;
@@ -469,7 +469,7 @@ export interface OrderResponse {
   id: number;
   status: OrderStatus;
   firstName: string;
-  lastName: string;
+  lastName: string | null;
   email: string | null;
   phone: string | null;
   address: string | null;

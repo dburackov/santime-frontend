@@ -119,8 +119,14 @@
   transition: background var(--motion-fast);
 }
 
-.cart-item__qty-btn:hover {
+.cart-item__qty-btn:hover:not(:disabled) {
   background: var(--color-tint);
+}
+
+.cart-item__qty-btn:disabled {
+  color: var(--color-slate);
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .cart-item__qty-value {

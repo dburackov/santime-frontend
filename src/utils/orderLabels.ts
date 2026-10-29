@@ -9,6 +9,7 @@ export const PAYMENT_METHODS = [
 export const DELIVERY_METHODS = [
   { value: 'COURIER', label: 'Курьером' },
   { value: 'PICKUP', label: 'Самовывоз' },
+  { value: 'CARRIER', label: 'Транспортной компанией' },
 ];
 
 export const ORDER_STATUSES: { value: OrderStatus; label: string }[] = [

@@ -47,7 +47,7 @@ interface FormState {
 function toForm(order: OrderResponse): FormState {
   return {
     firstName: order.firstName,
-    lastName: order.lastName,
+    lastName: order.lastName ?? '',
     email: order.email ?? '',
     phone: order.phone ?? '',
     city: order.city ?? '',
@@ -63,7 +63,7 @@ function toForm(order: OrderResponse): FormState {
 function toRequest(form: FormState): AdminOrderUpdateRequest {
   return {
     firstName: form.firstName,
-    lastName: form.lastName,
+    lastName: form.lastName || null,
     email: form.email || null,
     phone: form.phone || null,
     city: form.city || null,
@@ -338,13 +338,12 @@ export function OrderDetailPage() {
                 )}
               </div>
               <div className="admin-form-field">
-                <label htmlFor="order-last-name">Фамилия<RequiredMark /></label>
+                <label htmlFor="order-last-name">Фамилия</label>
                 <input
                   id="order-last-name"
                   className="filter-text-input"
                   value={form.lastName}
                   onChange={(e) => setForm((f) => (f ? { ...f, lastName: e.target.value } : f))}
-                  required
                 />
                 {fieldError(updateMutation.error, 'lastName') && (
                   <span className="admin-form-error">{fieldError(updateMutation.error, 'lastName')}</span>

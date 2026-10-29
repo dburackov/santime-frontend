@@ -1,64 +1,95 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { FocusEvent, FormEvent } from 'react';
+import type { FocusEvent, FormEvent, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import { saveLastOrder } from '@/cart/lastOrder';
 import './CheckoutPage.css';
-import '@/admin/admin.css';
-import '@/components/filters/Filters.css';
 import { useCart } from '@/cart/useCart';
 import { usePromoDiscount } from '@/cart/usePromoDiscount';
 import { createOrder } from '@/api/orders';
 import type { OrderRequest } from '@/api/types';
 import { Price } from '@/components/ui/Price';
-import { Button } from '@/components/ui/Button';
-import { Select } from '@/components/ui/Select';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
+import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
+import { ProductPhoto } from '@/components/ui/ProductPhoto';
+import {
+  AlertIcon,
+  ArrowRightIcon,
+  BanknoteIcon,
+  BoxIcon,
+  CardCheckIcon,
+  ClockIcon,
+  PlusIcon,
+  TruckIcon,
+  WarehouseIcon,
+} from '@/components/ui/icons';
 import { fieldError, formError } from '@/admin/formErrors';
-import { RequiredMark } from '@/admin/components/RequiredMark';
-import { DELIVERY_METHODS, PAYMENT_METHODS } from '@/utils/orderLabels';
+import { CARRIER, COURIER, PICKUP, isCourierFree } from '@/config/delivery';
+import { formatPrice } from '@/utils/price';
+import { formatProductsCount } from '@/utils/plural';
 import { PHONE_PREFIX, formatPhone, isValidPhone, phoneDigits, toPhoneE164 } from '@/utils/phone';
 
-/** Поля, которые проверяем на клиенте: у каждого своя русская ошибка под полем. */
-type RequiredField = 'firstName' | 'lastName' | 'email' | 'phone' | 'address';
+type DeliveryMethod = 'COURIER' | 'PICKUP' | 'CARRIER';
 
-type FormErrors = Partial<Record<RequiredField, string>>;
+/** Поля, которые проверяем на клиенте: у каждого своя русская ошибка под полем. */
+type CheckedField = 'firstName' | 'phone' | 'email' | 'address' | 'city' | 'agreed';
+
+type FormErrors = Partial<Record<CheckedField, string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const FIELD_INPUT_ID: Record<RequiredField, string> = {
+const FIELD_INPUT_ID: Record<CheckedField, string> = {
   firstName: 'co-first-name',
-  lastName: 'co-last-name',
-  email: 'co-email',
   phone: 'co-phone',
+  email: 'co-email',
   address: 'co-address',
+  city: 'co-city',
+  agreed: 'co-agreed',
 };
+
+const CRUMBS = [{ label: 'Главная', to: '/' }, { label: 'Корзина', to: '/cart' }, { label: 'Оформление заказа' }];
+
+const PAYMENT_OPTIONS = [
+  {
+    value: 'CASH',
+    icon: <BanknoteIcon width={20} height={20} strokeWidth={1.7} />,
+    title: 'При получении',
+    note: 'Наличными или картой',
+  },
+  {
+    value: 'CARD',
+    icon: <CardCheckIcon width={20} height={20} strokeWidth={1.7} />,
+    title: 'Онлайн картой',
+    note: 'Через систему E-POS',
+  },
+];
 
 interface FormState {
   firstName: string;
   lastName: string;
-  email: string;
   phone: string;
+  email: string;
+  deliveryMethod: DeliveryMethod;
   address: string;
-  postalCode: string;
   city: string;
+  postalCode: string;
   paymentMethod: string;
-  deliveryMethod: string;
   comment: string;
 }
 
 const EMPTY_FORM: FormState = {
   firstName: '',
   lastName: '',
-  email: '',
   phone: PHONE_PREFIX,
+  email: '',
+  deliveryMethod: 'COURIER',
   address: '',
-  postalCode: '',
   city: '',
-  paymentMethod: PAYMENT_METHODS[0].value,
-  deliveryMethod: DELIVERY_METHODS[0].value,
+  postalCode: '',
+  paymentMethod: PAYMENT_OPTIONS[0].value,
   comment: '',
 };
 
@@ -69,6 +100,7 @@ export function CheckoutPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [agreed, setAgreed] = useState(false);
+  const [commentOpen, setCommentOpen] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (body: OrderRequest) => createOrder(body),
@@ -94,8 +126,57 @@ export function CheckoutPage() {
 
   if (!isHydrated || cartIsEmpty) return null;
 
-  // Самовывозу адрес не нужен — обязателен он только курьерской доставке.
-  const addressRequired = form.deliveryMethod === 'COURIER';
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  const payable = discount.isApplied ? discount.totalPrice : totalPrice;
+  const courierFree = isCourierFree(payable);
+  const delivery = form.deliveryMethod;
+
+  const deliveryOptions: {
+    value: DeliveryMethod;
+    icon: ReactNode;
+    title: string;
+    price: ReactNode;
+    free: boolean;
+  }[] = [
+    {
+      value: 'COURIER',
+      icon: <TruckIcon width={20} height={20} strokeWidth={1.7} />,
+      title: 'Курьером',
+      price: courierFree ? 'Бесплатно' : <>{formatPrice(COURIER.price)} <CurrencySymbol /></>,
+      free: courierFree,
+    },
+    {
+      value: 'PICKUP',
+      icon: <WarehouseIcon width={20} height={20} strokeWidth={1.7} />,
+      title: 'Самовывоз',
+      price: 'Бесплатно',
+      free: true,
+    },
+    {
+      value: 'CARRIER',
+      icon: <BoxIcon width={20} height={20} strokeWidth={1.7} />,
+      title: 'Транспортной компанией',
+      price: <>от {formatPrice(CARRIER.priceFrom)} <CurrencySymbol /></>,
+      free: false,
+    },
+  ];
+
+  const deliveryFree = delivery === 'PICKUP' || (delivery === 'COURIER' && courierFree);
+  const deliverySummary =
+    delivery === 'CARRIER' ? (
+      'По тарифу ТК'
+    ) : deliveryFree ? (
+      'Бесплатно'
+    ) : (
+      <>
+        {formatPrice(COURIER.price)} <CurrencySymbol />
+      </>
+    );
+
+  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
+    if (key in FIELD_INPUT_ID) clearError(key as CheckedField);
+    setForm((f) => ({ ...f, [key]: value }));
+  }
 
   function handlePhoneChange(raw: string) {
     clearError('phone');
@@ -122,11 +203,11 @@ export function CheckoutPage() {
     });
   }
 
-  function clearError(field: RequiredField) {
+  function clearError(field: CheckedField) {
     setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
   }
 
-  function errorFor(field: RequiredField) {
+  function errorFor(field: CheckedField) {
     return errors[field] ?? fieldError(mutation.error, field);
   }
 
@@ -135,11 +216,11 @@ export function CheckoutPage() {
   function validate(): FormErrors {
     const found: FormErrors = {};
     if (!form.firstName.trim()) found.firstName = 'Укажите имя';
-    if (!form.lastName.trim()) found.lastName = 'Укажите фамилию';
-    if (!form.email.trim()) found.email = 'Укажите email — на него придёт письмо о заказе';
-    else if (!EMAIL_RE.test(form.email.trim())) found.email = 'Похоже, в адресе опечатка';
-    if (!isValidPhone(form.phone)) found.phone = `Введите действительный номер телефона`;
-    if (addressRequired && !form.address.trim()) found.address = 'Укажите адрес доставки';
+    if (!isValidPhone(form.phone)) found.phone = 'Введите номер полностью, например +375 29 123-45-67';
+    if (form.email.trim() && !EMAIL_RE.test(form.email.trim())) found.email = 'Похоже, в адресе опечатка';
+    if (delivery === 'CARRIER' && !form.city.trim()) found.city = 'Укажите город';
+    if (delivery !== 'PICKUP' && !form.address.trim()) found.address = 'Укажите адрес доставки';
+    if (!agreed) found.agreed = 'Без согласия мы не сможем принять заказ';
     return found;
   }
 
@@ -151,7 +232,7 @@ export function CheckoutPage() {
 
     const found = validate();
     setErrors(found);
-    const firstInvalid = (Object.keys(found) as RequiredField[])[0];
+    const firstInvalid = (Object.keys(FIELD_INPUT_ID) as CheckedField[]).find((field) => found[field]);
     if (firstInvalid) {
       document.getElementById(FIELD_INPUT_ID[firstInvalid])?.focus();
       return;
@@ -159,15 +240,15 @@ export function CheckoutPage() {
 
     const body: OrderRequest = {
       firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      email: form.email.trim(),
+      lastName: form.lastName.trim() || null,
+      email: form.email.trim() || null,
       phone: toPhoneE164(form.phone),
-      address: form.address.trim() || null,
-      postalCode: form.postalCode || null,
-      city: form.city || null,
+      address: delivery === 'PICKUP' ? null : form.address.trim(),
+      city: delivery === 'CARRIER' ? form.city.trim() : null,
+      postalCode: delivery === 'CARRIER' ? form.postalCode.trim() || null : null,
       paymentMethod: form.paymentMethod,
-      deliveryMethod: form.deliveryMethod,
-      comment: form.comment || null,
+      deliveryMethod: delivery,
+      comment: form.comment.trim() || null,
       promoCode: promoCode || null,
       items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
     };
@@ -176,214 +257,370 @@ export function CheckoutPage() {
 
   return (
     <div className="container checkout-page">
+      <Breadcrumbs items={CRUMBS} />
       <h1 className="checkout-page__title">Оформление заказа</h1>
 
-      <div className="checkout-page__layout">
-        <form className="admin-form checkout-page__form" onSubmit={handleSubmit} noValidate>
-          {formError(mutation.error) && <div className="admin-banner-error">{formError(mutation.error)}</div>}
+      <form className="checkout-page__layout" onSubmit={handleSubmit} noValidate>
+        <div className="checkout-page__steps">
+          <section className="checkout-step" aria-labelledby="co-step-contacts">
+            <StepHead id="co-step-contacts" number={1} title="Контактные данные" />
+            <div className="checkout-step__grid">
+              <Field id="co-first-name" label="Имя" required error={errorFor('firstName')}>
+                <input
+                  id="co-first-name"
+                  aria-required="true"
+                  className="checkout-input"
+                  autoComplete="given-name"
+                  value={form.firstName}
+                  onChange={(e) => update('firstName', e.target.value)}
+                />
+              </Field>
+              <Field id="co-phone" label="Телефон" required error={errorFor('phone')}>
+                <input
+                  id="co-phone"
+                  aria-required="true"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  className="checkout-input mono-num"
+                  value={form.phone}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  onFocus={handlePhoneFocus}
+                />
+              </Field>
+              <Field id="co-last-name" label="Фамилия" error={fieldError(mutation.error, 'lastName')}>
+                <input
+                  id="co-last-name"
+                  className="checkout-input"
+                  autoComplete="family-name"
+                  value={form.lastName}
+                  onChange={(e) => update('lastName', e.target.value)}
+                />
+              </Field>
+              <Field id="co-email" label="Email" error={errorFor('email')}>
+                <input
+                  id="co-email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  className="checkout-input"
+                  value={form.email}
+                  onChange={(e) => update('email', e.target.value)}
+                />
+              </Field>
+            </div>
+          </section>
 
-          <div className="admin-form-row">
-            <div className="admin-form-field">
-              <label htmlFor="co-first-name">Имя<RequiredMark /></label>
-              <input
-                id="co-first-name"
-                className="filter-text-input"
-                value={form.firstName}
-                onChange={(e) => {
-                  clearError('firstName');
-                  setForm((f) => ({ ...f, firstName: e.target.value }));
-                }}
-                required
-              />
-              {errorFor('firstName') && <span className="admin-form-error">{errorFor('firstName')}</span>}
-            </div>
-            <div className="admin-form-field">
-              <label htmlFor="co-last-name">Фамилия<RequiredMark /></label>
-              <input
-                id="co-last-name"
-                className="filter-text-input"
-                value={form.lastName}
-                onChange={(e) => {
-                  clearError('lastName');
-                  setForm((f) => ({ ...f, lastName: e.target.value }));
-                }}
-                required
-              />
-              {errorFor('lastName') && <span className="admin-form-error">{errorFor('lastName')}</span>}
-            </div>
-          </div>
-
-          <div className="admin-form-row checkout-page__row--stacked">
-            <div className="admin-form-field">
-              <label htmlFor="co-email">Email<RequiredMark /></label>
-              <input
-                id="co-email"
-                type="email"
-                className="filter-text-input"
-                value={form.email}
-                onChange={(e) => {
-                  clearError('email');
-                  setForm((f) => ({ ...f, email: e.target.value }));
-                }}
-                required
-              />
-              {errorFor('email') && <span className="admin-form-error">{errorFor('email')}</span>}
-            </div>
-            <div className="admin-form-field">
-              <label htmlFor="co-phone">Телефон<RequiredMark /></label>
-              <input
-                id="co-phone"
-                type="tel"
-                inputMode="tel"
-                className="filter-text-input mono-num"
-                value={form.phone}
-                onChange={(e) => handlePhoneChange(e.target.value)}
-                onFocus={handlePhoneFocus}
-                required
-              />
-              {errorFor('phone') && <span className="admin-form-error">{errorFor('phone')}</span>}
-            </div>
-          </div>
-
-          <div className="admin-form-field">
-            <label htmlFor="co-address">Адрес{addressRequired && <RequiredMark />}</label>
-            <input
-              id="co-address"
-              className="filter-text-input"
-              value={form.address}
-              onChange={(e) => {
-                clearError('address');
-                setForm((f) => ({ ...f, address: e.target.value }));
-              }}
-              required={addressRequired}
+          <section className="checkout-step" aria-labelledby="co-step-delivery">
+            <StepHead
+              id="co-step-delivery"
+              number={2}
+              title="Доставка"
+              action={
+                <Link href="/delivery" target="_blank" className="checkout-step__more">
+                  Подробнее
+                  <ArrowRightIcon width={14} height={14} />
+                </Link>
+              }
             />
-            {errorFor('address') && <span className="admin-form-error">{errorFor('address')}</span>}
+            <fieldset className="checkout-options">
+              <legend className="visually-hidden">Способ доставки</legend>
+              {deliveryOptions.map((option) => (
+                <label key={option.value} className="checkout-option">
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    className="visually-hidden"
+                    value={option.value}
+                    checked={delivery === option.value}
+                    onChange={() => {
+                      clearError('address');
+                      clearError('city');
+                      update('deliveryMethod', option.value);
+                    }}
+                  />
+                  <span className="checkout-option__icon">{option.icon}</span>
+                  <span className="checkout-option__body">
+                    <span className="checkout-option__title">{option.title}</span>
+                  </span>
+                  <span className={`checkout-option__price${option.free ? ' checkout-option__price--free' : ''}`}>
+                    {option.price}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+
+            {delivery === 'COURIER' && (
+              <div className="checkout-delivery">
+                <p className="checkout-delivery__info">
+                  <ClockIcon width={16} height={16} strokeWidth={1.8} />
+                  <span>
+                    От {COURIER.freeFrom} <CurrencySymbol /> доставка бесплатная. Менеджер свяжется с вами, чтобы
+                    согласовать время доставки.
+                  </span>
+                </p>
+                <Field id="co-address" label="Адрес" required error={errorFor('address')}>
+                  <input
+                    id="co-address"
+                    aria-required="true"
+                    className="checkout-input"
+                    autoComplete="street-address"
+                    placeholder="Улица, дом"
+                    value={form.address}
+                    onChange={(e) => update('address', e.target.value)}
+                  />
+                </Field>
+              </div>
+            )}
+
+            {delivery === 'PICKUP' && (
+              <div className="checkout-delivery checkout-pickup">
+                <div className="checkout-pickup__place">
+                  <span className="checkout-pickup__street">
+                    {PICKUP.city}, {PICKUP.street}
+                  </span>
+                  <span className="checkout-pickup__hours">
+                    {PICKUP.hours}, {PICKUP.hoursNote.toLowerCase()}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {delivery === 'CARRIER' && (
+              <div className="checkout-delivery">
+                <p className="checkout-delivery__info">
+                  <BoxIcon width={16} height={16} strokeWidth={1.8} />
+                  <span>
+                    Стоимость — по тарифу транспортной компании, от {formatPrice(CARRIER.priceFrom)} <CurrencySymbol />.
+                    Менеджер рассчитает её и согласует с вами перед отправкой.
+                  </span>
+                </p>
+                <div className="checkout-step__grid checkout-step__grid--city">
+                  <Field id="co-city" label="Город или населённый пункт" required error={errorFor('city')}>
+                    <input
+                      id="co-city"
+                      aria-required="true"
+                      className="checkout-input"
+                      autoComplete="address-level2"
+                      value={form.city}
+                      onChange={(e) => update('city', e.target.value)}
+                    />
+                  </Field>
+                  <Field id="co-postal" label="Индекс" error={fieldError(mutation.error, 'postalCode')}>
+                    <input
+                      id="co-postal"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      className="checkout-input mono-num"
+                      value={form.postalCode}
+                      onChange={(e) => update('postalCode', e.target.value)}
+                    />
+                  </Field>
+                </div>
+                <Field id="co-address" label="Адрес" required error={errorFor('address')}>
+                  <input
+                    id="co-address"
+                    aria-required="true"
+                    className="checkout-input"
+                    autoComplete="street-address"
+                    placeholder="Улица, дом, квартира или номер отделения"
+                    value={form.address}
+                    onChange={(e) => update('address', e.target.value)}
+                  />
+                </Field>
+              </div>
+            )}
+          </section>
+
+          <section className="checkout-step" aria-labelledby="co-step-payment">
+            <StepHead id="co-step-payment" number={3} title="Оплата" />
+            <fieldset className="checkout-options checkout-options--two">
+              <legend className="visually-hidden">Способ оплаты</legend>
+              {PAYMENT_OPTIONS.map((option) => (
+                <label key={option.value} className="checkout-option">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    className="visually-hidden"
+                    value={option.value}
+                    checked={form.paymentMethod === option.value}
+                    onChange={() => update('paymentMethod', option.value)}
+                  />
+                  <span className="checkout-option__icon">{option.icon}</span>
+                  <span className="checkout-option__body">
+                    <span className="checkout-option__title">{option.title}</span>
+                    <span className="checkout-option__note">{option.note}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+
+            {commentOpen ? (
+              <Field id="co-comment" label="Комментарий к заказу">
+                <textarea
+                  id="co-comment"
+                  className="checkout-input checkout-input--area"
+                  placeholder="Например, удобное время звонка или подъезд со двора"
+                  value={form.comment}
+                  onChange={(e) => update('comment', e.target.value)}
+                  autoFocus
+                />
+              </Field>
+            ) : (
+              <button type="button" className="checkout-step__add" onClick={() => setCommentOpen(true)}>
+                <PlusIcon width={16} height={16} />
+                Добавить комментарий к заказу
+              </button>
+            )}
+          </section>
+        </div>
+
+        <aside className="checkout-summary" aria-label="Ваш заказ">
+          <div className="checkout-summary__head">
+            <h2 className="checkout-summary__title">Ваш заказ</h2>
+            <Link href="/cart" className="checkout-summary__edit">
+              Изменить
+            </Link>
           </div>
 
-          <div className="admin-form-row">
-            <div className="admin-form-field">
-              <label htmlFor="co-city">Город</label>
-              <input
-                id="co-city"
-                className="filter-text-input"
-                value={form.city}
-                onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-              />
-            </div>
-            <div className="admin-form-field">
-              <label htmlFor="co-postal">Индекс</label>
-              <input
-                id="co-postal"
-                className="filter-text-input mono-num"
-                value={form.postalCode}
-                onChange={(e) => setForm((f) => ({ ...f, postalCode: e.target.value }))}
-              />
-            </div>
-          </div>
-
-          <div className="admin-form-row checkout-page__row--stacked">
-            <div className="admin-form-field">
-              <label htmlFor="co-delivery">Способ доставки</label>
-              <Select
-                id="co-delivery"
-                options={DELIVERY_METHODS}
-                value={form.deliveryMethod}
-                onChange={(value) => {
-                  clearError('address');
-                  setForm((f) => ({ ...f, deliveryMethod: value }));
-                }}
-                ariaLabel="Способ доставки"
-              />
-            </div>
-            <div className="admin-form-field">
-              <label htmlFor="co-payment">Способ оплаты</label>
-              <Select
-                id="co-payment"
-                options={PAYMENT_METHODS}
-                value={form.paymentMethod}
-                onChange={(value) => setForm((f) => ({ ...f, paymentMethod: value }))}
-                ariaLabel="Способ оплаты"
-              />
-            </div>
-          </div>
-
-          <div className="admin-form-field">
-            <label htmlFor="co-comment">Комментарий к заказу</label>
-            <textarea
-              id="co-comment"
-              value={form.comment}
-              onChange={(e) => setForm((f) => ({ ...f, comment: e.target.value }))}
-            />
-          </div>
-
-          <label className="admin-form-checkbox checkout-page__terms">
-            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-            <span>
-              Ознакомлен с{' '}
-              <Link href="/terms" target="_blank" rel="noopener noreferrer">
-                пользовательским соглашением
-              </Link>{' '}
-              и согласен с{' '}
-              <Link href="/privacy" target="_blank" rel="noopener noreferrer">
-                обработкой персональных данных
-              </Link>
-            </span>
-          </label>
-
-          <Button type="submit" disabled={mutation.isPending || discount.isRejected || !agreed}>
-            {mutation.isPending ? 'Оформляем...' : 'Подтвердить заказ'}
-          </Button>
-        </form>
-
-        <aside className="checkout-page__summary">
-          <h2>Ваш заказ</h2>
-          <ul className="checkout-page__items">
-            {items.map((item) => (
-              <li key={item.variantId} className="checkout-page__item">
-                <span className="checkout-page__item-name">
-                  {item.productName} <span className="mono-num">× {item.quantity}</span>
-                </span>
-                <Price value={item.price * item.quantity} size="sm" />
+          <ul className="checkout-summary__thumbs" aria-label={formatProductsCount(count)}>
+            {items.slice(0, 4).map((item) => (
+              <li key={item.variantId} className="checkout-summary__thumb" title={item.productName}>
+                <ProductPhoto image={item.image} alt={item.productName} size="thumb" />
+                {item.quantity > 1 && <span className="checkout-summary__qty">{item.quantity}</span>}
               </li>
             ))}
+            {items.length > 4 && <li className="checkout-summary__more">+{items.length - 4}</li>}
           </ul>
 
-          {discount.isApplied && (
-            <>
-              <div className="checkout-page__line">
-                <span>Товары</span>
-                <Price value={totalPrice} size="sm" />
+          <dl className="checkout-summary__lines">
+            <div className="checkout-summary__line">
+              <dt>{formatProductsCount(count)}</dt>
+              <dd>
+                {formatPrice(totalPrice)} <CurrencySymbol />
+              </dd>
+            </div>
+            {discount.isApplied && (
+              <div className="checkout-summary__line checkout-summary__line--discount">
+                <dt>Промокод {promoCode}</dt>
+                <dd>
+                  −{formatPrice(discount.discountAmount)} <CurrencySymbol />
+                </dd>
               </div>
-              <div className="checkout-page__line checkout-page__line--discount">
-                <span>
-                  Промокод <span className="checkout-page__promo-code">{promoCode}</span>
-                </span>
-                <span className="checkout-page__discount-value">
-                  −<Price value={discount.discountAmount} size="sm" />
-                </span>
-              </div>
-            </>
-          )}
-
-          <div className="checkout-page__total">
-            <span>Итого</span>
-            {discount.isApplied ? (
-              <span className="checkout-page__total-values">
-                <Price value={totalPrice} size="sm" className="checkout-page__old-price" />
-                <Price value={discount.totalPrice} size="lg" />
-              </span>
-            ) : (
-              <Price value={totalPrice} size="lg" />
             )}
+          </dl>
+
+          <div className="checkout-summary__total">
+            <span>Итого</span>
+            <Price value={payable} size="lg" className="checkout-summary__total-price" />
           </div>
 
+          <p className="checkout-summary__delivery">
+            <TruckIcon width={16} height={16} strokeWidth={1.7} />
+            <span>Доставка</span>
+            <span className={`checkout-summary__delivery-value${deliveryFree ? ' checkout-summary__delivery-value--free' : ''}`}>
+              {deliverySummary}
+            </span>
+          </p>
+
           {discount.isRejected && (
-            <div className="admin-banner-error checkout-page__promo-error">
-              {discount.message} Уберите или замените промокод в корзине.
-            </div>
+            <p className="checkout-summary__alert" role="alert">
+              <AlertIcon width={16} height={16} />
+              <span>
+                {discount.message} <Link href="/cart">Уберите или замените промокод в корзине.</Link>
+              </span>
+            </p>
           )}
+
+          <div className="checkout-summary__agree">
+            <label className="checkout-agree">
+              <input
+                id="co-agreed"
+                type="checkbox"
+                checked={agreed}
+                aria-invalid={Boolean(errors.agreed)}
+                onChange={(e) => {
+                  clearError('agreed');
+                  setAgreed(e.target.checked);
+                }}
+              />
+              <span>
+                Принимаю{' '}
+                <Link href="/terms" target="_blank" rel="noopener noreferrer">
+                  пользовательское соглашение
+                </Link>{' '}
+                и даю согласие на{' '}
+                <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+                  обработку персональных данных
+                </Link>
+              </span>
+            </label>
+            {errors.agreed && <span className="checkout-field__error">{errors.agreed}</span>}
+          </div>
+
+          {formError(mutation.error) && (
+            <p className="checkout-summary__alert" role="alert">
+              <AlertIcon width={16} height={16} />
+              <span>{formError(mutation.error)}</span>
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="checkout-summary__submit"
+            disabled={mutation.isPending || discount.isRejected}
+          >
+            {mutation.isPending ? 'Оформляем…' : 'Подтвердить заказ'}
+          </button>
         </aside>
-      </div>
+      </form>
+    </div>
+  );
+}
+
+interface StepHeadProps {
+  id: string;
+  number: number;
+  title: string;
+  action?: ReactNode;
+}
+
+function StepHead({ id, number, title, action }: StepHeadProps) {
+  return (
+    <div className="checkout-step__head">
+      <span className="checkout-step__num" aria-hidden="true">
+        {number}
+      </span>
+      <h2 id={id} className="checkout-step__title">
+        {title}
+      </h2>
+      {action}
+    </div>
+  );
+}
+
+interface FieldProps {
+  id: string;
+  label: string;
+  required?: boolean;
+  error?: string;
+  children: ReactNode;
+}
+
+function Field({ id, label, required, error, children }: FieldProps) {
+  return (
+    <div className={`checkout-field${error ? ' checkout-field--invalid' : ''}`}>
+      <label htmlFor={id} className="checkout-field__label">
+        {label}
+        {required && (
+          <span className="checkout-field__required" aria-hidden="true">
+            {' '}
+            *
+          </span>
+        )}
+      </label>
+      {children}
+      {error && <span className="checkout-field__error">{error}</span>}
     </div>
   );
 }
