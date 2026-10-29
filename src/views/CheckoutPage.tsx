@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import type { FocusEvent, FormEvent, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { saveLastOrder } from '@/cart/lastOrder';
 import './CheckoutPage.css';
 import { useCart } from '@/cart/useCart';
-import { usePromoDiscount } from '@/cart/usePromoDiscount';
+import { CART_QUOTE_QUERY_KEY, useCartQuote } from '@/cart/useCartQuote';
 import { createOrder } from '@/api/orders';
 import type { OrderRequest } from '@/api/types';
 import { Price } from '@/components/ui/Price';
@@ -94,8 +94,9 @@ const EMPTY_FORM: FormState = {
 };
 
 export function CheckoutPage() {
-  const { items, isHydrated, totalPrice, promoCode, clear } = useCart();
-  const discount = usePromoDiscount();
+  const { items, isHydrated, promoCode, clear } = useCart();
+  const quote = useCartQuote();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -114,6 +115,7 @@ export function CheckoutPage() {
       clear();
       router.replace('/order-confirmation');
     },
+    onError: () => queryClient.invalidateQueries({ queryKey: [CART_QUOTE_QUERY_KEY] }),
   });
 
   // Пустую корзину оформлять нечего — уводим назад. Раньше это был <Navigate>,
@@ -130,10 +132,11 @@ export function CheckoutPage() {
     if (cartIsEmpty) router.replace('/cart');
   }, [cartIsEmpty, router]);
 
-  if (!isHydrated || cartIsEmpty || placed) return null;
+  if (!isHydrated || cartIsEmpty || placed || !quote.isReady) return null;
 
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
-  const payable = discount.isApplied ? discount.totalPrice : totalPrice;
+  const payable = quote.totalPrice;
+  const blocked = quote.hasIssues || quote.promoRejected;
   const courierFree = isCourierFree(payable);
   const delivery = form.deliveryMethod;
 
@@ -148,7 +151,13 @@ export function CheckoutPage() {
       value: 'COURIER',
       icon: <TruckIcon width={20} height={20} strokeWidth={1.7} />,
       title: 'Курьером',
-      price: courierFree ? 'Бесплатно' : <>{formatPrice(COURIER.price)} <CurrencySymbol /></>,
+      price: courierFree ? (
+        'Бесплатно'
+      ) : (
+        <>
+          {formatPrice(COURIER.price)} <CurrencySymbol />
+        </>
+      ),
       free: courierFree,
     },
     {
@@ -162,7 +171,11 @@ export function CheckoutPage() {
       value: 'CARRIER',
       icon: <BoxIcon width={20} height={20} strokeWidth={1.7} />,
       title: 'Транспортной компанией',
-      price: <>от {formatPrice(CARRIER.priceFrom)} <CurrencySymbol /></>,
+      price: (
+        <>
+          от {formatPrice(CARRIER.priceFrom)} <CurrencySymbol />
+        </>
+      ),
       free: false,
     },
   ];
@@ -232,9 +245,9 @@ export function CheckoutPage() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    // Промокод, который сервер уже отклонил, отправлять незачем: заказ вернёт 409.
-    // Пусть покупатель сначала уберёт его в корзине.
-    if (discount.isRejected) return;
+    // С отклонённым промокодом или недоступной позицией заказ всё равно вернёт 409.
+    // Пусть покупатель сначала поправит корзину.
+    if (blocked) return;
 
     const found = validate();
     setErrors(found);
@@ -256,6 +269,7 @@ export function CheckoutPage() {
       deliveryMethod: delivery,
       comment: form.comment.trim() || null,
       promoCode: promoCode || null,
+      expectedTotal: payable,
       items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
     };
     mutation.mutate(body);
@@ -501,16 +515,16 @@ export function CheckoutPage() {
 
           <dl className="checkout-summary__lines">
             <div className="checkout-summary__line">
-              <dt>{formatProductsCount(count)}</dt>
+              <dt>{formatProductsCount(quote.count)}</dt>
               <dd>
-                {formatPrice(totalPrice)} <CurrencySymbol />
+                {formatPrice(quote.subtotal)} <CurrencySymbol />
               </dd>
             </div>
-            {discount.isApplied && (
+            {quote.promoApplied && (
               <div className="checkout-summary__line checkout-summary__line--discount">
                 <dt>Промокод {promoCode}</dt>
                 <dd>
-                  −{formatPrice(discount.discountAmount)} <CurrencySymbol />
+                  −{formatPrice(quote.discountAmount)} <CurrencySymbol />
                 </dd>
               </div>
             )}
@@ -524,16 +538,27 @@ export function CheckoutPage() {
           <p className="checkout-summary__delivery">
             <TruckIcon width={16} height={16} strokeWidth={1.7} />
             <span>Доставка</span>
-            <span className={`checkout-summary__delivery-value${deliveryFree ? ' checkout-summary__delivery-value--free' : ''}`}>
+            <span
+              className={`checkout-summary__delivery-value${deliveryFree ? ' checkout-summary__delivery-value--free' : ''}`}
+            >
               {deliverySummary}
             </span>
           </p>
 
-          {discount.isRejected && (
+          {quote.hasIssues && (
             <p className="checkout-summary__alert" role="alert">
               <AlertIcon width={16} height={16} />
               <span>
-                {discount.message} <Link href="/cart">Уберите или замените промокод в корзине.</Link>
+                Часть товаров закончилась или снята с продажи. <Link href="/cart">Поправьте корзину.</Link>
+              </span>
+            </p>
+          )}
+
+          {quote.promoRejected && (
+            <p className="checkout-summary__alert" role="alert">
+              <AlertIcon width={16} height={16} />
+              <span>
+                {quote.promoMessage} <Link href="/cart">Уберите или замените промокод в корзине.</Link>
               </span>
             </p>
           )}
@@ -571,11 +596,7 @@ export function CheckoutPage() {
             </p>
           )}
 
-          <button
-            type="submit"
-            className="checkout-summary__submit"
-            disabled={mutation.isPending || discount.isRejected}
-          >
+          <button type="submit" className="checkout-summary__submit" disabled={mutation.isPending || blocked}>
             {mutation.isPending ? 'Оформляем…' : 'Подтвердить заказ'}
           </button>
         </aside>

@@ -50,6 +50,13 @@
   color: #fff;
 }
 
+.cart-page__cta--disabled,
+.cart-page__cta--disabled:hover {
+  background: var(--color-slate);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 /* ---------- Позиции ---------- */
 
 .cart-page__list {
@@ -97,6 +104,38 @@
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
   color: var(--color-slate);
+}
+
+.cart-item__note {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--color-slate);
+}
+
+.cart-item__note--issue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--color-danger);
+}
+
+.cart-item__fix {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-accent-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cart-item__status {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.cart-item--blocked :is(.product-photo, .cart-item__name, .cart-item__qty) {
+  opacity: 0.5;
 }
 
 .cart-item__qty {
@@ -275,6 +314,25 @@
 
 .cart-summary__delivery--free svg {
   flex-shrink: 0;
+}
+
+.cart-summary__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--color-danger) 7%, transparent);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+
+.cart-summary__alert svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-danger);
 }
 
 .cart-summary__continue {

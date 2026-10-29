@@ -94,12 +94,7 @@ export interface SitemapResponse {
   products: SitemapEntryResponse[];
 }
 
-export type CatalogSort =
-  | 'PRICE_ASC'
-  | 'PRICE_DESC'
-  | 'DISCOUNT_DESC'
-  | 'POPULAR_DESC'
-  | 'NEW_DESC';
+export type CatalogSort = 'PRICE_ASC' | 'PRICE_DESC' | 'DISCOUNT_DESC' | 'POPULAR_DESC' | 'NEW_DESC';
 
 export interface CatalogProductsQuery {
   categoryId?: number;
@@ -358,16 +353,10 @@ export interface ProductVariantRequest {
 
 /** Правка позиции. Категории нет: она задаётся при создании и не меняется. */
 /** Правка позиции: полей модели здесь нет, они правятся у группы. */
-export type ProductVariantUpdateRequest = Omit<
-  ProductVariantRequest,
-  'categoryId' | 'brandId' | 'description'
->;
+export type ProductVariantUpdateRequest = Omit<ProductVariantRequest, 'categoryId' | 'brandId' | 'description'>;
 
 /** Новое исполнение: непереданное копируется с исходной позиции. */
-export type ProductVariantSiblingRequest = Omit<
-  ProductVariantRequest,
-  'categoryId' | 'brandId' | 'description'
->;
+export type ProductVariantSiblingRequest = Omit<ProductVariantRequest, 'categoryId' | 'brandId' | 'description'>;
 
 // ---- Импорт из внешнего источника (админка) ----
 
@@ -438,6 +427,8 @@ export interface OrderRequest {
   comment?: string | null;
   /** Код промокода. Скидку сервер считает сам, с фронта сумма не принимается. */
   promoCode?: string | null;
+  /** Итог, который видел покупатель. Сервер только сверяет его и при расхождении отвечает 409. */
+  expectedTotal?: number | null;
   items: OrderItemRequest[];
 }
 
@@ -534,31 +525,37 @@ export interface PromoCodeResponse {
 }
 
 export type PromoRejectionReason =
-  | 'NOT_FOUND'
-  | 'INACTIVE'
-  | 'NOT_STARTED'
-  | 'EXPIRED'
-  | 'MIN_ORDER_NOT_REACHED'
-  | 'NO_MATCHING_ITEMS';
+  'NOT_FOUND' | 'INACTIVE' | 'NOT_STARTED' | 'EXPIRED' | 'MIN_ORDER_NOT_REACHED' | 'NO_MATCHING_ITEMS';
 
-export interface PromoCodeValidateRequest {
-  code: string;
+export interface CartQuoteRequest {
+  promoCode: string | null;
   items: OrderItemRequest[];
 }
 
-/**
- * Приходит со статусом 200 и при отказе тоже: «промокод не подошёл» — это
- * результат проверки, а не ошибка запроса. Причина лежит в reason, готовый
- * текст для покупателя — в message.
- */
-export interface PromoCodeValidateResponse {
-  valid: boolean;
-  code: string;
+/** available: false — вариант снят с продажи или удалён; цены тогда нет. */
+export interface CartQuoteItemResponse {
+  productVariantId: number;
+  available: boolean;
+  price: number | null;
+  stockQuantity: number;
+}
+
+export interface CartQuotePromoResponse {
+  applied: boolean;
   reason: PromoRejectionReason | null;
   message: string | null;
+}
+
+/**
+ * Суммы — только по позициям, которые можно заказать как есть: доступны и на
+ * складе хватает. promo — null, если код не передавали.
+ */
+export interface CartQuoteResponse {
+  items: CartQuoteItemResponse[];
   subtotal: number;
   discountAmount: number;
   totalPrice: number;
+  promo: CartQuotePromoResponse | null;
 }
 
 export interface PromoCodeBannerResponse {

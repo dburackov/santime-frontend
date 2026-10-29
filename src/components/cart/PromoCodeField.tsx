@@ -4,14 +4,13 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import './PromoCodeField.css';
 import { useCart } from '@/cart/useCart';
-import { usePromoDiscount } from '@/cart/usePromoDiscount';
+import type { CartQuote } from '@/cart/useCartQuote';
 import { Button } from '@/components/ui/Button';
 import { Price } from '@/components/ui/Price';
 import { CloseIcon } from '@/components/ui/icons';
 
-export function PromoCodeField() {
+export function PromoCodeField({ quote }: { quote: CartQuote }) {
   const { promoCode, setPromoCode, clearPromoCode } = useCart();
-  const discount = usePromoDiscount();
   const [draft, setDraft] = useState('');
 
   function handleSubmit(event: FormEvent) {
@@ -22,13 +21,13 @@ export function PromoCodeField() {
     setDraft('');
   }
 
-  if (promoCode && discount.isApplied) {
+  if (promoCode && quote.promoApplied) {
     return (
       <div className="promo-field">
         <div className="promo-field__applied">
           <span className="promo-field__applied-text">
             Промокод <span className="promo-field__code">{promoCode}</span> — скидка{' '}
-            <Price value={discount.discountAmount} size="sm" />
+            <Price value={quote.discountAmount} size="sm" />
           </span>
           <button
             type="button"
@@ -56,13 +55,13 @@ export function PromoCodeField() {
             autoComplete="off"
           />
         </div>
-        <Button type="submit" variant="secondary" size="sm" disabled={discount.isPending || !draft.trim()}>
-          {discount.isPending ? 'Проверяем...' : 'Применить'}
+        <Button type="submit" variant="secondary" size="sm" disabled={quote.isPending || !draft.trim()}>
+          {quote.isPending ? 'Проверяем...' : 'Применить'}
         </Button>
       </form>
 
-      {promoCode && discount.isRejected && (
-        <span className="admin-form-error promo-field__error">{discount.message}</span>
+      {promoCode && quote.promoRejected && (
+        <span className="admin-form-error promo-field__error">{quote.promoMessage}</span>
       )}
     </div>
   );
