@@ -1,4 +1,5 @@
 .cart-page {
+  min-height: 100svh;
   padding-top: var(--space-5);
   padding-bottom: clamp(48px, 5vw, 72px);
 }

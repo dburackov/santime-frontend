@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import './OrderConfirmationPage.css';
@@ -26,8 +26,8 @@ function SuccessBadge() {
 
 export function OrderConfirmationPage() {
   // sessionStorage читается только после монтирования — на сервере его нет.
-  // До этого показывается та же заглушка, что и при отсутствии заказа.
-  const [lastOrder, setLastOrder] = useState<LastOrder | null>(null);
+  // undefined — ещё не прочитан, null — заказа в сессии нет.
+  const [lastOrder, setLastOrder] = useState<LastOrder | null | undefined>(undefined);
 
   useEffect(() => {
     // Паттерн гидрации, см. пояснение в CartContext: sessionStorage доступен
@@ -35,6 +35,10 @@ export function OrderConfirmationPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLastOrder(loadLastOrder());
   }, []);
+
+  if (lastOrder === undefined) {
+    return <div className="container order-confirmation" aria-busy="true" />;
+  }
 
   if (!lastOrder) {
     return (
@@ -90,7 +94,13 @@ export function OrderConfirmationPage() {
             icon: <TruckIcon width={16} height={16} strokeWidth={1.8} />,
             place: address,
             note: null,
-            price: courierFree ? 'бесплатно' : <>{formatPrice(COURIER.price)} <CurrencySymbol /></>,
+            price: courierFree ? (
+              'бесплатно'
+            ) : (
+              <>
+                {formatPrice(COURIER.price)} <CurrencySymbol />
+              </>
+            ),
             free: courierFree,
           };
 
@@ -102,12 +112,14 @@ export function OrderConfirmationPage() {
           Спасибо{order.firstName ? `, ${order.firstName}` : ''}! Заказ принят
         </h1>
         <p className="order-confirmation__lead">
-          Менеджер позвонит Вам{order.phone && (
+          Менеджер позвонит Вам
+          {order.phone && (
             <>
               {' '}
               на <span className="order-confirmation__nowrap">{formatPhone(order.phone)}</span>
             </>
-          )}, чтобы подтвердить заказ.
+          )}
+          , чтобы подтвердить заказ.
         </p>
       </div>
 
@@ -165,8 +177,7 @@ export function OrderConfirmationPage() {
             <Price value={order.totalPrice} size="lg" className="order-card__total-price" />
           </div>
           <p className="order-card__delivery-cost">
-            Доставка{' '}
-            <span className={delivery.free ? 'order-card__free' : undefined}>{delivery.price}</span>
+            Доставка <span className={delivery.free ? 'order-card__free' : undefined}>{delivery.price}</span>
           </p>
         </div>
 
@@ -211,13 +222,14 @@ export function OrderConfirmationPage() {
 
       <p className="order-confirmation__help">
         Что-то указали неверно? Позвоните нам:{' '}
-        <a href={SITE_PHONES[0].href} className="order-confirmation__phone">
-          {SITE_PHONES[0].display}
-        </a>{' '}
-        или{' '}
-        <a href={SITE_PHONES[1].href} className="order-confirmation__phone">
-          {SITE_PHONES[1].display}
-        </a>
+        {SITE_PHONES.map((phone, index) => (
+          <Fragment key={phone.href}>
+            {index > 0 && ' или '}
+            <a href={phone.href} className="order-confirmation__phone">
+              {phone.display}
+            </a>
+          </Fragment>
+        ))}
       </p>
 
       <div className="order-confirmation__actions">

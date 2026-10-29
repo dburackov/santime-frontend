@@ -55,14 +55,12 @@ export function PromoCodeField({ quote }: { quote: CartQuote }) {
             autoComplete="off"
           />
         </div>
-        <Button type="submit" variant="secondary" size="sm" disabled={quote.isPending || !draft.trim()}>
-          {quote.isPending ? 'Проверяем...' : 'Применить'}
+        <Button type="submit" variant="secondary" size="sm" disabled={quote.promoPending || !draft.trim()}>
+          {quote.promoPending ? 'Проверяем...' : 'Применить'}
         </Button>
       </form>
 
-      {promoCode && quote.promoRejected && (
-        <span className="admin-form-error promo-field__error">{quote.promoMessage}</span>
-      )}
+      {promoCode && quote.promoRejected && <span className="promo-field__error">{quote.promoMessage}</span>}
     </div>
   );
 }

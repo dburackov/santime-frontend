@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import './CartPage.css';
-import '@/admin/admin.css';
 import { useCart } from '@/cart/useCart';
 import { useCartQuote, type CartLineIssue } from '@/cart/useCartQuote';
 import { ProductPhoto } from '@/components/ui/ProductPhoto';
@@ -26,7 +25,8 @@ import { formatProductsCount } from '@/utils/plural';
 
 const CRUMBS = [{ label: 'Главная', to: '/' }, { label: 'Корзина' }];
 
-const ISSUE_LABELS: Record<Exclude<CartLineIssue, 'insufficient-stock'>, string> = {
+/** Проблемы, при которых позицию нельзя заказать ни в каком количестве. */
+const BLOCKING_ISSUES: Partial<Record<CartLineIssue, string>> = {
   unavailable: 'Снят с продажи',
   'out-of-stock': 'Закончился',
 };
@@ -75,8 +75,10 @@ export function CartPage() {
         <ul className="cart-page__list">
           {items.map((item) => {
             const line = quote.lines[item.variantId];
-            const blocked = line.issue === 'unavailable' || line.issue === 'out-of-stock';
-            const atStockLimit = line.stockQuantity !== null && item.quantity >= line.stockQuantity;
+            const blockedLabel = line.issue ? BLOCKING_ISSUES[line.issue] : undefined;
+            const blocked = blockedLabel !== undefined;
+            const stock = line.stockQuantity;
+            const atStockLimit = stock !== null && item.quantity >= stock;
             return (
               <li className={`cart-item${blocked ? ' cart-item--blocked' : ''}`} key={item.variantId}>
                 <Link href={`/product/${item.variantSlug}`} tabIndex={-1} aria-hidden="true">
@@ -97,15 +99,15 @@ export function CartPage() {
                       Цена изменилась, было {formatPrice(line.previousPrice)} <CurrencySymbol />
                     </span>
                   )}
-                  {line.issue === 'insufficient-stock' && line.stockQuantity !== null && (
+                  {line.issue === 'insufficient-stock' && stock !== null && (
                     <span className="cart-item__note cart-item__note--issue">
-                      В наличии только {line.stockQuantity} шт.
+                      В наличии только {stock} шт.
                       <button
                         type="button"
                         className="cart-item__fix"
-                        onClick={() => setQuantity(item.variantId, line.stockQuantity as number)}
+                        onClick={() => setQuantity(item.variantId, stock)}
                       >
-                        Оставить {line.stockQuantity}
+                        Оставить {stock}
                       </button>
                     </span>
                   )}
@@ -136,9 +138,7 @@ export function CartPage() {
                 </div>
 
                 {blocked ? (
-                  <span className="cart-item__sum cart-item__status">
-                    {ISSUE_LABELS[line.issue as keyof typeof ISSUE_LABELS]}
-                  </span>
+                  <span className="cart-item__sum cart-item__status">{blockedLabel}</span>
                 ) : (
                   <Price value={line.price * item.quantity} size="md" className="cart-item__sum" />
                 )}

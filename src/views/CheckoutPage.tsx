@@ -132,10 +132,19 @@ export function CheckoutPage() {
     if (cartIsEmpty) router.replace('/cart');
   }, [cartIsEmpty, router]);
 
-  if (!isHydrated || cartIsEmpty || placed || !quote.isReady) return null;
+  if (cartIsEmpty || placed) {
+    return (
+      <div className="container checkout-page">
+        <Breadcrumbs items={CRUMBS} />
+        <h1 className="checkout-page__title">Оформление заказа</h1>
+        <div className="checkout-page__pending" aria-busy="true" />
+      </div>
+    );
+  }
 
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const payable = quote.totalPrice;
+  const ready = isHydrated && quote.isReady;
   const blocked = quote.hasIssues || quote.promoRejected;
   const courierFree = isCourierFree(payable);
   const delivery = form.deliveryMethod;
@@ -247,7 +256,7 @@ export function CheckoutPage() {
     e.preventDefault();
     // С отклонённым промокодом или недоступной позицией заказ всё равно вернёт 409.
     // Пусть покупатель сначала поправит корзину.
-    if (blocked) return;
+    if (!ready || blocked) return;
 
     const found = validate();
     setErrors(found);
@@ -375,8 +384,8 @@ export function CheckoutPage() {
                 <p className="checkout-delivery__info">
                   <ClockIcon width={16} height={16} strokeWidth={1.8} />
                   <span>
-                    От {COURIER.freeFrom} <CurrencySymbol /> доставка бесплатная. Менеджер свяжется с вами, чтобы
-                    согласовать время доставки.
+                    От {formatPrice(COURIER.freeFrom)} <CurrencySymbol /> доставка бесплатная. Менеджер свяжется с вами,
+                    чтобы согласовать время доставки.
                   </span>
                 </p>
                 <Field id="co-address" label="Адрес" required error={errorFor('address')}>
@@ -394,7 +403,7 @@ export function CheckoutPage() {
             )}
 
             {delivery === 'PICKUP' && (
-              <div className="checkout-delivery checkout-pickup">
+              <div className="checkout-delivery">
                 <div className="checkout-pickup__place">
                   <span className="checkout-pickup__street">
                     {PICKUP.city}, {PICKUP.street}
@@ -503,7 +512,7 @@ export function CheckoutPage() {
             </Link>
           </div>
 
-          <ul className="checkout-summary__thumbs" aria-label={formatProductsCount(count)}>
+          <ul className="checkout-summary__thumbs" aria-label={isHydrated ? formatProductsCount(count) : undefined}>
             {items.slice(0, 4).map((item) => (
               <li key={item.variantId} className="checkout-summary__thumb" title={item.productName}>
                 <ProductPhoto image={item.image} alt={item.productName} size="thumb" />
@@ -515,12 +524,18 @@ export function CheckoutPage() {
 
           <dl className="checkout-summary__lines">
             <div className="checkout-summary__line">
-              <dt>{formatProductsCount(quote.count)}</dt>
+              <dt>{ready ? formatProductsCount(quote.count) : 'Товары'}</dt>
               <dd>
-                {formatPrice(quote.subtotal)} <CurrencySymbol />
+                {ready ? (
+                  <>
+                    {formatPrice(quote.subtotal)} <CurrencySymbol />
+                  </>
+                ) : (
+                  <span className="checkout-summary__skeleton" />
+                )}
               </dd>
             </div>
-            {quote.promoApplied && (
+            {ready && quote.promoApplied && (
               <div className="checkout-summary__line checkout-summary__line--discount">
                 <dt>Промокод {promoCode}</dt>
                 <dd>
@@ -532,7 +547,11 @@ export function CheckoutPage() {
 
           <div className="checkout-summary__total">
             <span>Итого</span>
-            <Price value={payable} size="lg" className="checkout-summary__total-price" />
+            {ready ? (
+              <Price value={payable} size="lg" className="checkout-summary__total-price" />
+            ) : (
+              <span className="checkout-summary__skeleton checkout-summary__skeleton--lg" />
+            )}
           </div>
 
           <p className="checkout-summary__delivery">
@@ -596,7 +615,7 @@ export function CheckoutPage() {
             </p>
           )}
 
-          <button type="submit" className="checkout-summary__submit" disabled={mutation.isPending || blocked}>
+          <button type="submit" className="checkout-summary__submit" disabled={!ready || mutation.isPending || blocked}>
             {mutation.isPending ? 'Оформляем…' : 'Подтвердить заказ'}
           </button>
         </aside>

@@ -3,6 +3,10 @@
   padding-bottom: clamp(48px, 5vw, 72px);
 }
 
+.checkout-page__pending {
+  min-height: 100svh;
+}
+
 .checkout-page__title {
   margin: var(--space-4) 0 var(--space-6);
   font-size: clamp(1.75rem, 2.6vw, 2.25rem);
@@ -368,6 +372,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  min-height: 52px;
+}
+
+.checkout-summary__skeleton {
+  display: inline-block;
+  width: 6em;
+  height: 1em;
+  border-radius: var(--radius-sm);
+  background: var(--color-tint-2);
+  vertical-align: middle;
+}
+
+.checkout-summary__skeleton--lg {
+  height: 1.75em;
 }
 
 .checkout-summary__thumb {

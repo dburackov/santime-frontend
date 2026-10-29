@@ -85,5 +85,6 @@
 }
 
 .promo-field__error {
-  text-align: left;
+  font-size: var(--text-xs);
+  color: var(--color-danger);
 }

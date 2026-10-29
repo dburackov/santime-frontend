@@ -31,7 +31,8 @@ export interface CartQuote {
   promoApplied: boolean;
   promoRejected: boolean;
   promoMessage: string | null;
-  isPending: boolean;
+  /** Идёт проверка введённого промокода. */
+  promoPending: boolean;
   /** Сервер ответил хотя бы раз (или упал — тогда остаётся снапшот). */
   isReady: boolean;
 }
@@ -59,6 +60,7 @@ export function useCartQuote(): CartQuote {
   });
 
   const result = query.data;
+  const promoPending = Boolean(promoCode) && query.isFetching;
   const quoted = new Map(result?.items.map((line) => [line.productVariantId, line]));
 
   const lines: Record<number, CartLineQuote> = {};
@@ -95,7 +97,7 @@ export function useCartQuote(): CartQuote {
       promoApplied: false,
       promoRejected: false,
       promoMessage: null,
-      isPending: query.isPending && query.fetchStatus !== 'idle',
+      promoPending,
       isReady: query.isError,
     };
   }
@@ -111,7 +113,7 @@ export function useCartQuote(): CartQuote {
     promoApplied: promo?.applied ?? false,
     promoRejected: promo ? !promo.applied : false,
     promoMessage: promo?.message ?? null,
-    isPending: query.isFetching,
+    promoPending,
     isReady: true,
   };
 }
