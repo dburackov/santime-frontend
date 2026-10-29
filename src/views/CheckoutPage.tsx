@@ -101,11 +101,16 @@ export function CheckoutPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [agreed, setAgreed] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
+  const [placed, setPlaced] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (body: OrderRequest) => createOrder(body),
     onSuccess: (order) => {
-      saveLastOrder(order);
+      saveLastOrder({
+        order,
+        images: Object.fromEntries(items.map((item) => [item.variantId, item.image ?? null])),
+      });
+      setPlaced(true);
       clear();
       router.replace('/order-confirmation');
     },
@@ -114,17 +119,18 @@ export function CheckoutPage() {
   // Пустую корзину оформлять нечего — уводим назад. Раньше это был <Navigate>,
   // в Next перенаправление клиентского компонента идёт эффектом.
   //
-  // isSuccess в условии обязателен: сразу после оформления clear() опустошает
-  // корзину, и без этой оговорки редирект увёл бы с подтверждения обратно в /cart.
+  // placed, а не mutation.isSuccess: onSuccess выполняется до перехода мутации в success,
+  // и clear() внутри него перерисовывал страницу ещё с isSuccess=false — редирект в /cart
+  // обгонял переход на подтверждение.
   // isHydrated обязателен: до чтения localStorage корзина всегда пуста, и без
   // этой проверки редирект срабатывал бы даже на заполненной корзине.
-  const cartIsEmpty = isHydrated && items.length === 0 && !mutation.isSuccess;
+  const cartIsEmpty = isHydrated && items.length === 0 && !placed;
 
   useEffect(() => {
     if (cartIsEmpty) router.replace('/cart');
   }, [cartIsEmpty, router]);
 
-  if (!isHydrated || cartIsEmpty) return null;
+  if (!isHydrated || cartIsEmpty || placed) return null;
 
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const payable = discount.isApplied ? discount.totalPrice : totalPrice;

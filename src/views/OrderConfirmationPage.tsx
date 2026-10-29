@@ -1,68 +1,230 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import './OrderConfirmationPage.css';
 import { Price } from '@/components/ui/Price';
-import { Button } from '@/components/ui/Button';
+import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
+import { ProductPhoto } from '@/components/ui/ProductPhoto';
+import { BoxIcon, CardIcon, CheckIcon, TruckIcon, UserIcon, WarehouseIcon } from '@/components/ui/icons';
 import { loadLastOrder } from '@/cart/lastOrder';
-import type { OrderResponse } from '@/api/types';
+import type { LastOrder } from '@/cart/lastOrder';
+import { COURIER, PICKUP, isCourierFree } from '@/config/delivery';
+import { SITE_PHONES } from '@/config/siteInfo';
+import { deliveryMethodLabel, paymentMethodLabel } from '@/utils/orderLabels';
+import { formatPhone } from '@/utils/phone';
+import { formatPrice } from '@/utils/price';
+
+function SuccessBadge() {
+  return (
+    <span className="order-confirmation__badge">
+      <CheckIcon width={30} height={30} strokeWidth={2.4} />
+    </span>
+  );
+}
 
 export function OrderConfirmationPage() {
   // sessionStorage читается только после монтирования — на сервере его нет.
   // До этого показывается та же заглушка, что и при отсутствии заказа.
-  const [order, setOrder] = useState<OrderResponse | null>(null);
+  const [lastOrder, setLastOrder] = useState<LastOrder | null>(null);
 
   useEffect(() => {
     // Паттерн гидрации, см. пояснение в CartContext: sessionStorage доступен
     // только в браузере.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setOrder(loadLastOrder());
+    setLastOrder(loadLastOrder());
   }, []);
 
-  if (!order) {
+  if (!lastOrder) {
     return (
       <div className="container order-confirmation">
-        <h1>Заказ оформлен</h1>
-        <p className="order-confirmation__text">
-          Детали заказа доступны только сразу после оформления. Если вы обновили страницу — не переживайте,
-          заказ уже принят в обработку.
-        </p>
-        <Link href="/">
-          <Button>На главную</Button>
-        </Link>
+        <div className="order-confirmation__hero">
+          <SuccessBadge />
+          <h1 className="order-confirmation__title">Заказ оформлен</h1>
+          <p className="order-confirmation__lead">
+            Детали заказа видны только сразу после оформления. Заказ уже принят — менеджер свяжется с Вами для
+            подтверждения.
+          </p>
+        </div>
+        <div className="order-confirmation__actions">
+          <Link href="/catalog" className="order-confirmation__button">
+            Продолжить покупки
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const { order, images } = lastOrder;
+  const count = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const discounted = order.discountAmount > 0;
+  const address = [order.city, order.address, order.postalCode].filter(Boolean).join(', ');
+  const courierFree = isCourierFree(order.totalPrice);
+
+  const createdAt = new Date(order.createdAt).toLocaleString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const delivery: { icon: ReactNode; place: string; note: string | null; price: ReactNode; free: boolean } =
+    order.deliveryMethod === 'PICKUP'
+      ? {
+          icon: <WarehouseIcon width={16} height={16} strokeWidth={1.8} />,
+          place: `${PICKUP.city}, ${PICKUP.street}`,
+          note: PICKUP.hours,
+          price: 'бесплатно',
+          free: true,
+        }
+      : order.deliveryMethod === 'CARRIER'
+        ? {
+            icon: <BoxIcon width={16} height={16} strokeWidth={1.8} />,
+            place: address,
+            note: null,
+            price: 'по тарифу ТК',
+            free: false,
+          }
+        : {
+            icon: <TruckIcon width={16} height={16} strokeWidth={1.8} />,
+            place: address,
+            note: null,
+            price: courierFree ? 'бесплатно' : <>{formatPrice(COURIER.price)} <CurrencySymbol /></>,
+            free: courierFree,
+          };
+
   return (
     <div className="container order-confirmation">
-      <h1>Спасибо за заказ!</h1>
-      <p className="order-confirmation__text">
-        Заказ <span className="mono-num">№{order.id}</span> принят в обработку. Мы свяжемся с вами для
-        подтверждения.
-      </p>
+      <div className="order-confirmation__hero">
+        <SuccessBadge />
+        <h1 className="order-confirmation__title">
+          Спасибо{order.firstName ? `, ${order.firstName}` : ''}! Заказ принят
+        </h1>
+        <p className="order-confirmation__lead">
+          Менеджер позвонит Вам{order.phone && (
+            <>
+              {' '}
+              на <span className="order-confirmation__nowrap">{formatPhone(order.phone)}</span>
+            </>
+          )}, чтобы подтвердить заказ.
+        </p>
+      </div>
 
-      <div className="order-confirmation__card">
-        <ul className="order-confirmation__items">
+      <section className="order-card" aria-labelledby="oc-number">
+        <header className="order-card__head">
+          <div className="order-card__heading">
+            <h2 id="oc-number" className="order-card__number">
+              Заказ №{order.id}
+            </h2>
+            <span className="order-card__date">{createdAt}</span>
+          </div>
+          <span className="order-card__status">Принят</span>
+        </header>
+
+        <ul className="order-card__items">
           {order.items.map((item) => (
-            <li key={item.id} className="order-confirmation__item">
-              <span>
-                {item.productName} <span className="mono-num">× {item.quantity}</span>
+            <li key={item.id} className="order-card__item">
+              <ProductPhoto image={images[item.productVariantId] ?? null} alt="" size="thumb" />
+              <span className="order-card__item-info">
+                <span className="order-card__item-name">{item.productName}</span>
+                <span className="order-card__item-unit">
+                  {item.quantity} шт.
+                  {item.quantity > 1 && (
+                    <>
+                      {' '}
+                      × {formatPrice(item.price)} <CurrencySymbol />
+                    </>
+                  )}
+                </span>
               </span>
-              <Price value={item.price * item.quantity} size="sm" />
+              <Price value={item.price * item.quantity} size="md" className="order-card__item-sum" />
             </li>
           ))}
         </ul>
-        <div className="order-confirmation__total">
-          <span>Итого</span>
-          <Price value={order.totalPrice} size="lg" />
-        </div>
-      </div>
 
-      <Link href="/">
-        <Button variant="secondary">Продолжить покупки</Button>
-      </Link>
+        <div className="order-card__totals">
+          {discounted && (
+            <dl className="order-card__lines">
+              <div className="order-card__line">
+                <dt>Товары, {count} шт.</dt>
+                <dd>
+                  {formatPrice(order.subtotal)} <CurrencySymbol />
+                </dd>
+              </div>
+              <div className="order-card__line order-card__line--discount">
+                <dt>Промокод {order.promoCode}</dt>
+                <dd>
+                  −{formatPrice(order.discountAmount)} <CurrencySymbol />
+                </dd>
+              </div>
+            </dl>
+          )}
+          <div className="order-card__total">
+            <span>Итого</span>
+            <Price value={order.totalPrice} size="lg" className="order-card__total-price" />
+          </div>
+          <p className="order-card__delivery-cost">
+            Доставка{' '}
+            <span className={delivery.free ? 'order-card__free' : undefined}>{delivery.price}</span>
+          </p>
+        </div>
+
+        <div className="order-card__foot">
+          <dl className="order-card__details">
+            <div className="order-card__detail">
+              <dt>
+                {delivery.icon}
+                {deliveryMethodLabel(order.deliveryMethod)}
+              </dt>
+              <dd>
+                {delivery.place}
+                {delivery.note && <span className="order-card__muted">{delivery.note}</span>}
+              </dd>
+            </div>
+            <div className="order-card__detail">
+              <dt>
+                <CardIcon width={16} height={16} strokeWidth={1.8} />
+                Оплата
+              </dt>
+              <dd>{paymentMethodLabel(order.paymentMethod)}</dd>
+            </div>
+            <div className="order-card__detail">
+              <dt>
+                <UserIcon width={16} height={16} strokeWidth={1.8} />
+                Получатель
+              </dt>
+              <dd>
+                {[order.firstName, order.lastName].filter(Boolean).join(' ')}
+                {order.phone && <span className="order-card__muted">{formatPhone(order.phone)}</span>}
+              </dd>
+            </div>
+          </dl>
+
+          {order.comment && (
+            <p className="order-card__comment">
+              <span className="order-card__muted">Комментарий:</span> {order.comment}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <p className="order-confirmation__help">
+        Что-то указали неверно? Позвоните нам:{' '}
+        <a href={SITE_PHONES[0].href} className="order-confirmation__phone">
+          {SITE_PHONES[0].display}
+        </a>{' '}
+        или{' '}
+        <a href={SITE_PHONES[1].href} className="order-confirmation__phone">
+          {SITE_PHONES[1].display}
+        </a>
+      </p>
+
+      <div className="order-confirmation__actions">
+        <Link href="/catalog" className="order-confirmation__button">
+          Продолжить покупки
+        </Link>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { OrderResponse } from '@/api/types';
+import type { OrderResponse, ProductImageResponse } from '@/api/types';
 
 const STORAGE_KEY = 'santime-last-order';
 
@@ -12,19 +12,26 @@ const STORAGE_KEY = 'santime-last-order';
  * эндпоинта чтения одного заказа у бэкенда нет, иначе правильнее было бы
  * ходить за ним по ?orderId=.
  */
-export function saveLastOrder(order: OrderResponse): void {
+export interface LastOrder {
+  order: OrderResponse;
+  /** Фото позиций по productVariantId из корзины: в ответе заказа картинок нет. */
+  images: Record<number, ProductImageResponse | null>;
+}
+
+export function saveLastOrder(lastOrder: LastOrder): void {
   try {
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(lastOrder));
   } catch {
     // приватный режим или переполненное хранилище — подтверждение просто
     // покажет обобщённый текст, заказ при этом уже создан
   }
 }
 
-export function loadLastOrder(): OrderResponse | null {
+export function loadLastOrder(): LastOrder | null {
   try {
     const raw = window.sessionStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as OrderResponse) : null;
+    const parsed = raw ? (JSON.parse(raw) as Partial<LastOrder>) : null;
+    return parsed?.order ? { order: parsed.order, images: parsed.images ?? {} } : null;
   } catch {
     return null;
   }
