@@ -69,6 +69,7 @@ export function OrdersPage() {
             key={option.value}
             type="button"
             role="tab"
+            data-status={option.value}
             aria-selected={status === option.value}
             className={`orders-page__status ${status === option.value ? 'orders-page__status--current' : ''}`}
             onClick={() => selectStatus(option.value)}

@@ -13,6 +13,15 @@ interface SkuCopyProps {
 }
 
 export function SkuCopy({ sku, tooltipAlign = 'center' }: SkuCopyProps) {
+  return (
+    <span className={`sku-copy${tooltipAlign === 'end' ? ' sku-copy--end' : ''}`}>
+      Артикул:
+      <CopyValue value={sku} title="Скопировать артикул" />
+    </span>
+  );
+}
+
+export function CopyValue({ value, title }: { value: string; title: string }) {
   const [copied, setCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
 
@@ -20,7 +29,7 @@ export function SkuCopy({ sku, tooltipAlign = 'center' }: SkuCopyProps) {
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(sku);
+      await navigator.clipboard.writeText(value);
     } catch {
       return;
     }
@@ -30,21 +39,18 @@ export function SkuCopy({ sku, tooltipAlign = 'center' }: SkuCopyProps) {
   };
 
   return (
-    <span className={`sku-copy${tooltipAlign === 'end' ? ' sku-copy--end' : ''}`}>
-      Артикул:
-      <button type="button" className="sku-copy__button" onClick={copy} title="Скопировать артикул">
-        <span className="mono-num">{sku}</span>
-        {copied ? (
-          <CheckIcon className="sku-copy__icon sku-copy__icon--done" width={14} height={14} strokeWidth={2.4} />
-        ) : (
-          <CopyIcon className="sku-copy__icon" width={14} height={14} />
-        )}
-        {copied && (
-          <span className="sku-copy__tooltip" role="status">
-            Скопировано
-          </span>
-        )}
-      </button>
-    </span>
+    <button type="button" className="sku-copy__button" onClick={copy} title={title} aria-label={`${title}: ${value}`}>
+      <span className="mono-num">{value}</span>
+      {copied ? (
+        <CheckIcon className="sku-copy__icon sku-copy__icon--done" width={14} height={14} strokeWidth={2.4} />
+      ) : (
+        <CopyIcon className="sku-copy__icon" width={14} height={14} />
+      )}
+      {copied && (
+        <span className="sku-copy__tooltip" role="status">
+          Скопировано
+        </span>
+      )}
+    </button>
   );
 }

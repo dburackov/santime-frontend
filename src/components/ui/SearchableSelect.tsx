@@ -102,12 +102,13 @@ export function SearchableSelect({
     if (!open) return;
 
     let rafId: number | null = null;
-    let lastRect: { top: number; bottom: number; left: number; width: number } | null = null;
+    let lastRect: { top: number; bottom: number; left: number; width: number; viewportHeight: number } | null = null;
 
     function measurePosition() {
       rafId = null;
       const rect = triggerRef.current?.getBoundingClientRect();
       if (!rect) return;
+      const viewportHeight = window.innerHeight;
 
       // Скролл где угодно на странице (capture: true) долетает сюда, даже если
       // триггер не сдвинулся ни на пиксель — не пересчитываем позицию впустую.
@@ -116,18 +117,23 @@ export function SearchableSelect({
         lastRect.top === rect.top &&
         lastRect.bottom === rect.bottom &&
         lastRect.left === rect.left &&
-        lastRect.width === rect.width
+        lastRect.width === rect.width &&
+        lastRect.viewportHeight === viewportHeight
       ) {
         return;
       }
-      lastRect = { top: rect.top, bottom: rect.bottom, left: rect.left, width: rect.width };
+      lastRect = { top: rect.top, bottom: rect.bottom, left: rect.left, width: rect.width, viewportHeight };
 
-      const panelHeight = panelRef.current?.offsetHeight ?? 0;
-      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
+      const panel = panelRef.current;
+      panel?.style.setProperty('--select-available-height', `${Math.max(spaceAbove, spaceBelow) - 12}px`);
+      const panelHeight = panel?.offsetHeight ?? 0;
       // Раскрываем вверх, только если снизу панель не помещается, а сверху места больше —
       // иначе по умолчанию всегда вниз, даже если наверху чуть просторнее.
       const shouldOpenUp = spaceBelow < panelHeight + 4 && spaceAbove > spaceBelow;
+      const availableHeight = (shouldOpenUp ? spaceAbove : spaceBelow) - 12;
+      panel?.style.setProperty('--select-available-height', `${Math.max(0, availableHeight)}px`);
       setOpenUp(shouldOpenUp);
       if (portal) {
         setPanelStyle(
@@ -188,6 +194,7 @@ export function SearchableSelect({
   const panel = open && (
         <div
           className={`searchable-select__panel ${portal ? 'searchable-select__panel--portal' : ''} ${openUp ? 'searchable-select__panel--up' : ''}`}
+          data-select-id={id}
           ref={panelRef}
           style={portal ? (panelStyle ?? { top: 0, left: 0, visibility: 'hidden' }) : undefined}
         >
@@ -218,6 +225,7 @@ export function SearchableSelect({
             {filteredOptions.map((option) => (
               <label
                 className={`searchable-select__option ${selected.includes(option.value) ? 'searchable-select__option--selected' : ''}`}
+                data-value={option.value}
                 key={option.value}
                 onClick={() => toggleValue(option.value)}
               >

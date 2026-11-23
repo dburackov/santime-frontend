@@ -221,3 +221,27 @@
   color: var(--color-ink);
   font-size: var(--text-sm);
 }
+
+.admin-shell .sku-copy__button {
+  font-size: var(--text-sm);
+}
+
+:is(.orders-page__status, .order-detail__status, .order-detail__status-field)[data-status="NEW"],
+:is([data-select-id="order-header-status"], [data-select-id="order-status"]) [data-value="NEW"] {
+  --status-color: var(--color-accent-2);
+}
+
+:is(.orders-page__status, .order-detail__status, .order-detail__status-field)[data-status="CONFIRMED"],
+:is([data-select-id="order-header-status"], [data-select-id="order-status"]) [data-value="CONFIRMED"] {
+  --status-color: color-mix(in srgb, var(--color-gold) 60%, var(--color-ink));
+}
+
+:is(.orders-page__status, .order-detail__status, .order-detail__status-field)[data-status="DELIVERED"],
+:is([data-select-id="order-header-status"], [data-select-id="order-status"]) [data-value="DELIVERED"] {
+  --status-color: var(--color-ok-ink);
+}
+
+:is(.orders-page__status, .order-detail__status, .order-detail__status-field)[data-status="CANCELLED"],
+:is([data-select-id="order-header-status"], [data-select-id="order-status"]) [data-value="CANCELLED"] {
+  --status-color: var(--color-danger);
+}

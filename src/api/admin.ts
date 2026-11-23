@@ -312,6 +312,10 @@ export function updateOrder(id: number, body: AdminOrderUpdateRequest): Promise<
   return apiRequest(`/api/admin/orders/${id}`, { method: 'PUT', body });
 }
 
+export function deleteOrder(id: number): Promise<void> {
+  return apiRequest(`/api/admin/orders/${id}`, { method: 'DELETE' });
+}
+
 export function getOrderReceipt(id: number): Promise<DownloadedFile> {
   return apiRequestFile(`/api/admin/orders/${id}/receipt`);
 }

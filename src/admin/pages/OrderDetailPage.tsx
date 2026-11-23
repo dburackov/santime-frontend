@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { useRouteParams } from '@/hooks/useRouteParams';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
 import './OrderDetailPage.css';
-import { getOrder, updateOrder } from '@/api/admin';
+import { deleteOrder, getOrder, updateOrder } from '@/api/admin';
 import type { AdminOrderUpdateRequest, OrderResponse, OrderStatus } from '@/api/types';
+import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { Modal } from '@/admin/components/Modal';
 import { PrintReceiptButton } from '@/admin/components/PrintReceiptButton';
 import { RequiredMark } from '@/admin/components/RequiredMark';
@@ -18,17 +20,27 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Price } from '@/components/ui/Price';
 import { Select } from '@/components/ui/Select';
 import { fieldError, formError } from '@/admin/formErrors';
-import { ChevronLeftIcon, ChevronRightIcon, EditIcon } from '@/components/ui/icons';
+import { CopyValue } from '@/components/product/SkuCopy';
+import { EditIcon } from '@/components/ui/icons';
 import {
   DELIVERY_METHODS,
   ORDER_STATUSES,
   PAYMENT_METHODS,
   deliveryMethodLabel,
-  nextOrderStatus,
-  orderStatusLabel,
   paymentMethodLabel,
-  previousOrderStatus,
 } from '@/utils/orderLabels';
+
+const minskDateTime = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'Europe/Minsk',
+  dateStyle: 'short',
+  timeStyle: 'medium',
+});
+
+function formatCreatedAt(value: string) {
+  // API возвращает время создания в UTC без суффикса часового пояса.
+  const instant = /(?:Z|[+-]\d{2}:\d{2})$/i.test(value) ? value : value + 'Z';
+  return minskDateTime.format(new Date(instant));
+}
 
 interface FormState {
   firstName: string;
@@ -78,6 +90,7 @@ function toRequest(form: FormState): AdminOrderUpdateRequest {
 
 export function OrderDetailPage() {
   const { orderId: orderIdParam } = useRouteParams<{ orderId: string }>();
+  const router = useRouter();
   const orderId = Number(orderIdParam);
   const queryClient = useQueryClient();
 
@@ -99,6 +112,15 @@ export function OrderDetailPage() {
     },
   });
 
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteOrder(orderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      router.replace('/admin/orders');
+    },
+  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState<FormState | null>(null);
   const [receiptError, setReceiptError] = useState<unknown>(null);
@@ -115,14 +137,12 @@ export function OrderDetailPage() {
     updateMutation.mutateAsync(toRequest(form)).then(() => setModalOpen(false)).catch(() => {});
   }
 
-  /** Шаг по цепочке статусов: остальные поля заказа уходят как есть. */
   function changeStatus(status: OrderStatus) {
-    if (!order) return;
+    if (!order || order.status === status || updateMutation.isPending) return;
     updateMutation.mutate({ ...toRequest(toForm(order)), status });
   }
 
-  const nextStatus = order ? nextOrderStatus(order.status) : null;
-  const previousStatus = order ? previousOrderStatus(order.status) : null;
+  const address = [order?.city, order?.address, order?.postalCode].filter(Boolean).join(', ');
 
   if (isError) {
     return (
@@ -140,41 +160,18 @@ export function OrderDetailPage() {
         <h1>Заказ №{order?.id}</h1>
         {order && (
           <div className="order-detail__header-actions">
-            <span
-              className={`admin-status-dot ${
-                order.status === 'CANCELLED' ? 'admin-status-dot--inactive' : 'admin-status-dot--active'
-              }`}
-            >
-              {orderStatusLabel(order.status)}
-            </span>
-            {previousStatus && (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="order-status-step--prev"
-                onClick={() => changeStatus(previousStatus)}
-                disabled={updateMutation.isPending}
-              >
-                <ChevronLeftIcon width={16} height={16} />
-                {orderStatusLabel(previousStatus)}
-              </Button>
-            )}
-            {nextStatus && (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="order-status-step--next"
-                onClick={() => changeStatus(nextStatus)}
-                disabled={updateMutation.isPending}
-              >
-                {orderStatusLabel(nextStatus)}
-                <ChevronRightIcon width={16} height={16} />
-              </Button>
-            )}
+            <fieldset className="order-detail__status" data-status={order.status} disabled={updateMutation.isPending}>
+              <Select
+                id="order-header-status"
+                ariaLabel="Статус заказа"
+                options={ORDER_STATUSES}
+                value={order.status}
+                onChange={(value) => changeStatus(value as OrderStatus)}
+              />
+            </fieldset>
             <PrintReceiptButton orderId={order.id} onError={setReceiptError} />
-            <Button size="sm" onClick={openEdit}>
+            <Button size="sm" onClick={openEdit} title="Редактировать заказ" aria-label="Редактировать заказ">
               <EditIcon width={16} height={16} />
-              Редактировать
             </Button>
           </div>
         )}
@@ -199,15 +196,15 @@ export function OrderDetailPage() {
               </div>
               <div>
                 <dt>Email</dt>
-                <dd>{order.email ?? '—'}</dd>
+                <dd>{order.email ? <a href={`mailto:${order.email}`}>{order.email}</a> : '—'}</dd>
               </div>
               <div>
                 <dt>Телефон</dt>
-                <dd>{order.phone ?? '—'}</dd>
+                <dd>{order.phone ? <a href={`tel:${order.phone.replace(/[^+\d]/g, '')}`}>{order.phone}</a> : '—'}</dd>
               </div>
               <div>
                 <dt>Адрес</dt>
-                <dd>{[order.city, order.address, order.postalCode].filter(Boolean).join(', ') || '—'}</dd>
+                <dd>{address ? <CopyValue value={address} title="Скопировать адрес" /> : '—'}</dd>
               </div>
               <div>
                 <dt>Оплата</dt>
@@ -223,14 +220,14 @@ export function OrderDetailPage() {
               </div>
               <div>
                 <dt>Создан</dt>
-                <dd className="mono-num">{new Date(order.createdAt).toLocaleString('ru-RU')}</dd>
+                <dd className="mono-num">{formatCreatedAt(order.createdAt)}</dd>
               </div>
             </dl>
           </section>
 
           <section className="order-detail__section">
             <h2>Состав заказа</h2>
-            <div className="admin-table-wrap">
+            <div className="admin-table-wrap order-detail__items">
               <table className="admin-table">
                 <colgroup>
                   <col className="order-detail__col--product" />
@@ -252,11 +249,11 @@ export function OrderDetailPage() {
                   {order.items.map((item) => (
                     <tr key={item.id}>
                       <td>{item.productName}</td>
-                      <td className="mono-num">{item.sku}</td>
+                      <td><CopyValue value={item.sku} title="Скопировать артикул" /></td>
                       <td>
                         <Price value={item.price} size="sm" />
                       </td>
-                      <td className="mono-num">{item.quantity}</td>
+                      <td className="order-detail__quantity mono-num">{item.quantity}</td>
                       <td>
                         <Price value={item.price * item.quantity} size="sm" />
                       </td>
@@ -292,7 +289,7 @@ export function OrderDetailPage() {
       )}
 
       <Modal
-        open={modalOpen}
+        open={modalOpen && !confirmDelete}
         onClose={() => setModalOpen(false)}
         title="Редактировать заказ"
         footer={
@@ -312,7 +309,7 @@ export function OrderDetailPage() {
               <div className="admin-banner-error">{formError(updateMutation.error)}</div>
             )}
 
-            <div className="admin-form-field">
+            <div className="admin-form-field order-detail__status-field" data-status={form.status}>
               <label htmlFor="order-status">Статус<RequiredMark /></label>
               <Select
                 id="order-status"
@@ -445,9 +442,34 @@ export function OrderDetailPage() {
                 onChange={(e) => setForm((f) => (f ? { ...f, comment: e.target.value } : f))}
               />
             </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="order-detail__delete"
+              disabled={updateMutation.isPending}
+              onClick={() => {
+                deleteMutation.reset();
+                setConfirmDelete(true);
+              }}
+            >
+              Удалить заказ
+            </Button>
           </form>
         )}
       </Modal>
+      <ConfirmDialog
+        open={confirmDelete}
+        title={`Удалить заказ №${orderId}?`}
+        description="Заказ и все его позиции будут удалены безвозвратно."
+        confirmLabel="Удалить заказ"
+        error={formError(deleteMutation.error)}
+        isPending={deleteMutation.isPending || deleteMutation.isSuccess}
+        onCancel={() => {
+          if (!deleteMutation.isPending && !deleteMutation.isSuccess) setConfirmDelete(false);
+        }}
+        onConfirm={() => deleteMutation.mutate()}
+      />
     </div>
   );
 }

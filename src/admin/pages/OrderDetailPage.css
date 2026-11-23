@@ -7,29 +7,46 @@
 .order-detail__header-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  flex: 0 0 auto;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
 }
 
-/* Шаг по статусу читается цветом: вперёд — зелёный, назад — красный.
-   Селектор с .btn нужен, чтобы перебить .btn--secondary. */
-.btn.order-status-step--next {
-  background: color-mix(in srgb, var(--color-success) 12%, transparent);
-  border-color: color-mix(in srgb, var(--color-success) 35%, transparent);
-  color: var(--color-success);
+.order-detail__header-actions svg {
+  flex-shrink: 0;
 }
 
-.btn.order-status-step--next:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-success) 20%, transparent);
+.order-detail__status {
+  width: 9rem;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
 }
 
-.btn.order-status-step--prev {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  border-color: color-mix(in srgb, var(--color-danger) 32%, transparent);
-  color: var(--color-danger);
+:is(.order-detail__status, .order-detail__status-field) .searchable-select__trigger {
+  color: var(--status-color);
+  border-color: color-mix(in srgb, var(--status-color) 45%, var(--color-line));
+  background: color-mix(in srgb, var(--status-color) 10%, var(--color-surface));
 }
 
-.btn.order-status-step--prev:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 18%, transparent);
+:is([data-select-id="order-header-status"], [data-select-id="order-status"]) .searchable-select__option {
+  color: var(--status-color);
+}
+
+:is([data-select-id="order-header-status"], [data-select-id="order-status"]) .searchable-select__option--selected {
+  background: color-mix(in srgb, var(--status-color) 12%, var(--color-surface));
+  font-weight: 700;
+}
+
+.order-detail__fields dd, .order-detail__items td {
+  overflow-wrap: anywhere;
+}
+
+.order-detail__fields .sku-copy__button, .order-detail__items .sku-copy__button {
+  max-width: 100%;
+  text-align: start;
 }
 
 .order-detail__section h2 {
@@ -124,4 +141,70 @@
 
 .order-detail__col--total {
   width: 16%;
+}
+
+@media (max-width: 767px) {
+  .order-detail__header-actions {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .order-detail__items {
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .order-detail__items :is(table, tbody) {
+    display: block;
+  }
+
+  .order-detail__items :is(colgroup, thead) {
+    display: none;
+  }
+
+  .order-detail__items tbody {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .order-detail__items tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    border: var(--border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  .order-detail__items td {
+    padding: 0;
+    border: 0;
+  }
+
+  .order-detail__items td:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .order-detail__items td:last-child {
+    display: none;
+  }
+
+  .order-detail__items .sku-copy__button {
+    min-height: var(--space-6);
+    padding: 0;
+    margin: 0;
+  }
+
+  .order-detail__quantity::before {
+    content: '× ';
+  }
+}
+
+.btn.order-detail__delete {
+  justify-self: start;
+  align-self: start;
+  color: var(--color-danger);
 }

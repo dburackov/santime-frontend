@@ -392,36 +392,35 @@ export function ProductsPage() {
   const brandNames = new Map(brands?.map((brand) => [brand.id, brand.name]));
 
   return (
-    <div className="admin-page admin-page--wide">
-      <div className="admin-page__header">
+    <div className="admin-page admin-page--wide products-page">
+      <div className="admin-page__header products-page__header">
         <h1>Товары</h1>
+        <div className="products-page__filters">
+          <div className="admin-form-field">
+            <Select
+              id="product-category-filter"
+              ariaLabel="Категория"
+              options={[{ value: '', label: 'Все категории' }, ...(categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? [])]}
+              value={categoryFilter}
+              onChange={(value) => updateParams({ categoryId: value })}
+            />
+          </div>
+          <div className="admin-form-field">
+            <input
+              id="product-search"
+              aria-label="Поиск"
+              className="filter-text-input"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Название или артикул"
+              autoComplete="off"
+            />
+          </div>
+        </div>
         <Button size="sm" onClick={openCreate} disabled={!categories || categories.length === 0}>
           <PlusIcon width={16} height={16} />
           Добавить товар
         </Button>
-      </div>
-
-      <div className="products-page__filters">
-        <div className="admin-form-field">
-          <label htmlFor="product-category-filter">Категория</label>
-          <Select
-            id="product-category-filter"
-            options={[{ value: '', label: 'Все категории' }, ...(categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? [])]}
-            value={categoryFilter}
-            onChange={(value) => updateParams({ categoryId: value })}
-          />
-        </div>
-        <div className="admin-form-field">
-          <label htmlFor="product-search">Поиск</label>
-          <input
-            id="product-search"
-            className="filter-text-input"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Название или артикул"
-            autoComplete="off"
-          />
-        </div>
       </div>
 
       {!hasFilter && (

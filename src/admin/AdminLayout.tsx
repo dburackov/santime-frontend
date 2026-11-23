@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import './AdminLayout.css';
-import { ChevronLeftIcon } from '@/components/ui/icons';
 import { useAuth } from '@/auth/useAuth';
 
 const NAV_ITEMS = [
@@ -61,13 +60,6 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="admin-shell">
       <header className="admin-header">
-        <div className="container admin-header__bar">
-          <Link href="/" className="admin-header__back touch-target">
-            <ChevronLeftIcon width={16} height={16} />
-            Витрина
-          </Link>
-          <span className="admin-header__title">Админ-панель</span>
-        </div>
         <nav className="container admin-header__nav" aria-label="Разделы админ-панели">
           {NAV_ITEMS.map((item) => (
             <Link key={item.to} href={item.to} className={navLinkClass(item.to)}>

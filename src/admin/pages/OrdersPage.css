@@ -10,23 +10,22 @@
   border: var(--border);
   border-radius: var(--radius);
   background: var(--color-surface);
-  color: var(--color-slate);
+  color: var(--status-color);
   font-family: inherit;
   font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
 }
 
-/* :not нужен из-за специфичности: без него hover перебивал бы --current и текст
-   выбранной вкладки становился тёмным на тёмном. */
-.orders-page__status:not(.orders-page__status--current):hover {
-  color: var(--color-ink);
+.orders-page__status:hover {
+  background: color-mix(in srgb, var(--status-color) 6%, var(--color-surface));
 }
 
-.orders-page__status--current {
-  background: var(--color-ink);
-  border-color: var(--color-ink);
-  color: var(--color-surface);
+.orders-page__status--current,
+.orders-page__status--current:hover {
+  background: color-mix(in srgb, var(--status-color) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--status-color) 45%, var(--color-line));
+  font-weight: 700;
 }
 
 .orders-page__col--id {
