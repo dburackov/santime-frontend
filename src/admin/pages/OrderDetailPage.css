@@ -80,6 +80,16 @@
   color: var(--color-ink);
 }
 
+.order-detail__fields a {
+  color: var(--color-accent-2);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.order-detail__fields a:hover {
+  text-decoration-thickness: 2px;
+}
+
 /* Сводка прижата вправо и узкая: итог с разбивкой читается как столбик под
    таблицей, а не как ещё одна её строка. */
 .order-detail__summary {
