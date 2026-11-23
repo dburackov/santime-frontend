@@ -25,22 +25,11 @@ import { EditIcon } from '@/components/ui/icons';
 import {
   DELIVERY_METHODS,
   ORDER_STATUSES,
+  formatOrderCreatedAt,
   PAYMENT_METHODS,
   deliveryMethodLabel,
   paymentMethodLabel,
 } from '@/utils/orderLabels';
-
-const minskDateTime = new Intl.DateTimeFormat('ru-RU', {
-  timeZone: 'Europe/Minsk',
-  dateStyle: 'short',
-  timeStyle: 'medium',
-});
-
-function formatCreatedAt(value: string) {
-  // API возвращает время создания в UTC без суффикса часового пояса.
-  const instant = /(?:Z|[+-]\d{2}:\d{2})$/i.test(value) ? value : value + 'Z';
-  return minskDateTime.format(new Date(instant));
-}
 
 interface FormState {
   firstName: string;
@@ -220,7 +209,7 @@ export function OrderDetailPage() {
               </div>
               <div>
                 <dt>Создан</dt>
-                <dd className="mono-num">{formatCreatedAt(order.createdAt)}</dd>
+                <dd className="mono-num">{formatOrderCreatedAt(order.createdAt)}</dd>
               </div>
             </dl>
           </section>

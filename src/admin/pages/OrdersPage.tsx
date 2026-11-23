@@ -13,7 +13,7 @@ import { formError } from '@/admin/formErrors';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Pagination } from '@/components/ui/Pagination';
 import { Price } from '@/components/ui/Price';
-import { ORDER_STATUSES, deliveryMethodLabel, paymentMethodLabel } from '@/utils/orderLabels';
+import { ORDER_STATUSES, deliveryMethodLabel, formatOrderCreatedAt, paymentMethodLabel } from '@/utils/orderLabels';
 
 const PAGE_SIZE = 20;
 const DEFAULT_STATUS: OrderStatus = 'NEW';
@@ -84,7 +84,7 @@ export function OrdersPage() {
       {isError && <ErrorState description="Не удалось загрузить заказы." onRetry={refetch} />}
 
       {!isError && (
-        <div className="admin-table-wrap">
+        <div className="admin-table-wrap orders-page__results">
           <table className="admin-table">
             <colgroup>
               <col className="orders-page__col--id" />
@@ -118,7 +118,7 @@ export function OrdersPage() {
                   <td>
                     <Price value={order.totalPrice} size="sm" />
                   </td>
-                  <td className="mono-num">{new Date(order.createdAt).toLocaleString('ru-RU')}</td>
+                  <td className="mono-num">{formatOrderCreatedAt(order.createdAt)}</td>
                   <td>
                     <div className="admin-table__actions">
                       <Link href={`/admin/orders/${order.id}`} className="admin-table__link-btn">
@@ -131,6 +131,22 @@ export function OrdersPage() {
               ))}
             </tbody>
           </table>
+          <ul className="orders-page__cards" aria-label="Заказы">
+            {data?.content.map((order) => (
+              <li key={order.id} className="orders-page__card">
+                <div className="orders-page__card-heading">
+                  <Link href={`/admin/orders/${order.id}`}>Заказ №{order.id}</Link>
+                  <Price value={order.totalPrice} size="sm" />
+                </div>
+                <div>{order.firstName} {order.lastName}</div>
+                <div>{paymentMethodLabel(order.paymentMethod)} · {deliveryMethodLabel(order.deliveryMethod)}</div>
+                <div className="orders-page__card-footer">
+                  <span className="mono-num">{formatOrderCreatedAt(order.createdAt)}</span>
+                  <PrintReceiptButton orderId={order.id} variant="icon" onError={setReceiptError} />
+                </div>
+              </li>
+            ))}
+          </ul>
           {!isLoading && data?.content.length === 0 && (
             <div className="admin-empty">Заказов с этим статусом нет.</div>
           )}

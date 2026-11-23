@@ -34,3 +34,15 @@ export function deliveryMethodLabel(value: string): string {
 export function orderStatusLabel(value: OrderStatus): string {
   return labelOf(ORDER_STATUSES, value);
 }
+
+const minskDateTime = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'Europe/Minsk',
+  dateStyle: 'short',
+  timeStyle: 'medium',
+});
+
+export function formatOrderCreatedAt(value: string) {
+  // API возвращает время создания в UTC без суффикса часового пояса.
+  const instant = /(?:Z|[+-]\d{2}:\d{2})$/i.test(value) ? value : value + 'Z';
+  return minskDateTime.format(new Date(instant));
+}

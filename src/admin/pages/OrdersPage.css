@@ -55,3 +55,59 @@
 .orders-page__col--actions {
   width: 14%;
 }
+
+.orders-page__cards {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .orders-page__results {
+    border: 0;
+    background: transparent;
+  }
+
+  .orders-page__results .admin-table {
+    display: none;
+  }
+
+  .orders-page__cards {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .orders-page__card {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    background: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+  }
+
+  .orders-page__card-heading,
+  .orders-page__card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .orders-page__card-heading a {
+    color: var(--color-accent-2);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .orders-page__card-footer {
+    color: var(--color-slate);
+  }
+
+  .orders-page__card-footer button {
+    padding: var(--space-2);
+  }
+}
