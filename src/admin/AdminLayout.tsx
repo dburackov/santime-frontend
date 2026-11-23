@@ -75,7 +75,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
       </header>
 
-      <main className="container admin-shell__main">{children}</main>
+      <main className={pathname === '/admin/products' ? undefined : 'container'}>{children}</main>
     </div>
   );
 }

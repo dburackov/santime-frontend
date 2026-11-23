@@ -54,16 +54,21 @@ a {
 }
 
 .container {
+  max-width: 1240px;
+}
+
+.container,
+.container-fluid {
   --container-gutter: var(--space-4);
 
   width: 100%;
-  max-width: 1240px;
   margin: 0 auto;
   padding: 0 var(--container-gutter);
 }
 
 @media (min-width: 1024px) {
-  .container {
+  .container,
+  .container-fluid {
     --container-gutter: var(--space-6);
   }
 }

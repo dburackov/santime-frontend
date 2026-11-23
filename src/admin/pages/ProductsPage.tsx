@@ -392,158 +392,162 @@ export function ProductsPage() {
   const brandNames = new Map(brands?.map((brand) => [brand.id, brand.name]));
 
   return (
-    <div className="admin-page admin-page--wide products-page">
-      <div className="admin-page__header products-page__header">
-        <h1>Товары</h1>
-        <div className="products-page__filters">
-          <div className="admin-form-field">
-            <Select
-              id="product-category-filter"
-              ariaLabel="Категория"
-              options={[{ value: '', label: 'Все категории' }, ...(categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? [])]}
-              value={categoryFilter}
-              onChange={(value) => updateParams({ categoryId: value })}
-            />
+    <div className="admin-page products-page">
+      <div className="container">
+        <div className="admin-page__header products-page__header">
+          <h1>Товары</h1>
+          <div className="products-page__filters">
+            <div className="admin-form-field">
+              <Select
+                id="product-category-filter"
+                ariaLabel="Категория"
+                options={[{ value: '', label: 'Все категории' }, ...(categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? [])]}
+                value={categoryFilter}
+                onChange={(value) => updateParams({ categoryId: value })}
+              />
+            </div>
+            <div className="admin-form-field">
+              <input
+                id="product-search"
+                aria-label="Поиск"
+                className="filter-text-input"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Название или артикул"
+                autoComplete="off"
+              />
+            </div>
           </div>
-          <div className="admin-form-field">
-            <input
-              id="product-search"
-              aria-label="Поиск"
-              className="filter-text-input"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Название или артикул"
-              autoComplete="off"
-            />
-          </div>
+          <Button size="sm" onClick={openCreate} disabled={!categories || categories.length === 0}>
+            <PlusIcon width={16} height={16} />
+            Добавить товар
+          </Button>
         </div>
-        <Button size="sm" onClick={openCreate} disabled={!categories || categories.length === 0}>
-          <PlusIcon width={16} height={16} />
-          Добавить товар
-        </Button>
       </div>
 
-      {!hasFilter && (
-        <div className="admin-empty">Выберите категорию или введите запрос, чтобы увидеть товары.</div>
-      )}
+      <div className="container-fluid">
+        {!hasFilter && (
+          <div className="admin-empty">Выберите категорию или введите запрос, чтобы увидеть товары.</div>
+        )}
 
-      {hasFilter && isError && <ErrorState description="Не удалось загрузить товары." onRetry={refetch} />}
+        {hasFilter && isError && <ErrorState description="Не удалось загрузить товары." onRetry={refetch} />}
 
-      {hasFilter && !isError && (
-        <div className="admin-table-wrap">
-          <table className="admin-table products-page__table">
-            <colgroup>
-              <col className="products-page__col--id" />
-              <col className="products-page__col--name" />
-              <col className="products-page__col--sku" />
-              <col className="products-page__col--price" />
-              <col className="products-page__col--stock" />
-              <col className="products-page__col--status" />
-              <col className="products-page__col--brand" />
-              <col className="products-page__col--actions" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Артикул</th>
-                <th>Цена</th>
-                <th>Остаток</th>
-                <th>Статус</th>
-                <th>Бренд</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {pageData?.content.map((group) => (
-                <Fragment key={group.id}>
-                  <tr className="products-page__group-row">
-                    <td colSpan={8}>
-                      <div className="products-page__group-head">
-                        <span className="products-page__group-title">{groupTitle(group.variants)}</span>
-                        <span className="products-page__group-meta">{shownCount(group)}</span>
-                        {group.axes.length > 0 && (
-                          <span className="products-page__group-meta">
-                            различает: {group.axes.map((axis) => axis.attributeName).join(', ')}
-                          </span>
-                        )}
-                        {group.axes.length === 0 && group.variantTotal > 1 && (
-                          <span className="admin-form-error">оси не заданы</span>
-                        )}
-                        <div className="admin-table__actions products-page__group-actions">
-                          <button
-                            type="button"
-                            className="admin-table__link-btn"
-                            onClick={() => openSibling(group)}
-                          >
-                            Добавить
-                          </button>
-                          <Link
-                            href={`/admin/products/groups/${group.id}/images`}
-                            className="admin-table__link-btn"
-                          >
-                            Фото
-                          </Link>
-                          <button
-                            type="button"
-                            className="admin-table__link-btn"
-                            onClick={() => setGroupTarget(group)}
-                          >
-                            Редактировать
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  {group.variants.map((variant) => (
-                    <tr key={variant.id}>
-                      <td className="mono-num">{variant.id}</td>
-                      <td>{variant.name}</td>
-                      <td className="mono-num">{variant.sku}</td>
-                      <td className="mono-num">{formatPrice(variant.price)}</td>
-                      <td className="mono-num">{variant.stockQuantity}</td>
-                      <td>
-                        <span className={`admin-status-dot ${variant.active ? 'admin-status-dot--active' : 'admin-status-dot--inactive'}`}>
-                          {variant.active ? 'Активен' : 'Скрыт'}
-                        </span>
-                      </td>
-                      <td>{(variant.brandId !== null && brandNames.get(variant.brandId)) || '—'}</td>
-                      <td>
-                        <div className="admin-table__actions">
-                          <Link href={`/admin/products/${variant.id}/images`} className="admin-table__link-btn">
-                            Фото
-                          </Link>
-                          <button
-                            type="button"
-                            className="admin-table__icon-btn"
-                            onClick={() => openEdit(group, variant)}
-                            aria-label="Редактировать"
-                          >
-                            <EditIcon width={16} height={16} />
-                          </button>
-                          <button
-                            type="button"
-                            className="admin-table__icon-btn admin-table__icon-btn--danger"
-                            onClick={() => setDeleteTarget(variant)}
-                            aria-label="Удалить"
-                          >
-                            <TrashIcon width={16} height={16} />
-                          </button>
+        {hasFilter && !isError && (
+          <div className="admin-table-wrap">
+            <table className="admin-table products-page__table">
+              <colgroup>
+                <col className="products-page__col--id" />
+                <col className="products-page__col--name" />
+                <col className="products-page__col--sku" />
+                <col className="products-page__col--price" />
+                <col className="products-page__col--stock" />
+                <col className="products-page__col--status" />
+                <col className="products-page__col--brand" />
+                <col className="products-page__col--actions" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Название</th>
+                  <th>Артикул</th>
+                  <th>Цена</th>
+                  <th>Остаток</th>
+                  <th>Статус</th>
+                  <th>Бренд</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {pageData?.content.map((group) => (
+                  <Fragment key={group.id}>
+                    <tr className="products-page__group-row">
+                      <td colSpan={8}>
+                        <div className="products-page__group-head">
+                          <span className="products-page__group-title">{groupTitle(group.variants)}</span>
+                          <span className="products-page__group-meta">{shownCount(group)}</span>
+                          {group.axes.length > 0 && (
+                            <span className="products-page__group-meta">
+                              различает: {group.axes.map((axis) => axis.attributeName).join(', ')}
+                            </span>
+                          )}
+                          {group.axes.length === 0 && group.variantTotal > 1 && (
+                            <span className="admin-form-error">оси не заданы</span>
+                          )}
+                          <div className="admin-table__actions products-page__group-actions">
+                            <button
+                              type="button"
+                              className="admin-table__link-btn"
+                              onClick={() => openSibling(group)}
+                            >
+                              Добавить
+                            </button>
+                            <Link
+                              href={`/admin/products/groups/${group.id}/images`}
+                              className="admin-table__link-btn"
+                            >
+                              Фото
+                            </Link>
+                            <button
+                              type="button"
+                              className="admin-table__link-btn"
+                              onClick={() => setGroupTarget(group)}
+                            >
+                              Редактировать
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
-          {!isLoading && pageData?.content.length === 0 && (
-            <div className="admin-empty">{search ? 'Ничего не найдено.' : 'Товаров пока нет.'}</div>
-          )}
-        </div>
-      )}
+                    {group.variants.map((variant) => (
+                      <tr key={variant.id}>
+                        <td className="mono-num">{variant.id}</td>
+                        <td>{variant.name}</td>
+                        <td className="mono-num">{variant.sku}</td>
+                        <td className="mono-num">{formatPrice(variant.price)}</td>
+                        <td className="mono-num">{variant.stockQuantity}</td>
+                        <td>
+                          <span className={`admin-status-dot ${variant.active ? 'admin-status-dot--active' : 'admin-status-dot--inactive'}`}>
+                            {variant.active ? 'Активен' : 'Скрыт'}
+                          </span>
+                        </td>
+                        <td>{(variant.brandId !== null && brandNames.get(variant.brandId)) || '—'}</td>
+                        <td>
+                          <div className="admin-table__actions">
+                            <Link href={`/admin/products/${variant.id}/images`} className="admin-table__link-btn">
+                              Фото
+                            </Link>
+                            <button
+                              type="button"
+                              className="admin-table__icon-btn"
+                              onClick={() => openEdit(group, variant)}
+                              aria-label="Редактировать"
+                            >
+                              <EditIcon width={16} height={16} />
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-table__icon-btn admin-table__icon-btn--danger"
+                              onClick={() => setDeleteTarget(variant)}
+                              aria-label="Удалить"
+                            >
+                              <TrashIcon width={16} height={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+            {!isLoading && pageData?.content.length === 0 && (
+              <div className="admin-empty">{search ? 'Ничего не найдено.' : 'Товаров пока нет.'}</div>
+            )}
+          </div>
+        )}
 
-      {hasFilter && pageData && <Pagination page={page} totalPages={pageData.totalPages} onChange={setPage} />}
+        {hasFilter && pageData && <Pagination page={page} totalPages={pageData.totalPages} onChange={setPage} />}
+      </div>
 
       <Modal
         open={modalOpen}
