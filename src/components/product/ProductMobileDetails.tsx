@@ -6,8 +6,6 @@ import { Price } from '@/components/ui/Price';
 import { DeliveryInfoMobile } from '@/components/info/DeliveryInfoMobile';
 import { PaymentInfoMobile } from '@/components/info/PaymentInfoMobile';
 import { ProductAboutSheet } from './ProductAboutSheet';
-import { SkuCopy } from './SkuCopy';
-import { StockBadge } from './StockBadge';
 import { VariantOptions } from './VariantOptions';
 import { buildSpecRows, splitDescription } from './productSpecs';
 import type { ProductCartState } from './useProductCart';
@@ -32,14 +30,7 @@ export function ProductMobileDetails({ variant, cart }: ProductMobileDetailsProp
 
   return (
     <div className="product-mobile">
-      <div className="product-mobile__summary">
-        <div className="product-mobile__meta">
-          <StockBadge stock={variant.stockQuantity} />
-          <SkuCopy sku={variant.sku} tooltipAlign="end" />
-        </div>
-        <h1 className="product-mobile__title">{variant.name}</h1>
-        <Price value={variant.price} oldValue={variant.oldPrice} size="lg" className="product-mobile__price" />
-      </div>
+      <Price value={variant.price} oldValue={variant.oldPrice} size="lg" className="product-mobile__price" />
 
       <VariantOptions groups={variant.variantOptions} metadata={variant.attributeMetadata} />
 

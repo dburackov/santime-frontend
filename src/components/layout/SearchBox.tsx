@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import './SearchBox.css';
@@ -20,6 +20,8 @@ interface SearchBoxProps {
 
 export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBoxProps) {
   const router = useRouter();
+  const generatedInputId = useId();
+  const fieldId = inputId ?? generatedInputId;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLFormElement>(null);
@@ -88,9 +90,10 @@ export function SearchBox({ autoFocus, onNavigate, onClose, inputId }: SearchBox
   return (
     <form className="search-box" role="search" ref={rootRef} onSubmit={handleSubmit}>
       <SearchIcon width={16} height={16} className="search-box__icon" />
+      <label className="visually-hidden" htmlFor={fieldId}>Поиск товаров</label>
       <input
         ref={inputRef}
-        id={inputId}
+        id={fieldId}
         type="text"
         className="search-box__input"
         placeholder="Поиск товаров"

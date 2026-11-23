@@ -13,6 +13,8 @@ import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductBuyBox } from '@/components/product/ProductBuyBox';
 import { ProductCharacteristics } from '@/components/product/ProductCharacteristics';
 import { ProductMobileDetails } from '@/components/product/ProductMobileDetails';
+import { SkuCopy } from '@/components/product/SkuCopy';
+import { StockBadge } from '@/components/product/StockBadge';
 import { StickyBuyBar } from '@/components/product/StickyBuyBar';
 import { SimilarProducts } from '@/components/product/SimilarProducts';
 import { useProductCart } from '@/components/product/useProductCart';
@@ -89,8 +91,15 @@ function ProductView({ variant }: { variant: VariantDetailResponse }) {
           </Link>
 
           <ProductGallery images={variant.images ?? []} productName={variant.name} />
-          <ProductBuyBox variant={variant} cart={cart} onJump={jumpTo} />
-          <ProductMobileDetails variant={variant} cart={cart} />
+          <div className="product-page__purchase">
+            <div className="product-page__mobile-meta">
+              <StockBadge stock={variant.stockQuantity} />
+              <SkuCopy sku={variant.sku} tooltipAlign="end" />
+            </div>
+            <h1 className="product-page__title">{variant.name}</h1>
+            <ProductBuyBox variant={variant} cart={cart} onJump={jumpTo} />
+            <ProductMobileDetails variant={variant} cart={cart} />
+          </div>
         </section>
 
         <ProductCharacteristics id={SECTION_IDS.characteristics} variant={variant} />

@@ -28,12 +28,9 @@ interface ProductBuyBoxProps {
 export function ProductBuyBox({ variant, cart, onJump }: ProductBuyBoxProps) {
   return (
     <div className="product-buy-box">
-      <div className="product-buy-box__head">
-        <h1 className="product-buy-box__title">{variant.name}</h1>
-        <div className="product-buy-box__meta">
-          <SkuCopy sku={variant.sku} />
-          <StockBadge stock={variant.stockQuantity} />
-        </div>
+      <div className="product-buy-box__meta">
+        <SkuCopy sku={variant.sku} />
+        <StockBadge stock={variant.stockQuantity} />
       </div>
 
       <VariantOptions groups={variant.variantOptions} metadata={variant.attributeMetadata} />

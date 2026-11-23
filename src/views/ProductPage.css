@@ -33,6 +33,23 @@
   padding-bottom: clamp(32px, 3vw, 44px);
 }
 
+.product-page__purchase {
+  position: sticky;
+  top: calc(var(--header-height) + 13px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.product-page__title {
+  font-size: clamp(1.375rem, 1.8vw, 1.75rem);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+
+.product-page__mobile-meta,
 .product-page__back {
   display: none;
 }
@@ -57,6 +74,10 @@
   .product-page__main {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .product-page__purchase {
+    position: static;
+  }
 }
 
 /* На телефоне крошки сворачиваются в одну ссылку «назад в категорию». Доставку и оплату
@@ -71,6 +92,35 @@
     gap: var(--space-4);
     padding-top: var(--space-2);
     padding-bottom: 0;
+  }
+
+  .product-page__purchase {
+    gap: 10px;
+    margin-top: var(--space-1);
+  }
+
+  .product-page__title {
+    font-size: 1.3125rem;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+
+  .product-page__mobile-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .product-page__mobile-meta .sku-copy__button {
+    min-height: 36px;
+    margin-right: calc(-1 * var(--space-2));
+    margin-left: 0;
+  }
+
+  .product-page__mobile-meta .sku-copy__button:active {
+    background: var(--color-tint);
   }
 
   .product-page__back {

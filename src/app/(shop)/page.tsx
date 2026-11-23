@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getBestsellers, getCategories, getKits, getProducts } from '@/api/catalog';
+import { getBestsellers, getKits, getProducts } from '@/api/catalog';
 import { getPublicPromoCodes } from '@/api/promo';
 import { createServerQueryClient } from '@/app/query-client';
 import { PUBLIC_PROMO_CODES_QUERY_KEY } from '@/queries/promoQueryKeys';
@@ -35,10 +35,6 @@ export default async function Page() {
   const queryClient = createServerQueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ['categories'],
-      queryFn: () => getCategories({ revalidate }),
-    }),
     queryClient.prefetchQuery({
       queryKey: ['catalog-products', DISCOUNTS_QUERY],
       queryFn: () => getProducts(DISCOUNTS_QUERY, { revalidate }),

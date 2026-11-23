@@ -1,23 +1,8 @@
 .product-buy-box {
-  position: sticky;
-  top: calc(var(--header-height) + 13px);
   display: flex;
   flex-direction: column;
   gap: 18px;
   min-width: 0;
-}
-
-.product-buy-box__head {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.product-buy-box__title {
-  font-size: clamp(1.375rem, 1.8vw, 1.75rem);
-  line-height: 1.22;
-  letter-spacing: -0.02em;
-  text-wrap: pretty;
 }
 
 .product-buy-box__meta {
@@ -162,12 +147,6 @@
 .product-buy-box__jump-chevron {
   flex-shrink: 0;
   color: var(--color-slate);
-}
-
-@media (max-width: 1023px) {
-  .product-buy-box {
-    position: static;
-  }
 }
 
 /* На телефоне вместо блока покупки — ProductMobileDetails со своей раскладкой. */

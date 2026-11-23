@@ -5,6 +5,8 @@ import type { NextConfig } from 'next';
 const API_ORIGIN = process.env.API_BASE_URL || 'http://localhost:8080';
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+
   // standalone включается только под флагом, который выставляет Dockerfile: с ним
   // не работает `next start` ("next start does not work with output: standalone"),
   // а локально сборка проверяется именно им.
