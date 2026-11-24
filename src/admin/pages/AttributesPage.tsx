@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import '@/admin/admin.css';
 import '@/components/filters/Filters.css';
 import './AttributesPage.css';
@@ -52,6 +53,17 @@ export function AttributesPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [deleteTarget, setDeleteTarget] = useState<AttributeResponse | null>(null);
 
+  const search = useSearchParams()?.get('search') ?? '';
+  const query = search.trim().toLowerCase();
+  const visibleItems = items?.filter((attribute) => attribute.name.toLowerCase().includes(query));
+
+  function updateSearch(value: string) {
+    const url = new URL(window.location.href);
+    if (value) url.searchParams.set('search', value);
+    else url.searchParams.delete('search');
+    window.history.replaceState(null, '', url);
+  }
+
   function openCreate() {
     setEditing(null);
     setForm(EMPTY_FORM);
@@ -82,8 +94,17 @@ export function AttributesPage() {
 
   return (
     <div className="admin-page">
-      <div className="admin-page__header">
+      <div className="admin-page__header attributes-page__header">
         <h1>Атрибуты</h1>
+        <input
+          id="attribute-search"
+          aria-label="Поиск по названию атрибута"
+          className="filter-text-input attributes-page__search"
+          value={search}
+          onChange={(e) => updateSearch(e.target.value)}
+          placeholder="Название атрибута"
+          autoComplete="off"
+        />
         <Button size="sm" onClick={openCreate}>
           <PlusIcon width={16} height={16} />
           Добавить атрибут
@@ -114,7 +135,7 @@ export function AttributesPage() {
               </tr>
             </thead>
             <tbody>
-              {items?.map((attribute) => (
+              {visibleItems?.map((attribute) => (
                 <tr key={attribute.id}>
                   <td className="mono-num">{attribute.id}</td>
                   <td>{attribute.name}</td>
@@ -150,7 +171,9 @@ export function AttributesPage() {
               ))}
             </tbody>
           </table>
-          {items?.length === 0 && <div className="admin-empty">Атрибутов пока нет.</div>}
+          {visibleItems?.length === 0 && (
+            <div className="admin-empty">{query ? 'Атрибуты не найдены.' : 'Атрибутов пока нет.'}</div>
+          )}
         </div>
       )}
 

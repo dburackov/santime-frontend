@@ -1,3 +1,24 @@
+.admin-page__header.attributes-page__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.attributes-page__search {
+  max-width: 360px;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .admin-page__header.attributes-page__header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .attributes-page__search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
 .attributes-page__col--id {
   width: 6%;
 }

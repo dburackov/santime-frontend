@@ -90,6 +90,7 @@ export function useDragOrder<T>(
 
   return {
     items: ordered,
+    resetOrder: () => setLocal(null),
     draggingId,
     itemProps: (id: number) => ({
       ref: (node: HTMLElement | null) => {

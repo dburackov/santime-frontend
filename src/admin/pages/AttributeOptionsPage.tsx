@@ -3,18 +3,21 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouteParams } from '@/hooks/useRouteParams';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import '@/admin/admin.css';
+import '@/admin/dragOrder.css';
 import '@/components/filters/Filters.css';
 import './AttributeOptionsPage.css';
 import {
   listAttributeOptions,
+  reorderAttributeOptions,
   createAttributeOption,
   updateAttributeOption,
   deleteAttributeOption,
   listAttributes,
 } from '@/api/admin';
 import type { AttributeOptionRequest, AttributeOptionResponse } from '@/api/types';
+import { useDragOrder } from '@/admin/useDragOrder';
 import { useAdminResource } from '@/admin/useAdminResource';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
@@ -22,7 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { fieldError, formError } from '@/admin/formErrors';
-import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
+import { DragHandleIcon, PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 
 export function AttributeOptionsPage() {
   const { attributeId: attributeIdParam } = useRouteParams<{ attributeId: string }>();
@@ -41,6 +44,19 @@ export function AttributeOptionsPage() {
     update: (id, body) => updateAttributeOption(attributeId, id, body),
     remove: (id) => deleteAttributeOption(attributeId, id),
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: (ids: number[]) => reorderAttributeOptions(attributeId, ids),
+    onSettled: async () => {
+      await refetch();
+      resetOrder();
+    },
+  });
+  const { items: orderedOptions, itemProps, handleProps, resetOrder } = useDragOrder(
+    items,
+    (option) => option.id,
+    (ids) => reorderMutation.mutate(ids),
+  );
 
   const [editing, setEditing] = useState<AttributeOptionResponse | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -91,24 +107,33 @@ export function AttributeOptionsPage() {
 
       {isError && <ErrorState description="Не удалось загрузить значения." onRetry={refetch} />}
 
+      {reorderMutation.isError && (
+        <div className="admin-banner-error" role="alert">{formError(reorderMutation.error)}</div>
+      )}
+
       {!isError && (
         <div className="admin-table-wrap">
           <table className="admin-table">
             <colgroup>
+              <col className="attribute-options-page__col--grip" />
               <col className="attribute-options-page__col--id" />
               <col className="attribute-options-page__col--value" />
               <col className="attribute-options-page__col--actions" />
             </colgroup>
             <thead>
               <tr>
+                <th aria-label="Порядок" />
                 <th>ID</th>
                 <th>Значение</th>
                 <th />
               </tr>
             </thead>
             <tbody>
-              {items?.map((option) => (
-                <tr key={option.id}>
+              {orderedOptions.map((option) => (
+                <tr key={option.id} {...itemProps(option.id)}>
+                  <td className="drag-handle" {...(reorderMutation.isPending ? {} : handleProps(option.id))}>
+                    <DragHandleIcon width={16} height={16} />
+                  </td>
                   <td className="mono-num">{option.id}</td>
                   <td>{option.value}</td>
                   <td>

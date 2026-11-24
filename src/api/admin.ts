@@ -109,6 +109,10 @@ export function listAttributeOptions(attributeId: number): Promise<AttributeOpti
   return apiRequest(`/api/admin/attributes/${attributeId}/options`);
 }
 
+export function reorderAttributeOptions(attributeId: number, ids: number[]): Promise<void> {
+  return apiRequest(`/api/admin/attributes/${attributeId}/options/order`, { method: 'PUT', body: { ids } });
+}
+
 export function createAttributeOption(
   attributeId: number,
   body: AttributeOptionRequest,

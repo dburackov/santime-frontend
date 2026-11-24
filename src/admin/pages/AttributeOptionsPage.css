@@ -1,5 +1,9 @@
+.attribute-options-page__col--grip {
+  width: 4%;
+}
+
 .attribute-options-page__col--id {
-  width: 10%;
+  width: 6%;
 }
 
 .attribute-options-page__col--value {
