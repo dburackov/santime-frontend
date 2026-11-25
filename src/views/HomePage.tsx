@@ -45,7 +45,7 @@ export function HomePage() {
           <div className="hero__intro">
             <span className="hero__eyebrow">
               <span className="hero__eyebrow-dot" aria-hidden="true" />
-              Сантехника для дома · Минск
+              Сантехника для дома в Минске
             </span>
 
             <h1 className="hero__title">

@@ -23,6 +23,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { useDragOrder } from '@/admin/useDragOrder';
+import { groupTitle } from '@/admin/productGroupTitle';
 import { formError } from '@/admin/formErrors';
 
 /** Общие фото модели: на витрине идут в галерее каждого исполнения после его собственных. */
@@ -36,8 +37,7 @@ export function ProductGroupImagesPage() {
     queryFn: () => getProductGroup(groupId),
   });
 
-  // Своего имени у модели нет — берём имя базового исполнения, как и alt по умолчанию на бэке.
-  const title = group?.variants[0]?.name;
+  const title = group && groupTitle(group);
 
   const {
     data: images,

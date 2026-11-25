@@ -27,7 +27,6 @@ import { CurrencySymbol } from '@/components/ui/CurrencySymbol';
 import { Select } from '@/components/ui/Select';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { fieldError, formError } from '@/admin/formErrors';
-import { groupTitle } from '@/admin/productGroupTitle';
 import { PlusIcon, EditIcon, TrashIcon } from '@/components/ui/icons';
 import { blurOnWheel } from '@/utils/numberInput';
 
@@ -129,11 +128,9 @@ export function PromoCodesPage() {
     queryFn: () => listProductGroups({ size: PRODUCTS_PAGE_SIZE }),
   });
 
-  // Скоуп промокода — на группу («эта модель во всех исполнениях»), и эндпоинт уже отдаёт
-  // модели. Сортировка по имени только на клиенте: у группы своего имени в базе нет.
   const products = productsPage
     ? productsPage.content
-        .map((group) => ({ groupId: group.id, name: groupTitle(group.variants) }))
+        .map((group) => ({ groupId: group.id, name: group.name || String(group.id) }))
         .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
     : undefined;
   const productsTruncated = productsPage ? productsPage.totalElements > productsPage.content.length : false;

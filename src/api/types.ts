@@ -262,6 +262,7 @@ export type CategoryAttributeUpdateRequest = Omit<CategoryAttributeRequest, 'att
 /** Группа исполнений: сама по себе не заводится, живёт вместе с позициями. */
 export interface ProductGroupResponse {
   id: number;
+  name: string;
   categoryId: number;
   brandId: number | null;
   description: string | null;
@@ -286,6 +287,37 @@ export interface ProductGroupAxisRequest {
   sortOrder: number;
 }
 
+export interface ProductTransferRequest {
+  sourceGroupId: number;
+  variantIds: number[];
+}
+
+export interface ProductTransferConfirmRequest {
+  selection: ProductTransferRequest;
+  revision: string;
+  keepImageIds: number[];
+}
+
+interface ProductTransferModel {
+  id: number;
+  name: string;
+  brand: string | null;
+  description: string | null;
+  count: number;
+  axes: string[];
+  images: ProductImageAdminResponse[];
+  promoCodes: string[];
+}
+
+export interface ProductTransferPreview {
+  details: {
+    source: ProductTransferModel;
+    target: ProductTransferModel;
+    selected: { id: number; name: string; sku: string }[];
+  };
+  revision: string;
+}
+
 export interface ProductGroupVariantResponse {
   id: number;
   name: string;
@@ -300,6 +332,7 @@ export interface ProductGroupVariantResponse {
  */
 export interface ProductGroupRowResponse {
   id: number;
+  name: string;
   categoryId: number;
   brandId: number | null;
   description: string | null;
@@ -311,6 +344,7 @@ export interface ProductGroupRowResponse {
 
 /** Поля модели: общие для всех её исполнений. Категории нет — она неизменяема. */
 export interface ProductGroupRequest {
+  name: string;
   brandId: number | null;
   description: string | null;
 }
@@ -337,6 +371,7 @@ export interface ProductVariantResponse {
 
 /** Заведение новой позиции — вместе с ней создаётся её группа. */
 export interface ProductVariantRequest {
+  groupName: string;
   name: string;
   slug: string;
   sku: string;
@@ -353,10 +388,10 @@ export interface ProductVariantRequest {
 
 /** Правка позиции. Категории нет: она задаётся при создании и не меняется. */
 /** Правка позиции: полей модели здесь нет, они правятся у группы. */
-export type ProductVariantUpdateRequest = Omit<ProductVariantRequest, 'categoryId' | 'brandId' | 'description'>;
+export type ProductVariantUpdateRequest = Omit<ProductVariantRequest, 'groupName' | 'categoryId' | 'brandId' | 'description'>;
 
 /** Новое исполнение: непереданное копируется с исходной позиции. */
-export type ProductVariantSiblingRequest = Omit<ProductVariantRequest, 'categoryId' | 'brandId' | 'description'>;
+export type ProductVariantSiblingRequest = Omit<ProductVariantRequest, 'groupName' | 'categoryId' | 'brandId' | 'description'>;
 
 // ---- Импорт из внешнего источника (админка) ----
 

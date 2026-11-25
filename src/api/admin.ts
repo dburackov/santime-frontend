@@ -25,6 +25,9 @@ import type {
   ProductGroupAxisRequest,
   ProductGroupRequest,
   ProductGroupResponse,
+  ProductTransferRequest,
+  ProductTransferPreview,
+  ProductTransferConfirmRequest,
   ProductGroupRowResponse,
   ProductVariantRequest,
   ProductVariantResponse,
@@ -219,6 +222,14 @@ export function listProductGroups(
       sort: params.sort,
     },
   });
+}
+
+export function previewProductTransfer(id: number, body: ProductTransferRequest): Promise<ProductTransferPreview> {
+  return apiRequest(`/api/admin/product-groups/${id}/transfer/preview`, { method: 'POST', body });
+}
+
+export function transferProducts(id: number, body: ProductTransferConfirmRequest): Promise<void> {
+  return apiRequest(`/api/admin/product-groups/${id}/transfer`, { method: 'POST', body });
 }
 
 export function getProductGroup(id: number): Promise<ProductGroupResponse> {

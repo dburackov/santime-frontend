@@ -26,7 +26,7 @@ export function ProductMobileDetails({ variant, cart }: ProductMobileDetailsProp
   const rows = buildSpecRows(variant);
   const paragraphs = splitDescription(variant.description);
   // Без характеристик карточка показывает начало описания — шторка всё равно откроет его целиком.
-  const summary = rows.map((row) => row.summary).filter(Boolean).join(' · ') || paragraphs[0];
+  const summary = rows.map((row) => row.summary).filter(Boolean).join(', ') || paragraphs[0];
 
   return (
     <div className="product-mobile">

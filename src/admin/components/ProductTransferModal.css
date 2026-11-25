@@ -1,0 +1,33 @@
+.product-transfer__actions,
+.product-transfer__photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.product-transfer__result {
+  display: grid;
+  gap: var(--space-1);
+  text-align: left;
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  color: inherit;
+  cursor: pointer;
+}
+
+.product-transfer__result:hover {
+  background: var(--color-tint-2);
+}
+
+.product-transfer__result span {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}
+
+.product-transfer__photo {
+  width: calc(var(--space-8) * 2);
+  height: calc(var(--space-8) * 2);
+  object-fit: contain;
+}

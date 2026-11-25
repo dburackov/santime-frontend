@@ -35,6 +35,7 @@ import type {
   ProductVariantSiblingRequest,
   ProductVariantUpdateRequest,
 } from '@/api/types';
+import { ProductTransferModal } from '@/admin/components/ProductTransferModal';
 import { Modal } from '@/admin/components/Modal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { SlugField } from '@/admin/components/SlugField';
@@ -81,7 +82,7 @@ const EMPTY_FORM: FormState = {
  * Остальные поля модели задаются только при её создании — дальше их правит форма модели.
  * Отдельным состоянием, чтобы они не могли утечь в запрос правки позиции.
  */
-const EMPTY_NEW_GROUP = { brandId: '', description: '' };
+const EMPTY_NEW_GROUP = { name: '', brandId: '', description: '' };
 
 /** Незаполненное поле и отсутствующий ключ — одно и то же, иначе форма «грязная» сразу после открытия. */
 function sameAttributes(a: Record<string, string>, b: Record<string, string>): boolean {
@@ -195,6 +196,7 @@ export function ProductsPage() {
   // Снимок на момент открытия: по нему решаем, есть ли что терять при закрытии.
   const [initialForm, setInitialForm] = useState<FormState>(EMPTY_FORM);
   const [initialNewGroup, setInitialNewGroup] = useState(EMPTY_NEW_GROUP);
+  const [addTarget, setAddTarget] = useState<ProductGroupRowResponse | null>(null);
   const [groupTarget, setGroupTarget] = useState<ProductGroupRowResponse | null>(null);
 
   // Набор атрибутов определяется категорией формы, а не фильтром списка.
@@ -312,6 +314,7 @@ export function ProductsPage() {
     }));
     if (mode.kind === 'create') {
       setNewGroup((g) => ({
+        ...g,
         brandId: data.brandId !== null ? data.brandId.toString() : g.brandId,
         description: data.description,
       }));
@@ -327,6 +330,7 @@ export function ProductsPage() {
     if (closeConfirmOpen) return;
     const changed =
       !sameForm(form, initialForm) ||
+      newGroup.name !== initialNewGroup.name ||
       newGroup.brandId !== initialNewGroup.brandId ||
       newGroup.description !== initialNewGroup.description;
     if (!changed) {
@@ -375,6 +379,7 @@ export function ProductsPage() {
           ? updateMutation.mutateAsync({ id: mode.variant.id, body: common })
           : createMutation.mutateAsync({
               ...common,
+              groupName: newGroup.name.trim(),
               categoryId: Number(form.categoryId),
               brandId: newGroup.brandId ? Number(newGroup.brandId) : null,
               description: newGroup.description || null,
@@ -461,9 +466,10 @@ export function ProductsPage() {
                 {pageData?.content.map((group) => (
                   <Fragment key={group.id}>
                     <tr className="products-page__group-row">
-                      <td colSpan={8}>
+                      <td className="mono-num">{group.id}</td>
+                      <td colSpan={7}>
                         <div className="products-page__group-head">
-                          <span className="products-page__group-title">{groupTitle(group.variants)}</span>
+                          <span className="products-page__group-title">{group.name}</span>
                           <span className="products-page__group-meta">{shownCount(group)}</span>
                           {group.axes.length > 0 && (
                             <span className="products-page__group-meta">
@@ -477,9 +483,9 @@ export function ProductsPage() {
                             <button
                               type="button"
                               className="admin-table__link-btn"
-                              onClick={() => openSibling(group)}
+                              onClick={() => setAddTarget(group)}
                             >
-                              Добавить
+                              Добавить исполнение
                             </button>
                             <Link
                               href={`/admin/products/groups/${group.id}/images`}
@@ -559,7 +565,7 @@ export function ProductsPage() {
             <Button variant="secondary" size="sm" onClick={requestClose}>
               Отмена
             </Button>
-            <Button size="sm" onClick={handleSubmit} disabled={activeMutation.isPending || !form.categoryId}>
+            <Button size="sm" onClick={handleSubmit} disabled={activeMutation.isPending || !form.categoryId || (mode.kind === 'create' && !newGroup.name.trim())}>
               Сохранить
             </Button>
           </>
@@ -704,6 +710,15 @@ export function ProductsPage() {
               <fieldset className="products-page__shared">
                 <legend>Общие характеристики</legend>
 
+                <div className="admin-form-field">
+                  <label htmlFor="product-group-name">Название группы<RequiredMark /></label>
+                  <input id="product-group-name" className="filter-text-input" value={newGroup.name}
+                    maxLength={255} required onChange={(e) => setNewGroup((g) => ({ ...g, name: e.target.value }))} />
+                  {fieldError(activeMutation.error, 'groupName') && (
+                    <span className="admin-form-error">{fieldError(activeMutation.error, 'groupName')}</span>
+                  )}
+                </div>
+
                 <div className="admin-form-row">
                   <div className="admin-form-field">
                     <label htmlFor="product-category">Категория<RequiredMark /></label>
@@ -783,6 +798,15 @@ export function ProductsPage() {
         onConfirm={discardAndClose}
       />
 
+      {addTarget && (
+        <ProductTransferModal
+          target={addTarget}
+          onCreate={() => { openSibling(addTarget); setAddTarget(null); }}
+          onConfigure={() => { setGroupTarget(addTarget); setAddTarget(null); }}
+          onClose={() => setAddTarget(null)}
+        />
+      )}
+
       {groupTarget && (
         <ProductGroupModal
           group={groupTarget}
@@ -792,6 +816,8 @@ export function ProductsPage() {
           onSaved={() => {
             setGroupTarget(null);
             invalidate();
+            queryClient.invalidateQueries({ queryKey: ['admin-product-group', groupTarget.id] });
+            queryClient.invalidateQueries({ queryKey: ['admin-products-all'] });
           }}
         />
       )}
@@ -842,6 +868,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
   const savedDescription = group.description ?? '';
   const savedAxisSlugs = group.axes.map((axis) => axis.attributeSlug);
 
+  const [name, setName] = useState(group.name);
   const [brandId, setBrandId] = useState(savedBrandId);
   const [description, setDescription] = useState(savedDescription);
   const [axisSlugs, setAxisSlugs] = useState<string[]>(savedAxisSlugs);
@@ -859,7 +886,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
     mutationFn: (body: ProductGroupAxisRequest[]) => replaceProductGroupAxes(group.id, body),
   });
 
-  const fieldsChanged = brandId !== savedBrandId || description !== savedDescription;
+  const fieldsChanged = name !== group.name || brandId !== savedBrandId || description !== savedDescription;
   const axesChanged =
     axisSlugs.length !== savedAxisSlugs.length ||
     axisSlugs.some((slug) => !savedAxisSlugs.includes(slug));
@@ -876,6 +903,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
     const saves: Promise<unknown>[] = [];
     if (fieldsChanged) {
       saves.push(groupMutation.mutateAsync({
+        name: name.trim(),
         brandId: brandId ? Number(brandId) : null,
         description: description || null,
       }));
@@ -904,7 +932,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
       <Modal
         open
         onClose={requestClose}
-        title={groupTitle(group.variants)}
+        title={groupTitle(group)}
         size="wide"
         footer={
           <>
@@ -923,6 +951,15 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
 
             <div className="admin-form-note">
               Эти поля общие для всех исполнений модели — {variantCount(group.variantTotal)}.
+            </div>
+
+            <div className="admin-form-field">
+              <label htmlFor="group-name">Название группы</label>
+              <input id="group-name" className="filter-text-input" value={name}
+                maxLength={255} onChange={(e) => setName(e.target.value)} />
+              {fieldError(groupMutation.error, 'name') && (
+                <span className="admin-form-error">{fieldError(groupMutation.error, 'name')}</span>
+              )}
             </div>
 
             <div className="admin-form-row">

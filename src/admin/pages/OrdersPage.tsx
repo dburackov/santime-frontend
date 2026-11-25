@@ -139,7 +139,7 @@ export function OrdersPage() {
                   <Price value={order.totalPrice} size="sm" />
                 </div>
                 <div>{order.firstName} {order.lastName}</div>
-                <div>{paymentMethodLabel(order.paymentMethod)} · {deliveryMethodLabel(order.deliveryMethod)}</div>
+                <div>{paymentMethodLabel(order.paymentMethod)}, {deliveryMethodLabel(order.deliveryMethod)}</div>
                 <div className="orders-page__card-footer">
                   <span className="mono-num">{formatOrderCreatedAt(order.createdAt)}</span>
                   <PrintReceiptButton orderId={order.id} variant="icon" onError={setReceiptError} />

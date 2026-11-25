@@ -75,6 +75,7 @@
 
 .products-page__group-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-2);
 }
