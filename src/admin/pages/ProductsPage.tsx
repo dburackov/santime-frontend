@@ -82,7 +82,7 @@ const EMPTY_FORM: FormState = {
  * Остальные поля модели задаются только при её создании — дальше их правит форма модели.
  * Отдельным состоянием, чтобы они не могли утечь в запрос правки позиции.
  */
-const EMPTY_NEW_GROUP = { name: '', brandId: '', description: '' };
+const EMPTY_NEW_GROUP = { name: '', brandId: '', description: '', warrantyYears: '' };
 
 /** Незаполненное поле и отсутствующий ключ — одно и то же, иначе форма «грязная» сразу после открытия. */
 function sameAttributes(a: Record<string, string>, b: Record<string, string>): boolean {
@@ -317,6 +317,7 @@ export function ProductsPage() {
         ...g,
         brandId: data.brandId !== null ? data.brandId.toString() : g.brandId,
         description: data.description,
+        warrantyYears: data.warrantyYears?.toString() ?? g.warrantyYears,
       }));
     }
   }
@@ -332,7 +333,8 @@ export function ProductsPage() {
       !sameForm(form, initialForm) ||
       newGroup.name !== initialNewGroup.name ||
       newGroup.brandId !== initialNewGroup.brandId ||
-      newGroup.description !== initialNewGroup.description;
+      newGroup.description !== initialNewGroup.description ||
+      newGroup.warrantyYears !== initialNewGroup.warrantyYears;
     if (!changed) {
       setModalOpen(false);
       return;
@@ -383,6 +385,7 @@ export function ProductsPage() {
               categoryId: Number(form.categoryId),
               brandId: newGroup.brandId ? Number(newGroup.brandId) : null,
               description: newGroup.description || null,
+              warrantyYears: newGroup.warrantyYears ? Number(newGroup.warrantyYears) : null,
             });
 
     saved.then(() => setModalOpen(false)).catch(() => {});
@@ -565,13 +568,13 @@ export function ProductsPage() {
             <Button variant="secondary" size="sm" onClick={requestClose}>
               Отмена
             </Button>
-            <Button size="sm" onClick={handleSubmit} disabled={activeMutation.isPending || !form.categoryId || (mode.kind === 'create' && !newGroup.name.trim())}>
+            <Button size="sm" type="submit" form="product-variant-form" disabled={activeMutation.isPending || !form.categoryId || (mode.kind === 'create' && !newGroup.name.trim())}>
               Сохранить
             </Button>
           </>
         }
       >
-        <form className="admin-form products-page__form" onSubmit={handleSubmit}>
+        <form id="product-variant-form" className="admin-form products-page__form" onSubmit={handleSubmit}>
           <div className="products-page__form-col">
             {formError(activeMutation.error) && (
               <div className="admin-banner-error">{formError(activeMutation.error)}</div>
@@ -747,6 +750,13 @@ export function ProductsPage() {
                   </div>
                 </div>
 
+                <WarrantyField
+                  id="product-warranty-years"
+                  value={newGroup.warrantyYears}
+                  onChange={(value) => setNewGroup((g) => ({ ...g, warrantyYears: value }))}
+                  error={fieldError(activeMutation.error, 'warrantyYears')}
+                />
+
                 <div className="admin-form-field">
                   <label htmlFor="product-description">Описание</label>
                   <textarea
@@ -851,6 +861,31 @@ function variantCount(count: number): string {
   return `${count} исполнений`;
 }
 
+function WarrantyField({ id, value, onChange, error }: {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  error: string | undefined;
+}) {
+  return (
+    <div className="admin-form-field">
+      <label htmlFor={id}>Гарантия, лет</label>
+      <input
+        id={id}
+        type="number"
+        min={1}
+        max={2147483647}
+        step={1}
+        onWheel={blurOnWheel}
+        className="filter-text-input mono-num"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {error && <span className="admin-form-error">{error}</span>}
+    </div>
+  );
+}
+
 interface ProductGroupModalProps {
   group: ProductGroupRowResponse;
   categories: CategoryResponse[] | undefined;
@@ -866,11 +901,13 @@ interface ProductGroupModalProps {
 function ProductGroupModal({ group, categories, brands, onClose, onSaved }: ProductGroupModalProps) {
   const savedBrandId = group.brandId?.toString() ?? '';
   const savedDescription = group.description ?? '';
+  const savedWarrantyYears = group.warrantyYears?.toString() ?? '';
   const savedAxisSlugs = group.axes.map((axis) => axis.attributeSlug);
 
   const [name, setName] = useState(group.name);
   const [brandId, setBrandId] = useState(savedBrandId);
   const [description, setDescription] = useState(savedDescription);
+  const [warrantyYears, setWarrantyYears] = useState(savedWarrantyYears);
   const [axisSlugs, setAxisSlugs] = useState<string[]>(savedAxisSlugs);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
 
@@ -886,7 +923,9 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
     mutationFn: (body: ProductGroupAxisRequest[]) => replaceProductGroupAxes(group.id, body),
   });
 
-  const fieldsChanged = name !== group.name || brandId !== savedBrandId || description !== savedDescription;
+  const fieldsChanged =
+    name !== group.name || brandId !== savedBrandId || description !== savedDescription ||
+    warrantyYears !== savedWarrantyYears;
   const axesChanged =
     axisSlugs.length !== savedAxisSlugs.length ||
     axisSlugs.some((slug) => !savedAxisSlugs.includes(slug));
@@ -906,6 +945,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
         name: name.trim(),
         brandId: brandId ? Number(brandId) : null,
         description: description || null,
+        warrantyYears: warrantyYears ? Number(warrantyYears) : null,
       }));
     }
     if (axesChanged) {
@@ -939,13 +979,13 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
             <Button variant="secondary" size="sm" onClick={requestClose}>
               Отмена
             </Button>
-            <Button size="sm" onClick={handleSubmit} disabled={isPending}>
+            <Button size="sm" type="submit" form="product-group-form" disabled={isPending}>
               Сохранить
             </Button>
           </>
         }
       >
-        <form className="admin-form products-page__form" onSubmit={handleSubmit}>
+        <form id="product-group-form" className="admin-form products-page__form" onSubmit={handleSubmit}>
           <div className="products-page__form-col">
             {error && <div className="admin-banner-error">{error}</div>}
 
@@ -986,6 +1026,13 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
                 />
               </div>
             </div>
+
+            <WarrantyField
+              id="group-warranty-years"
+              value={warrantyYears}
+              onChange={setWarrantyYears}
+              error={fieldError(groupMutation.error, 'warrantyYears')}
+            />
 
             <div className="admin-form-field">
               <label htmlFor="group-description">Описание</label>

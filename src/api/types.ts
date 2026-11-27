@@ -166,6 +166,7 @@ export interface VariantDetailResponse {
   attributes: Record<string, AttributeValue>;
   groupId: number;
   description: string | null;
+  warrantyYears: number | null;
   categoryId: number;
   brandId: number | null;
   brandName: string | null;
@@ -266,6 +267,7 @@ export interface ProductGroupResponse {
   categoryId: number;
   brandId: number | null;
   description: string | null;
+  warrantyYears: number | null;
   axes: ProductGroupAxisResponse[];
   variants: ProductGroupVariantResponse[];
   createdAt: string;
@@ -303,6 +305,7 @@ interface ProductTransferModel {
   name: string;
   brand: string | null;
   description: string | null;
+  warrantyYears: number | null;
   count: number;
   axes: string[];
   images: ProductImageAdminResponse[];
@@ -336,6 +339,7 @@ export interface ProductGroupRowResponse {
   categoryId: number;
   brandId: number | null;
   description: string | null;
+  warrantyYears: number | null;
   /** Полное число исполнений модели: при поиске в variants приходят только совпавшие. */
   variantTotal: number;
   axes: ProductGroupAxisResponse[];
@@ -347,6 +351,7 @@ export interface ProductGroupRequest {
   name: string;
   brandId: number | null;
   description: string | null;
+  warrantyYears: number | null;
 }
 
 export interface ProductVariantResponse {
@@ -364,6 +369,7 @@ export interface ProductVariantResponse {
   categoryId: number;
   brandId: number | null;
   description: string | null;
+  warrantyYears: number | null;
   images?: ProductImageResponse[];
   createdAt: string;
   updatedAt: string;
@@ -384,14 +390,15 @@ export interface ProductVariantRequest {
   categoryId: number;
   brandId?: number | null;
   description?: string | null;
+  warrantyYears?: number | null;
 }
 
 /** Правка позиции. Категории нет: она задаётся при создании и не меняется. */
 /** Правка позиции: полей модели здесь нет, они правятся у группы. */
-export type ProductVariantUpdateRequest = Omit<ProductVariantRequest, 'groupName' | 'categoryId' | 'brandId' | 'description'>;
+export type ProductVariantUpdateRequest = Omit<ProductVariantRequest, 'groupName' | 'categoryId' | 'brandId' | 'description' | 'warrantyYears'>;
 
 /** Новое исполнение: непереданное копируется с исходной позиции. */
-export type ProductVariantSiblingRequest = Omit<ProductVariantRequest, 'groupName' | 'categoryId' | 'brandId' | 'description'>;
+export type ProductVariantSiblingRequest = Omit<ProductVariantRequest, 'groupName' | 'categoryId' | 'brandId' | 'description' | 'warrantyYears'>;
 
 // ---- Импорт из внешнего источника (админка) ----
 
@@ -417,6 +424,7 @@ export interface ExternalProductResponse {
   brandId: number | null;
   brandName: string;
   description: string;
+  warrantyYears: number | null;
   attributes: Record<string, AttributeValue>;
   skipped: ExternalAttributeSkip[];
 }

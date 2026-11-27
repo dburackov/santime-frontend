@@ -1,3 +1,4 @@
+import { formatWarrantyYears } from '@/utils/warranty';
 import { formatAttributeValue } from '@/utils/attributes';
 import type { VariantDetailResponse } from '@/api/types';
 
@@ -9,7 +10,7 @@ export interface SpecRow {
   summary: string | null;
 }
 
-/** Характеристики исполнения в порядке метаданных категории, пустые отброшены, вес — последним. */
+/** Характеристики исполнения в порядке метаданных категории, затем вес и гарантия. */
 export function buildSpecRows(variant: VariantDetailResponse): SpecRow[] {
   const rows: SpecRow[] = [];
   for (const meta of variant.attributeMetadata) {
@@ -25,6 +26,10 @@ export function buildSpecRows(variant: VariantDetailResponse): SpecRow[] {
   if (variant.weightKg) {
     const value = `${variant.weightKg} кг`;
     rows.push({ key: 'weight', name: 'Вес', value, summary: value });
+  }
+  if (variant.warrantyYears != null) {
+    const value = formatWarrantyYears(variant.warrantyYears);
+    rows.push({ key: 'group-warranty', name: 'Гарантия', value, summary: 'гарантия ' + value });
   }
   return rows;
 }

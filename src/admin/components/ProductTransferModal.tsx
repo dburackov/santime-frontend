@@ -7,6 +7,7 @@ import { getProductGroup, listProductGroups, previewProductTransfer, transferPro
 import type { ProductGroupRowResponse, ProductTransferPreview, ProductImageAdminResponse } from '@/api/types';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { groupTitle } from '@/admin/productGroupTitle';
+import { formatWarrantyYears } from '@/utils/warranty';
 import { formError } from '@/admin/formErrors';
 import { Modal } from './Modal';
 import { Button } from '@/components/ui/Button';
@@ -149,6 +150,10 @@ export function ProductTransferModal({ target, onCreate, onConfigure, onClose }:
           <ul>{details.selected.map(item => <li key={item.id}>{item.name}</li>)}</ul>
           <p>Различающие характеристики: {details.target.axes.join(', ')}.</p>
           {details.source.brand !== details.target.brand && <p>Бренд: {details.source.brand ?? 'Без бренда'} → {details.target.brand ?? 'Без бренда'}</p>}
+          {details.source.warrantyYears !== details.target.warrantyYears && (
+            <p>Гарантия: {details.source.warrantyYears == null ? 'Не указана' : formatWarrantyYears(details.source.warrantyYears)}
+              {' → '}{details.target.warrantyYears == null ? 'Не указана' : formatWarrantyYears(details.target.warrantyYears)}</p>
+          )}
           {details.source.description !== details.target.description && <div>
             <h3>Описание модели</h3>
             <p>Было: {details.source.description || 'Пусто'}</p>
