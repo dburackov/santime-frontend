@@ -263,7 +263,7 @@ export type CategoryAttributeUpdateRequest = Omit<CategoryAttributeRequest, 'att
 /** Группа исполнений: сама по себе не заводится, живёт вместе с позициями. */
 export interface ProductGroupResponse {
   id: number;
-  name: string;
+  name: string | null;
   categoryId: number;
   brandId: number | null;
   description: string | null;
@@ -302,7 +302,7 @@ export interface ProductTransferConfirmRequest {
 
 interface ProductTransferModel {
   id: number;
-  name: string;
+  name: string | null;
   brand: string | null;
   description: string | null;
   warrantyYears: number | null;
@@ -335,7 +335,7 @@ export interface ProductGroupVariantResponse {
  */
 export interface ProductGroupRowResponse {
   id: number;
-  name: string;
+  name: string | null;
   categoryId: number;
   brandId: number | null;
   description: string | null;
@@ -377,7 +377,7 @@ export interface ProductVariantResponse {
 
 /** Заведение новой позиции — вместе с ней создаётся её группа. */
 export interface ProductVariantRequest {
-  groupName: string;
+  groupName?: string | null;
   name: string;
   slug: string;
   sku: string;

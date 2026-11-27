@@ -381,7 +381,7 @@ export function ProductsPage() {
           ? updateMutation.mutateAsync({ id: mode.variant.id, body: common })
           : createMutation.mutateAsync({
               ...common,
-              groupName: newGroup.name.trim(),
+              groupName: newGroup.name.trim() || null,
               categoryId: Number(form.categoryId),
               brandId: newGroup.brandId ? Number(newGroup.brandId) : null,
               description: newGroup.description || null,
@@ -472,7 +472,7 @@ export function ProductsPage() {
                       <td className="mono-num">{group.id}</td>
                       <td colSpan={7}>
                         <div className="products-page__group-head">
-                          <span className="products-page__group-title">{group.name}</span>
+                          {group.name && <span className="products-page__group-title">{group.name}</span>}
                           <span className="products-page__group-meta">{shownCount(group)}</span>
                           {group.axes.length > 0 && (
                             <span className="products-page__group-meta">
@@ -568,7 +568,7 @@ export function ProductsPage() {
             <Button variant="secondary" size="sm" onClick={requestClose}>
               Отмена
             </Button>
-            <Button size="sm" type="submit" form="product-variant-form" disabled={activeMutation.isPending || !form.categoryId || (mode.kind === 'create' && !newGroup.name.trim())}>
+            <Button size="sm" type="submit" form="product-variant-form" disabled={activeMutation.isPending || !form.categoryId}>
               Сохранить
             </Button>
           </>
@@ -714,9 +714,9 @@ export function ProductsPage() {
                 <legend>Общие характеристики</legend>
 
                 <div className="admin-form-field">
-                  <label htmlFor="product-group-name">Название группы<RequiredMark /></label>
+                  <label htmlFor="product-group-name">Название группы</label>
                   <input id="product-group-name" className="filter-text-input" value={newGroup.name}
-                    maxLength={255} required onChange={(e) => setNewGroup((g) => ({ ...g, name: e.target.value }))} />
+                    maxLength={255} onChange={(e) => setNewGroup((g) => ({ ...g, name: e.target.value }))} />
                   {fieldError(activeMutation.error, 'groupName') && (
                     <span className="admin-form-error">{fieldError(activeMutation.error, 'groupName')}</span>
                   )}
@@ -899,12 +899,13 @@ interface ProductGroupModalProps {
  * списка — она уже несёт и оси, и позиции, поэтому догружать нечего и гонки нет.
  */
 function ProductGroupModal({ group, categories, brands, onClose, onSaved }: ProductGroupModalProps) {
+  const savedName = group.name ?? '';
   const savedBrandId = group.brandId?.toString() ?? '';
   const savedDescription = group.description ?? '';
   const savedWarrantyYears = group.warrantyYears?.toString() ?? '';
   const savedAxisSlugs = group.axes.map((axis) => axis.attributeSlug);
 
-  const [name, setName] = useState(group.name);
+  const [name, setName] = useState(savedName);
   const [brandId, setBrandId] = useState(savedBrandId);
   const [description, setDescription] = useState(savedDescription);
   const [warrantyYears, setWarrantyYears] = useState(savedWarrantyYears);
@@ -924,7 +925,7 @@ function ProductGroupModal({ group, categories, brands, onClose, onSaved }: Prod
   });
 
   const fieldsChanged =
-    name !== group.name || brandId !== savedBrandId || description !== savedDescription ||
+    name !== savedName || brandId !== savedBrandId || description !== savedDescription ||
     warrantyYears !== savedWarrantyYears;
   const axesChanged =
     axisSlugs.length !== savedAxisSlugs.length ||
